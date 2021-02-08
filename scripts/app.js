@@ -22,11 +22,11 @@ class AppKernel extends Kernel {
         super()
         this.query = $context.query
         // 注册组件
-        this.settingComponent = this._registerComponent("Setting")
+        this.settingComponent = this.registerComponent("Setting")
         this.setting = this.settingComponent.controller
         this.initSettingMethods()
-        this.page = this._registerComponent("Page")
-        this.menu = this._registerComponent("Menu")
+        this.page = this.registerComponent("Page")
+        this.menu = this.registerComponent("Menu")
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetAssetsPath = widgetAssetsPath
