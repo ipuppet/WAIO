@@ -10,7 +10,7 @@ const backupPath = "/assets/backup"
  */
 function widgetInstance(widget, that) {
     if ($file.exists(`${widgetRootPath}/${widget}/index.js`)) {
-        let { Widget } = require(`./ui/widget/${widget}/index.js`)
+        const { Widget } = require(`./ui/widget/${widget}/index.js`)
         return new Widget(that)
     } else {
         return false
@@ -40,9 +40,9 @@ class AppKernel extends Kernel {
     }
 
     uuid() {
-        var s = []
-        var hexDigits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        for (var i = 0; i < 36; i++) {
+        let s = []
+        const hexDigits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+        for (let i = 0; i < 36; i++) {
             s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
         }
         s[14] = "4" // bits 12-15 of the time_hi_and_version field to 0010
@@ -227,7 +227,7 @@ class AppKernel extends Kernel {
 
     getWidgetList() {
         let data = []
-        let widgets = $file.list(this.widgetRootPath)
+        const widgets = $file.list(this.widgetRootPath)
         for (let widget of widgets) {
             let widgetPath = `${this.widgetRootPath}/${widget}`
             if ($file.exists(`${widgetPath}/config.json`)) {
