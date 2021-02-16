@@ -266,46 +266,59 @@ class WidgetKernel extends Kernel {
 
 module.exports = {
     run: () => {
-        if ($app.env === $env.widget) {
-            const kernel = new WidgetKernel()
-            const widgetName = $widget.inputValue
-            const widget = kernel.widgetInstance(widgetName)
-            if (widget) {
-                widget.render()
-            } else {
-                $widget.setTimeline({
-                    render: ctx => {
-                        return {
-                            type: "text",
-                            props: {
-                                text: "去主程序选择一个Widget，或者参数有误？\n注意，不需要引号"
+        let kernel
+        switch ($app.env) {
+            case $env.widget:
+                kernel = new WidgetKernel()
+                const widgetName = $widget.inputValue
+                const widget = kernel.widgetInstance(widgetName)
+                if (widget) {
+                    widget.render()
+                } else {
+                    $widget.setTimeline({
+                        render: ctx => {
+                            return {
+                                type: "text",
+                                props: {
+                                    text: "去主程序选择一个Widget，或者参数有误？\n注意，不需要引号"
+                                }
                             }
                         }
-                    }
-                })
-            }
-        } else {
-            const Factory = require("./ui/main/factory")
-            const kernel = new AppKernel()
-            new Factory(kernel).render()
-            // 监听运行状态
-            $app.listen({
-                // 在应用启动之后调用
-                ready: () => {
-                    $widget.reloadTimeline()
-                    kernel.updateHomeScreenWidgetOptions()
-                },
-                // 在应用退出之前调用
-                exit: () => {
-                    $widget.reloadTimeline()
-                    kernel.updateHomeScreenWidgetOptions()
-                },
-                // 在应用停止响应后调用
-                pause: () => {
+                    })
+                }
+                break
+            case $env.app:
+                kernel = new AppKernel()
+                const Factory = require("./ui/main/factory")
+                new Factory(kernel).render()
+                const reloadAction = () => {
                     $widget.reloadTimeline()
                     kernel.updateHomeScreenWidgetOptions()
                 }
-            })
+                // 监听运行状态
+                $app.listen({
+                    // 在应用启动之后调用
+                    ready: reloadAction,
+                    // 在应用退出之前调用
+                    exit: reloadAction,
+                    // 在应用停止响应后调用
+                    pause: reloadAction
+                })
+                break
+            default:
+                $ui.render({
+                    views: [{
+                        type: "label",
+                        props: {
+                            text: "不支持在此环境中运行",
+                            align: $align.center
+                        },
+                        layout: (make, view) => {
+                            make.center.equalTo(view.super)
+                            make.size.equalTo(view.super)
+                        }
+                    }]
+                })
         }
     }
 }
