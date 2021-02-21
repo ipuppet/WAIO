@@ -13,26 +13,6 @@
             },
             {
                 "icon": [
-                    "wand.and.rays",
-                    "#FF9933"
-                ],
-                "title": "COLOR_TONE",
-                "type": "color",
-                "key": "colorTone",
-                "value": "#FF9933"
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
-                    "#3366CC"
-                ],
-                "title": "REMINDER_COLOR",
-                "type": "color",
-                "key": "colorReminder",
-                "value": "#3366CC"
-            },
-            {
-                "icon": [
                     "pencil.and.ellipsis.rectangle",
                     "#FF9900"
                 ],
@@ -52,7 +32,47 @@
                 "type": "number",
                 "key": "timeSpan",
                 "value": 10
+            }
+        ]
+    },
+    {
+        "title": "COLOR_SETTING",
+        "items": [
+            {
+                "icon": [
+                    "wand.and.rays",
+                    "#FF9933"
+                ],
+                "title": "DATE_COLOR",
+                "type": "color",
+                "key": "colorDate",
+                "value": "#FF9933"
             },
+            {
+                "icon": [
+                    "wand.and.rays",
+                    "#FF9933"
+                ],
+                "title": "CALENDAR_COLOR",
+                "type": "color",
+                "key": "colorCalendar",
+                "value": "#FF9933"
+            },
+            {
+                "icon": [
+                    "wand.and.rays",
+                    "#3366CC"
+                ],
+                "title": "REMINDER_COLOR",
+                "type": "color",
+                "key": "colorReminder",
+                "value": "#3366CC"
+            }
+        ]
+    },
+    {
+        "title": "2x2",
+        "items": [
             {
                 "icon": [
                     "paperplane.fill"

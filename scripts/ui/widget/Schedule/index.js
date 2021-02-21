@@ -20,7 +20,20 @@ class ScheduleWidget extends Widget {
         const nowDate = new Date()
         const expireDate = new Date(nowDate + this.cacheLife)
         // 获取视图
-        const view2x2 = await this.view2x2()
+        let view
+        switch ($widget.family) {
+            case 0:
+                view = await this.view2x2()
+                break
+            case 1:
+                view = await this.view2x4()
+                break
+            case 2:
+                view = await this.view2x4()
+                break
+            default:
+                view = this.errorView
+        }
         $widget.setTimeline({
             entries: [
                 {
@@ -33,8 +46,7 @@ class ScheduleWidget extends Widget {
             },
             render: ctx => {
                 this.printTimeConsuming()
-                // 只提供一种视图
-                return view2x2
+                return view
             }
         })
     }

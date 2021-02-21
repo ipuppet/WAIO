@@ -3,18 +3,21 @@ class Schedule {
         this.kernel = kernel
         this.setting = setting
         this.timeSpan = this.setting.get("timeSpan")
-        this.colorTone = this.setting.get("colorTone")
+        this.colorDate = this.setting.get("colorDate")
+        this.colorCalendar = this.setting.get("colorCalendar")
         this.colorReminder = this.setting.get("colorReminder")
         this.itemLength = this.setting.get("itemLength")
+        this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=calshow://`
+        this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=x-apple-reminderkit://`
         switch (this.setting.get("clickEvent")) {
             case 0:
                 this.urlScheme = this.setting.settingUrlScheme
                 break
             case 1:
-                this.urlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=x-apple-reminderkit://`
+                this.urlScheme = this.reminderUrlScheme
                 break
             case 2:
-                this.urlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=calshow://`
+                this.urlScheme = this.calendarUrlScheme
                 break
         }
     }
@@ -67,6 +70,26 @@ class Schedule {
         return schedule
     }
 
+    async getScheduleApart() {
+        const nowDate = new Date()
+        const startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
+        const hours = this.timeSpan * 24
+        const calendar = await this.getCalendar(startDate, hours, nowDate)
+        const reminder = await this.getReminder(startDate, hours)
+        // 按结束日期排序
+        this.quicksort(calendar, 0, calendar.length - 1, (item, compare) => {
+            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
+            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
+            return itemDate.getTime() >= compareDate.getTime()
+        })
+        this.quicksort(reminder, 0, reminder.length - 1, (item, compare) => {
+            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
+            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
+            return itemDate.getTime() >= compareDate.getTime()
+        })
+        return { calendar: calendar, reminder: reminder }
+    }
+
     /**
      * 排序
      * @param {Array} arr 数组
@@ -111,9 +134,7 @@ class Schedule {
 
     }
 
-    async getListView() {
-        // 获取数据
-        const list = await this.getSchedule()
+    getListView(list) {
         if (list.length === 0) return null
         let itemLength = 0, dateCollect = {}
         const isReminder = item => item.completed !== undefined
@@ -145,7 +166,7 @@ class Schedule {
                         {// 竖条颜色
                             type: "color",
                             props: {
-                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorTone),
+                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
                                 frame: {
                                     width: 2,
                                     height: 30,
@@ -193,7 +214,7 @@ class Schedule {
                                                     width: 12,
                                                     height: 12
                                                 },
-                                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorTone),
+                                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
                                                 resizable: true
                                             }
                                         },
@@ -236,13 +257,15 @@ class Schedule {
             }
             views.push({
                 type: "vstack",
-                props: { spacing: 5 },
+                props: {
+                    spacing: 5
+                },
                 views: [
                     {
                         type: "text",
                         props: {
                             text: date,
-                            color: $color(this.colorTone),
+                            color: $color(this.colorDate),
                             font: $font("bold", 12),
                             frame: {
                                 maxWidth: Infinity,
@@ -260,34 +283,55 @@ class Schedule {
 
     /**
      * 获取视图
-     * 只提供正方形视图布局
      */
     async scheduleView(family) {
-        const listView = await this.getListView()
-        if (null === listView) return {
+        const nothingView = {
             type: "text",
-            props: Object.assign(
-                { text: $l10n("NO_CALENDAR&REMINDER") },
-                family !== this.setting.family.small ? {
-                    link: this.urlScheme
-                } : {
-                        widgetURL: this.urlScheme
-                    })
-        }
-        return {
-            type: "vstack",
-            props: Object.assign({
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity,
-                    alignment: $widget.verticalAlignment.firstTextBaseline
-                },
-                padding: $insets(15, 15, 0, 0),
-                spacing: 15
-            }, family === this.setting.family.small ? {
+            props: {
+                text: $l10n("NO_CALENDAR&REMINDER"),
                 widgetURL: this.urlScheme
-            } : {}),
-            views: listView
+            }
+        }
+        const listView = (views, props = {}) => {
+            return {
+                type: "vstack",
+                props: Object.assign({
+                    frame: {
+                        maxHeight: Infinity,
+                        alignment: $widget.verticalAlignment.firstTextBaseline
+                    },
+                    padding: $insets(15, 15, 0, 15),
+                    spacing: 15
+                }, props),
+                views: views
+            }
+        }
+        switch (family) {
+            case this.setting.family.small:
+                const view = this.getListView(await this.getSchedule())
+                if (null === view) return nothingView
+                return listView(view, { widgetURL: this.urlScheme })
+            case this.setting.family.medium:
+                // 获取数据
+                const data = await this.getScheduleApart()
+                // 获取视图
+                const calendarView = this.getListView(data.calendar) ?? nothingView
+                const reminderView = this.getListView(data.reminder) ?? nothingView
+                return {
+                    type: "hstack",
+                    props: {
+                        frame: {
+                            maxWidth: Infinity,
+                            maxHeight: Infinity,
+                            alignment: $widget.verticalAlignment.firstTextBaseline
+                        },
+                        spacing: 0
+                    },
+                    views: [
+                        listView(calendarView, { link: this.calendarUrlScheme }),
+                        listView(reminderView, { link: this.reminderUrlScheme })
+                    ]
+                }
         }
     }
 }
