@@ -19,41 +19,52 @@ class Schedule {
         }
     }
 
-    async getSchedule() {
-        let nowDate = new Date()
-        let startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
-        let hours = this.timeSpan * 24
-        let calendar = await $calendar.fetch({
+    async getCalendar(startDate, hours, nowDate) {
+        if (nowDate === undefined) nowDate = new Date()
+        const res = []
+        const calendar = await $calendar.fetch({
             startDate: startDate,
             hours: hours
         })
-        calendar = calendar.events
-        let reminder = await $reminder.fetch({
-            startDate: startDate,
-            hours: hours
-        })
-        reminder = reminder.events
-        // 混合日程和提醒事项
-        let total = []
         // 未过期日程
-        calendar.forEach(item => {
+        calendar.events.forEach(item => {
             if (item.endDate >= nowDate) {
-                total.push(item)
+                res.push(item)
             }
+        })
+        return res
+    }
+
+    async getReminder(startDate, hours) {
+        const res = []
+        const reminder = await $reminder.fetch({
+            startDate: startDate,
+            hours: hours
         })
         // 未完成提醒事项
-        reminder.forEach(item => {
+        reminder.events.forEach(item => {
             if (!item.completed) {
-                total.push(item)
+                res.push(item)
             }
         })
+        return res
+    }
+
+    async getSchedule() {
+        const nowDate = new Date()
+        const startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
+        const hours = this.timeSpan * 24
+        const calendar = await this.getCalendar(startDate, hours, nowDate)
+        const reminder = await this.getReminder(startDate, hours)
+        // 混合日程和提醒事项
+        const schedule = [].concat(calendar).concat(reminder)
         // 按结束日期排序
-        this.quicksort(total, 0, total.length - 1, (item, compare) => {
-            let itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
-            let compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
+        this.quicksort(schedule, 0, schedule.length - 1, (item, compare) => {
+            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
+            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
             return itemDate.getTime() >= compareDate.getTime()
         })
-        return total
+        return schedule
     }
 
     /**
@@ -91,7 +102,7 @@ class Schedule {
         if (!date) return $l10n("NO_DATE")
         const formatInt = int => int < 10 ? `0${int}` : String(int)
         if (mode === 0) {
-            let month = date.getMonth() + 1
+            const month = date.getMonth() + 1
             date = date.getDate()
             return date === new Date().getDate() ? $l10n("TODAY") : `${month}${$l10n("MONTH")}${date}${$l10n("DATE")}`
         } else if (mode === 1) {
@@ -110,15 +121,15 @@ class Schedule {
         for (let item of list) {
             // 控制显示数目
             if (itemLength >= this.itemLength) break
-            let dateString = isReminder(item) ? this.formatDate(item.alarmDate) : this.formatDate(item.endDate)
+            const dateString = isReminder(item) ? this.formatDate(item.alarmDate) : this.formatDate(item.endDate)
             if (!dateCollect[dateString])
                 dateCollect[dateString] = []
             itemLength++
             dateCollect[dateString].push(item)
         }
-        let views = []
+        const views = []
         for (let date of Object.keys(dateCollect)) {
-            let view = []
+            const view = []
             for (let item of dateCollect[date]) {
                 view.push({
                     type: "hstack",
@@ -191,8 +202,8 @@ class Schedule {
                                             props: {
                                                 lineLimit: 1,
                                                 text: isReminder(item) ? this.formatDate(item.alarmDate, 1) : (() => {
-                                                    let startDate = this.formatDate(item.startDate, 1)
-                                                    let endDate = this.formatDate(item.endDate, 1)
+                                                    const startDate = this.formatDate(item.startDate, 1)
+                                                    const endDate = this.formatDate(item.endDate, 1)
                                                     return `${startDate}-${endDate}`
                                                 })(),
                                                 font: $font(12),
@@ -273,11 +284,9 @@ class Schedule {
                 },
                 padding: $insets(15, 15, 0, 0),
                 spacing: 15
-            }, family !== this.setting.family.small ? {
-                link: this.urlScheme
-            } : {
-                    widgetURL: this.urlScheme
-                }),
+            }, family === this.setting.family.small ? {
+                widgetURL: this.urlScheme
+            } : {}),
             views: listView
         }
     }

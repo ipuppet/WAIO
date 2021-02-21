@@ -23,13 +23,13 @@ class JoinWidget extends Widget {
     refreshCache() { }
 
     async view2x4() {
-        let leftWidget = this.kernel.widgetInstance(this.left)
-        let rightWidget = this.kernel.widgetInstance(this.right)
-        let leftView = await leftWidget.joinView(this.leftJoinMode)
-        let rightView = await rightWidget.joinView(this.rightJoinMode)
+        const leftWidget = this.kernel.widgetInstance(this.left)
+        const rightWidget = this.kernel.widgetInstance(this.right)
+        const leftView = await leftWidget.joinView(this.leftJoinMode)
+        const rightView = await rightWidget.joinView(this.rightJoinMode)
         $widget.family = this.setting.family.medium
-        let width = $widget.displaySize.width / 2 - this.spacing / 2
-        let height = $widget.displaySize.height
+        const width = $widget.displaySize.width / 2 - this.spacing / 2
+        const height = $widget.displaySize.height
         // 调节宽度并裁剪多余部分
         if (!leftView.props.frame) leftView.props.frame = {}
         leftView.props.frame["maxWidth"] = width
@@ -51,9 +51,9 @@ class JoinWidget extends Widget {
     }
 
     async render() {
-        let switchInterval = 1000 * 60 * this.switchInterval
+        const switchInterval = 1000 * 60 * this.switchInterval
         const expireDate = new Date(new Date() + switchInterval)
-        let view2x4 = await this.view2x4()
+        const view2x4 = await this.view2x4()
         $widget.setTimeline({
             entries: [
                 {

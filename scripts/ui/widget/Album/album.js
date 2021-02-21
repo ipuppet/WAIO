@@ -20,7 +20,7 @@ class Album {
      */
     getImages(isCompress) {
         if (isCompress) return $file.list(`${this.albumPath}/archive`)
-        let list = $file.list(this.albumPath)
+        const list = $file.list(this.albumPath)
         for (let i = 0; i < list.length; i++) {
             if ($file.isDirectory(`${this.albumPath}/${list[i]}`)) {
                 list.splice(i, 1)
@@ -33,10 +33,10 @@ class Album {
     deleteImage(src, indexPath) {
         $file.delete(src)
         // 同时删除压缩过的文件
-        let name = src.slice(src.lastIndexOf("/"))
+        const name = src.slice(src.lastIndexOf("/"))
         $file.delete(`${this.albumPath}/archive/${name}`)
         if (indexPath) {
-            let sender = $("picture-edit-matrix")
+            const sender = $("picture-edit-matrix")
             sender.delete(indexPath)
             // 检查是否已经为空，为空则显示提示字样
             if (sender.data.length === 0) {
@@ -96,8 +96,8 @@ class Album {
     }
 
     changemode() {
-        let matrix = $("picture-edit-matrix")
-        let button = $("album-multiple-selection-mode")
+        const matrix = $("picture-edit-matrix")
+        const button = $("album-multiple-selection-mode")
         switch (this.mode) {
             case 0: // 多选模式，显示删除按钮
                 if (matrix.data.length === 0) {
@@ -131,14 +131,14 @@ class Album {
                     items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
                     handler: (title, idx) => {
                         const saveImageAction = data => {
-                            let fileName = new Date().getTime() + data.fileName.slice(data.fileName.lastIndexOf("."))
+                            const fileName = new Date().getTime() + data.fileName.slice(data.fileName.lastIndexOf("."))
                             $file.write({
                                 data: data,
                                 path: `${this.albumPath}/${fileName}`
                             })
                             // 同时保留一份压缩后的图片
                             // TODO 控制压缩图片大小
-                            let image = data.image.jpg(this.imageMaxSize * 1024 / data.info.size)
+                            const image = data.image.jpg(this.imageMaxSize * 1024 / data.info.size)
                             $file.write({
                                 data: image,
                                 path: `${this.albumPath}/archive/${fileName}`
@@ -147,7 +147,7 @@ class Album {
                             if (!$("no-image-text").hidden)
                                 $("no-image-text").hidden = true
                             // UI插入图片
-                            let matrix = $("picture-edit-matrix")
+                            const matrix = $("picture-edit-matrix")
                             matrix.hidden = false
                             matrix.insert({
                                 indexPath: $indexPath(0, matrix.data.length),
@@ -249,8 +249,8 @@ class Album {
     }
 
     getAlbumView() {
-        let pictures = this.getImages()
-        let data = []
+        const pictures = this.getImages()
+        const data = []
         if (pictures.length > 0) {
             pictures.forEach(picture => {
                 data.push({

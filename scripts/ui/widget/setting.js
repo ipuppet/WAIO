@@ -67,7 +67,7 @@ class Setting {
 
     set(key, value) {
         // 每次操作都更新缓存
-        let result = this.setting.set(key, value)
+        const result = this.setting.set(key, value)
         $cache.set(`setting-${this.widget}`, this.setting.setting)
         return result
     }
@@ -79,7 +79,7 @@ class Setting {
     defaultSettingMethods() {
         this.setting.readme = animate => {
             animate.touchHighlightStart()
-            let content = $file.read(`/scripts/ui/widget/${this.widget}/README.md`).string
+            const content = $file.read(`/scripts/ui/widget/${this.widget}/README.md`).string
             this.kernel.UIKit.push({
                 view: [{
                     type: "markdown",
@@ -97,7 +97,7 @@ class Setting {
 
         this.setting.preview = animate => {
             animate.touchHighlight()
-            let widget = this.kernel.widgetInstance(this.widget)
+            const widget = this.kernel.widgetInstance(this.widget)
             if (widget) {
                 widget.render()
             } else {

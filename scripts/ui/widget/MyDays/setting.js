@@ -56,9 +56,9 @@ class MyDaysSetting extends Setting {
                                     if (!resp.data) return
                                     // 清除旧图片
                                     this.clearBackgroundImage()
-                                    let fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
+                                    const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     // TODO 控制压缩图片大小
-                                    let image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
+                                    const image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
                                     $file.write({
                                         data: image,
                                         path: `${this.path}/${fileName}`

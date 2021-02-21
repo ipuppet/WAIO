@@ -9,8 +9,8 @@ class JoinSetting extends Setting {
     initSettingMethods() {
         // 初始化菜单
         this.menu = (() => {
-            let data = this.kernel.getWidgetList()
-            let result = []
+            const data = this.kernel.getWidgetList()
+            const result = []
             data.forEach(item => {
                 if (item.title !== NAME)
                     result.push(item.title)

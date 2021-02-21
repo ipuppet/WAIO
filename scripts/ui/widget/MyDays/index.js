@@ -23,11 +23,11 @@ class MyDaysWidget extends Widget {
     }
 
     dateSpan(date) {
-        let now = new Date()
+        const now = new Date()
         if (typeof date === "number") date = new Date(date)
         // 重置时间
         date.setHours(0, 0, 0, 0)
-        let span = (date.getTime() - (now.getTime())) / 1000 / 3600 / 24
+        const span = (date.getTime() - (now.getTime())) / 1000 / 3600 / 24
         return Math.ceil(span)
     }
 
@@ -45,7 +45,7 @@ class MyDaysWidget extends Widget {
     }
 
     view2x2(family) {
-        let myday = this.myday
+        const myday = this.myday
         if (!myday) return {
             type: "text",
             props: { text: $l10n("NONE") }
@@ -143,7 +143,7 @@ class MyDaysWidget extends Widget {
                 afterDate: expireDate
             },
             render: ctx => {
-                let view = this.view2x2()
+                const view = this.view2x2()
                 this.printTimeConsuming()
                 return view
             }

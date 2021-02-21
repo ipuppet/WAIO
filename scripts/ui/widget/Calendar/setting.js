@@ -19,7 +19,7 @@ class CalendarSetting extends Setting {
      */
     async getHoliday(life) {
         const getHolidayAction = () => {
-            let year = new Date().getFullYear()
+            const year = new Date().getFullYear()
             $http.get({
                 url: `http://timor.tech/api/holiday/year/${year}/`,
                 handler: response => {
@@ -32,7 +32,7 @@ class CalendarSetting extends Setting {
                         $ui.error($l10n("HOLIDAY_API_ERROR"))
                         return
                     }
-                    let content = {
+                    const content = {
                         holiday: response.data.holiday,
                         date: new Date().getTime()
                     }
@@ -44,7 +44,7 @@ class CalendarSetting extends Setting {
             })
         }
         if ($file.exists(this.holidayPath)) {
-            let holiday = JSON.parse($file.read(this.holidayPath).string)
+            const holiday = JSON.parse($file.read(this.holidayPath).string)
             if (new Date().getTime() - holiday.date > life) {
                 getHolidayAction()
             }
@@ -111,7 +111,7 @@ class CalendarSetting extends Setting {
             animate.actionStart()
             const saveHolidayAction = () => {
                 let year = new Date().getFullYear()
-                $http.get({
+                $const.get({
                     url: `http://timor.tech/api/holiday/year/${year}/`,
                     handler: response => {
                         if (response.error) {
@@ -124,7 +124,7 @@ class CalendarSetting extends Setting {
                             animate.actionCancel()
                             return
                         }
-                        let content = {
+                        const content = {
                             holiday: response.data.holiday,
                             date: new Date().getTime()
                         }
@@ -173,9 +173,9 @@ class CalendarSetting extends Setting {
                                     if (!resp.data) return
                                     // 清除旧图片
                                     this.clearBackgroundImage()
-                                    let fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
+                                    const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     // TODO 控制压缩图片大小
-                                    let image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
+                                    const image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
                                     $file.write({
                                         data: image,
                                         path: `${this.path}/${fileName}`

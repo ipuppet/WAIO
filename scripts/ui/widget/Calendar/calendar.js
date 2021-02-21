@@ -70,8 +70,8 @@ class Calendar {
         if (!this.holiday) {
             return false
         }
-        let key = toString(month) + "-" + toString(date)
-        let holiday = this.holiday[key]
+        const key = toString(month) + "-" + toString(date)
+        const holiday = this.holiday[key]
         if (holiday && holiday.date === year + "-" + key) {
             return holiday
         }
@@ -79,11 +79,11 @@ class Calendar {
     }
 
     getCalendar(lunar, isFullMonth = true) {
-        let dateInstance = new Date()
-        let year = dateInstance.getFullYear()
-        let month = dateInstance.getMonth()
-        let dateNow = dateInstance.getDate() // 当前日期
-        let dates = new Date(year, month + 1, 0).getDate() // 总天数
+        const dateInstance = new Date()
+        const year = dateInstance.getFullYear()
+        const month = dateInstance.getMonth()
+        const dateNow = dateInstance.getDate() // 当前日期
+        const days = new Date(year, month + 1, 0).getDate() // 总天数
         let firstDay = new Date(year, month, 1).getDay() // 本月第一天是周几
         let lastMonthDates = new Date(year, month, 0).getDate() // 上个月总天数
         let nextMonth = 1 // 下个月的日期计数器
@@ -96,7 +96,7 @@ class Calendar {
         let calendar = []
         let date = 1 // 日期计数器
         for (let i = 0; i < 6; i++) { // 循环6次，每个月显示6周
-            let week = []
+            const week = []
             for (let day = 0; day <= 6; day++) {
                 // 当每周第一天为0时，代表前方无偏移量
                 if (day === firstDay && firstDay !== 0) firstDay = 0
@@ -108,7 +108,7 @@ class Calendar {
                 if (this.onlyCurrentMonth) {
                     if (firstDay === 0) {
                         // 判断是否到达最后一天
-                        if (date > dates) {
+                        if (date > days) {
                             break
                         }
                         formatDate = {
@@ -122,7 +122,7 @@ class Calendar {
                 } else {
                     if (firstDay === 0) {
                         // 判断是否到达最后一天
-                        formatDate = date > dates ? {
+                        formatDate = date > days ? {
                             month: month + 1,
                             date: nextMonth++,
                             day: formatDay
@@ -154,7 +154,7 @@ class Calendar {
                 // 节假日
                 if (this.hasHoliday && formatDate !== 0) { // 判断是否需要展示节假日
                     // month是0-11，故+1
-                    let holiday = this.isHoliday(year, formatDate.month + 1, formatDate.date)
+                    const holiday = this.isHoliday(year, formatDate.month + 1, formatDate.date)
                     if (holiday) {
                         formatDate["holiday"] = holiday
                     }
@@ -191,7 +191,7 @@ class Calendar {
             }
         }
         // 初始样式
-        let props = {
+        const props = {
             text: { color: $color("primaryText") },
             ext: { color: $color("primaryText") }, // 额外信息样式，如农历等
             box: {}
@@ -245,7 +245,7 @@ class Calendar {
      * @param {*} extra 
      */
     dayTemplate(text, props = {}, extra, family) {
-        let views = [{
+        const views = [{
             type: "text",
             props: Object.assign({
                 text: text,
@@ -301,7 +301,7 @@ class Calendar {
      * 周指示器模板
      */
     weekIndexTemplate() {
-        let title = []
+        const title = []
         for (let i = 0; i < 7; i++) {
             title.push(this.dayTemplate(this.localizedWeek(i), {
                 text: { color: $color(this.colorTone) }
@@ -311,15 +311,15 @@ class Calendar {
     }
 
     formatCalendar(family, calendarInfo, hasExtra) {
-        let calendar = calendarInfo.calendar
-        let days = []
+        const calendar = calendarInfo.calendar
+        const days = []
         for (let line of calendar) { // 设置不同日期显示不同样式
             for (let date of line) {
                 date = this.formatDay(date, calendarInfo, hasExtra)
                 days.push(this.dayTemplate(date.date, date.props, date.extra, family))
             }
         }
-        let weekTitle = this.weekIndexTemplate()
+        const weekTitle = this.weekIndexTemplate()
         return { // 返回完整视图
             type: "vgrid",
             props: {
@@ -411,9 +411,9 @@ class Calendar {
     }
 
     calendarView(family, reviseFamily) {
-        let calendarInfo = this.getCalendar(family === this.setting.family.large)
-        let calendar = this.formatCalendar(family, calendarInfo, family !== this.setting.family.small)
-        let titleBar = this.titleBarTemplate(family, calendarInfo)
+        const calendarInfo = this.getCalendar(family === this.setting.family.large)
+        const calendar = this.formatCalendar(family, calendarInfo, family !== this.setting.family.small)
+        const titleBar = this.titleBarTemplate(family, calendarInfo)
         return {
             type: "vstack",
             props: Object.assign({
@@ -448,14 +448,14 @@ class Calendar {
     }
 
     weekView(family) {
-        let weekView = this.getCalendar(true, false)
-        let days = []
+        const weekView = this.getCalendar(true, false)
+        const days = []
         for (let date of weekView.calendar) {
             date = this.formatDay(date, weekView, true)
             days.push(this.dayTemplate(date.date, date.props, date.extra))
         }
-        let weekTitle = this.weekIndexTemplate()
-        let calendar = {
+        const weekTitle = this.weekIndexTemplate()
+        const calendar = {
             type: "vgrid",
             props: {
                 columns: Array(7).fill({
@@ -474,7 +474,7 @@ class Calendar {
             },
             views: weekTitle.concat(days)
         }
-        let titleBar = this.titleBarTemplate(family, weekView)
+        const titleBar = this.titleBarTemplate(family, weekView)
         return {
             type: "vstack",
             props: Object.assign({
