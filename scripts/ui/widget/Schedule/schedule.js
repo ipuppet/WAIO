@@ -87,7 +87,7 @@ class Schedule {
                     type: "vstack",
                     props: {
                         frame: { maxWidth: Infinity },
-                        padding: $insets(0, 3, 3, 0),
+                        padding: $insets(0, 3, 0, 0),
                         spacing: 0
                     },
                     views: [
