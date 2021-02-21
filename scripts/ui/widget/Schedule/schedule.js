@@ -156,12 +156,7 @@ class Schedule {
                     type: "vstack",
                     props: {
                         frame: { maxWidth: Infinity },
-                        padding: $insets(0, 5, 3, 0),
-                        // TODO 单边边框
-                        /* border: {
-                            color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
-                            width: 2
-                        }, */
+                        padding: $insets(0, 3, 3, 0),
                         spacing: 0
                     },
                     views: [
