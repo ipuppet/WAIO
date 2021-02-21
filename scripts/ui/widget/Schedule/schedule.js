@@ -2,7 +2,6 @@ class Schedule {
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
-        this.timeSpan = this.setting.get("timeSpan")
         this.colorDate = this.setting.get("colorDate")
         this.colorCalendar = this.setting.get("colorCalendar")
         this.colorReminder = this.setting.get("colorReminder")
@@ -20,74 +19,6 @@ class Schedule {
                 this.urlScheme = this.calendarUrlScheme
                 break
         }
-    }
-
-    async getCalendar(startDate, hours, nowDate) {
-        if (nowDate === undefined) nowDate = new Date()
-        const res = []
-        const calendar = await $calendar.fetch({
-            startDate: startDate,
-            hours: hours
-        })
-        // 未过期日程
-        calendar.events.forEach(item => {
-            if (item.endDate >= nowDate) {
-                res.push(item)
-            }
-        })
-        return res
-    }
-
-    async getReminder(startDate, hours) {
-        const res = []
-        const reminder = await $reminder.fetch({
-            startDate: startDate,
-            hours: hours
-        })
-        // 未完成提醒事项
-        reminder.events.forEach(item => {
-            if (!item.completed) {
-                res.push(item)
-            }
-        })
-        return res
-    }
-
-    async getSchedule() {
-        const nowDate = new Date()
-        const startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
-        const hours = this.timeSpan * 24
-        const calendar = await this.getCalendar(startDate, hours, nowDate)
-        const reminder = await this.getReminder(startDate, hours)
-        // 混合日程和提醒事项
-        const schedule = [].concat(calendar).concat(reminder)
-        // 按结束日期排序
-        this.quicksort(schedule, 0, schedule.length - 1, (item, compare) => {
-            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
-            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
-            return itemDate.getTime() >= compareDate.getTime()
-        })
-        return schedule
-    }
-
-    async getScheduleApart() {
-        const nowDate = new Date()
-        const startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
-        const hours = this.timeSpan * 24
-        const calendar = await this.getCalendar(startDate, hours, nowDate)
-        const reminder = await this.getReminder(startDate, hours)
-        // 按结束日期排序
-        this.quicksort(calendar, 0, calendar.length - 1, (item, compare) => {
-            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
-            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
-            return itemDate.getTime() >= compareDate.getTime()
-        })
-        this.quicksort(reminder, 0, reminder.length - 1, (item, compare) => {
-            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
-            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
-            return itemDate.getTime() >= compareDate.getTime()
-        })
-        return { calendar: calendar, reminder: reminder }
     }
 
     /**
@@ -256,10 +187,15 @@ class Schedule {
         return views
     }
 
+    setData(calendar, reminder) {
+        this.calendar = calendar
+        this.reminder = reminder
+    }
+
     /**
      * 获取视图
      */
-    async scheduleView(family) {
+    scheduleView(family) {
         const nothingView = text => {
             return {
                 type: "text",
@@ -288,32 +224,43 @@ class Schedule {
                 views: views
             }
         }
-        switch (family) {
-            case this.setting.family.small:
-                const view = this.getListView(await this.getSchedule())
-                if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"))
-                return listView(view, { widgetURL: this.urlScheme })
-            case this.setting.family.medium:
-                // 获取数据
-                const data = await this.getScheduleApart()
-                // 获取视图
-                const calendarView = this.getListView(data.calendar) ?? [nothingView($l10n("NO_CALENDAR"))]
-                const reminderView = this.getListView(data.reminder) ?? [nothingView($l10n("NO_REMINDER"))]
-                return {
-                    type: "hstack",
-                    props: {
-                        frame: {
-                            maxWidth: Infinity,
-                            maxHeight: Infinity,
-                            alignment: $widget.verticalAlignment.firstTextBaseline
-                        },
-                        spacing: 0
+        const compareByDate = (item, compare) => {
+            const nowDate = new Date()
+            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
+            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
+            return itemDate.getTime() >= compareDate.getTime()
+        }
+        if (family === this.setting.family.small) {
+            // 混合日程和提醒事项
+            const schedule = [].concat(this.calendar).concat(this.reminder)
+            // 按结束日期排序
+            this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
+            // 获取视图
+            const view = this.getListView(schedule)
+            if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"))
+            return listView(view, { widgetURL: this.urlScheme })
+        } else {
+            // 整理数据
+            this.quicksort(this.calendar, 0, this.calendar.length - 1, compareByDate)
+            this.quicksort(this.reminder, 0, this.reminder.length - 1, compareByDate)
+            // 获取视图
+            const calendarView = this.getListView(this.calendar) ?? [nothingView($l10n("NO_CALENDAR"))]
+            const reminderView = this.getListView(this.reminder) ?? [nothingView($l10n("NO_REMINDER"))]
+            return {
+                type: "hstack",
+                props: {
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: Infinity,
+                        alignment: $widget.verticalAlignment.firstTextBaseline
                     },
-                    views: [
-                        listView(calendarView, { link: this.calendarUrlScheme }),
-                        listView(reminderView, { link: this.reminderUrlScheme })
-                    ]
-                }
+                    spacing: 0
+                },
+                views: [
+                    listView(calendarView, { link: this.calendarUrlScheme }),
+                    listView(reminderView, { link: this.reminderUrlScheme })
+                ]
+            }
         }
     }
 }
