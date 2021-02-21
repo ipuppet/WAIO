@@ -153,100 +153,82 @@ class Schedule {
             const view = []
             for (let item of dateCollect[date]) {
                 view.push({
-                    type: "hstack",
+                    type: "vstack",
                     props: {
-                        frame: {
-                            maxWidth: Infinity,
-                            alignment: $widget.alignment.leading,
-                            height: 30,
-                        },
-                        spacing: 5
+                        frame: { maxWidth: Infinity },
+                        padding: $insets(0, 5, 3, 0),
+                        // TODO 单边边框
+                        /* border: {
+                            color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
+                            width: 2
+                        }, */
+                        spacing: 0
                     },
                     views: [
-                        {// 竖条颜色
-                            type: "color",
+                        {// 标题
+                            type: "text",
                             props: {
-                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
-                                padding: $insets(3, 0, 0, 0),
+                                lineLimit: 1,
+                                text: item.title,
+                                font: $font(14),
                                 frame: {
-                                    width: 2,
-                                    height: 30
-                                }
+                                    maxWidth: Infinity,
+                                    alignment: $widget.alignment.leading
+                                },
+                                padding: $insets(0, 0, 2, 0)
                             }
                         },
-                        {
-                            type: "vstack",
+                        {// 图标和日期
+                            type: "hstack",
                             props: {
-                                frame: { maxWidth: Infinity },
-                                spacing: 0
+                                frame: {
+                                    maxWidth: Infinity,
+                                    alignment: $widget.alignment.leading,
+                                },
+                                spacing: 5
                             },
                             views: [
-                                {// 标题
+                                {
+                                    type: "image",
+                                    props: {
+                                        symbol: isReminder(item) ? "list.dash" : "calendar",
+                                        frame: {
+                                            width: 12,
+                                            height: 12
+                                        },
+                                        color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
+                                        resizable: true
+                                    }
+                                },
+                                {
                                     type: "text",
                                     props: {
                                         lineLimit: 1,
-                                        text: item.title,
-                                        font: $font(14),
-                                        frame: {
-                                            maxWidth: Infinity,
-                                            alignment: $widget.alignment.leading
-                                        },
-                                        padding: $insets(0, 0, 2, 0)
+                                        text: isReminder(item) ? this.formatDate(item.alarmDate, 1) : (() => {
+                                            const startDate = this.formatDate(item.startDate, 1)
+                                            const endDate = this.formatDate(item.endDate, 1)
+                                            return `${startDate}-${endDate}`
+                                        })(),
+                                        font: $font(12),
+                                        color: $color("systemGray2"),
+                                        frame: { height: 10 }
                                     }
                                 },
-                                {// 图标和日期
-                                    type: "hstack",
+                                { // 已过期
+                                    type: "image",
                                     props: {
+                                        opacity: (() => {
+                                            if (isReminder(item)) return isExpire(item.alarmDate) ? 1 : 0
+                                            else return isExpire(item.endDate) ? 1 : 0
+                                        })(),
+                                        symbol: "exclamationmark.triangle.fill",
+                                        color: $color("red"),
                                         frame: {
-                                            maxWidth: Infinity,
-                                            alignment: $widget.alignment.leading,
+                                            width: 12,
+                                            height: 12
                                         },
-                                        spacing: 5
-                                    },
-                                    views: [
-                                        {
-                                            type: "image",
-                                            props: {
-                                                symbol: isReminder(item) ? "list.dash" : "calendar",
-                                                frame: {
-                                                    width: 12,
-                                                    height: 12
-                                                },
-                                                color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
-                                                resizable: true
-                                            }
-                                        },
-                                        {
-                                            type: "text",
-                                            props: {
-                                                lineLimit: 1,
-                                                text: isReminder(item) ? this.formatDate(item.alarmDate, 1) : (() => {
-                                                    const startDate = this.formatDate(item.startDate, 1)
-                                                    const endDate = this.formatDate(item.endDate, 1)
-                                                    return `${startDate}-${endDate}`
-                                                })(),
-                                                font: $font(12),
-                                                color: $color("systemGray2"),
-                                                frame: { height: 10 }
-                                            }
-                                        },
-                                        { // 已过期
-                                            type: "image",
-                                            props: {
-                                                opacity: (() => {
-                                                    if (isReminder(item)) return isExpire(item.alarmDate) ? 1 : 0
-                                                    else return isExpire(item.endDate) ? 1 : 0
-                                                })(),
-                                                symbol: "exclamationmark.triangle.fill",
-                                                color: $color("red"),
-                                                frame: {
-                                                    width: 12,
-                                                    height: 12
-                                                },
-                                                resizable: true
-                                            }
-                                        }
-                                    ]
+                                        resizable: true
+                                    }
                                 }
                             ]
                         }
@@ -270,7 +252,7 @@ class Schedule {
                                 alignment: $widget.alignment.leading,
                                 height: 10,
                             },
-                            padding: $insets(-5, 5 + 2, -2, 0)
+                            padding: $insets(-5, 5 + 2, -2, 0) // +2为竖线颜色条宽度
                         }
                     }
                 ].concat(view)
@@ -283,11 +265,18 @@ class Schedule {
      * 获取视图
      */
     async scheduleView(family) {
-        const nothingView = {
-            type: "text",
-            props: {
-                text: $l10n("NO_CALENDAR&REMINDER"),
-                widgetURL: this.urlScheme
+        const nothingView = text => {
+            return {
+                type: "text",
+                props: {
+                    frame: {
+                        maxHeight: Infinity,
+                        maxWidth: Infinity,
+                        alignment: $widget.alignment.top
+                    },
+                    text: text,
+                    widgetURL: this.urlScheme
+                }
             }
         }
         const listView = (views, props = {}) => {
@@ -298,7 +287,7 @@ class Schedule {
                         maxHeight: Infinity,
                         alignment: $widget.verticalAlignment.firstTextBaseline
                     },
-                    padding: $insets(15, 15, 0, 15),
+                    padding: 15,
                     spacing: 15
                 }, props),
                 views: views
@@ -307,14 +296,14 @@ class Schedule {
         switch (family) {
             case this.setting.family.small:
                 const view = this.getListView(await this.getSchedule())
-                if (null === view) return nothingView
+                if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"))
                 return listView(view, { widgetURL: this.urlScheme })
             case this.setting.family.medium:
                 // 获取数据
                 const data = await this.getScheduleApart()
                 // 获取视图
-                const calendarView = this.getListView(data.calendar) ?? nothingView
-                const reminderView = this.getListView(data.reminder) ?? nothingView
+                const calendarView = this.getListView(data.calendar) ?? [nothingView($l10n("NO_CALENDAR"))]
+                const reminderView = this.getListView(data.reminder) ?? [nothingView($l10n("NO_REMINDER"))]
                 return {
                     type: "hstack",
                     props: {

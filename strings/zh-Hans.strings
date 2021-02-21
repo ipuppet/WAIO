@@ -142,6 +142,8 @@
 "DATE_COLOR" = "日期颜色";
 "CALENDAR_COLOR" = "日程颜色";
 "REMINDER_COLOR" = "提醒事项颜色";
+"NO_CALENDAR" = "最近无日程";
+"NO_REMINDER" = "最近无提醒";
 "NO_CALENDAR&REMINDER" = "最近无安排";
 "ITEM_LENGTH" = "显示条目数量";
 "CLICK_EVENT" = "点击事件";
