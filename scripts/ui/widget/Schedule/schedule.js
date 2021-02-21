@@ -167,19 +167,17 @@ class Schedule {
                             type: "color",
                             props: {
                                 color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
+                                padding: $insets(3, 0, 0, 0),
                                 frame: {
                                     width: 2,
-                                    height: 30,
+                                    height: 30
                                 }
                             }
                         },
                         {
                             type: "vstack",
                             props: {
-                                frame: {
-                                    maxWidth: Infinity,
-                                    alignment: $widget.alignment.leading
-                                },
+                                frame: { maxWidth: Infinity },
                                 spacing: 0
                             },
                             views: [
