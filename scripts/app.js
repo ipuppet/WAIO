@@ -288,18 +288,12 @@ module.exports = {
             const kernel = new AppKernel()
             const Factory = require("./ui/main/factory")
             new Factory(kernel).render()
-            const reloadAction = () => {
-                $widget.reloadTimeline()
-                kernel.updateHomeScreenWidgetOptions()
-            }
             // 监听运行状态
             $app.listen({
-                // 在应用启动之后调用
-                ready: reloadAction,
-                // 在应用退出之前调用
-                exit: reloadAction,
-                // 在应用停止响应后调用
-                pause: reloadAction
+                pause: () => {
+                    $widget.reloadTimeline()
+                    kernel.updateHomeScreenWidgetOptions()
+                }
             })
         } else {
             $ui.render({
