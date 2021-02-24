@@ -19,7 +19,7 @@
                 "title": "ITEM_LENGTH",
                 "type": "stepper",
                 "key": "itemLength",
-                "min": 3,
+                "min": 2,
                 "max": 5,
                 "value": 3
             },
