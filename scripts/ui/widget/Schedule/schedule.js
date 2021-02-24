@@ -67,7 +67,8 @@ class Schedule {
 
     getListView(list) {
         if (list.length === 0) return null
-        let itemLength = 0, dateCollect = {}
+        let itemLength = 0
+        const dateCollect = {}
         const isReminder = item => item.completed !== undefined
         const isExpire = date => date ? date.getTime() < new Date().getTime() : false
         for (let item of list) {
@@ -87,34 +88,57 @@ class Schedule {
                     type: "vstack",
                     props: {
                         frame: { maxWidth: Infinity },
-                        padding: $insets(0, 3, 0, 0),
                         spacing: 0
                     },
                     views: [
-                        {// 标题
-                            type: "text",
+                        { // 颜色条和事件名称
+                            type: "hstack",
                             props: {
-                                lineLimit: 1,
-                                text: item.title,
-                                font: $font(14),
                                 frame: {
                                     maxWidth: Infinity,
-                                    alignment: $widget.alignment.leading
+                                    height: 20,
+                                    alignment: $widget.alignment.leading,
                                 },
-                                padding: $insets(0, 0, 2, 0)
-                            }
+                                spacing: 5
+                            },
+                            views: [
+                                { // 颜色条
+                                    type: "color",
+                                    props: {
+                                        frame: {
+                                            alignment: $widget.alignment.trailing,
+                                            width: 2,
+                                            height: 12
+                                        },
+                                        color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar)
+                                    }
+                                },
+                                { // 事件名称
+                                    type: "text",
+                                    props: {
+                                        lineLimit: 1,
+                                        text: item.title,
+                                        font: $font(14),
+                                        frame: {
+                                            maxWidth: Infinity,
+                                            alignment: $widget.alignment.leading
+                                        }
+                                    }
+                                },
+                            ]
                         },
-                        {// 图标和日期
+                        { // 图标和日期
                             type: "hstack",
                             props: {
                                 frame: {
                                     maxWidth: Infinity,
                                     alignment: $widget.alignment.leading,
                                 },
-                                spacing: 5
+                                spacing: 5,
+                                padding: $insets(0, 7, 0, 0)
                             },
                             views: [
-                                {
+                                { // 图标
                                     type: "image",
                                     props: {
                                         symbol: isReminder(item) ? "list.dash" : "calendar",
@@ -126,7 +150,7 @@ class Schedule {
                                         resizable: true
                                     }
                                 },
-                                {
+                                { // 日期文字
                                     type: "text",
                                     props: {
                                         lineLimit: 1,
@@ -137,7 +161,7 @@ class Schedule {
                                         })(),
                                         font: $font(12),
                                         color: $color("systemGray2"),
-                                        frame: { height: 10 }
+                                        frame: { height: 12 }
                                     }
                                 },
                                 { // 已过期
@@ -163,9 +187,7 @@ class Schedule {
             }
             views.push({
                 type: "vstack",
-                props: {
-                    spacing: 5
-                },
+                props: { spacing: 0 },
                 views: [
                     {
                         type: "text",
@@ -176,9 +198,9 @@ class Schedule {
                             frame: {
                                 maxWidth: Infinity,
                                 alignment: $widget.alignment.leading,
-                                height: 10,
+                                height: 12,
                             },
-                            padding: $insets(-5, 5 + 2, -2, 0) // +2为竖线颜色条宽度
+                            padding: $insets(0, 7, 0, 0) // +2为竖线颜色条宽度
                         }
                     }
                 ].concat(view)
@@ -219,7 +241,7 @@ class Schedule {
                         alignment: $widget.verticalAlignment.firstTextBaseline
                     },
                     padding: 15,
-                    spacing: 15
+                    spacing: 8
                 }, props),
                 views: views
             }
