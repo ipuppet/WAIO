@@ -5,7 +5,7 @@ class HomeUI {
         // 检查是否携带widget参数，携带则打开设置页面
         if (this.kernel.query["widget"]) {
             setTimeout(() => {
-                let widget = this.kernel.widgetInstance(this.kernel.query["widget"])
+                const widget = this.kernel.widgetInstance(this.kernel.query["widget"])
                 if (widget) {
                     widget.custom()
                     // 清空参数
@@ -16,7 +16,7 @@ class HomeUI {
     }
 
     getWidgetListView() {
-        let data = this.kernel.getWidgetList()
+        const data = this.kernel.getWidgetList()
         const template = data => {
             return {
                 icon: {// 如果不设置image属性，默认为小组件目录下的icon.png
@@ -35,15 +35,14 @@ class HomeUI {
     }
 
     getViews() {
-        let views = this.getWidgetListView()
         return [
             {
                 type: "list",
                 props: {
-                    id: "EasyWidget-home-list",
+                    id: "waio-home-list",
                     rowHeight: 100,
                     indicatorInsets: $insets(30, 0, 50, 0),
-                    data: views,
+                    data: this.getWidgetListView(),
                     header: {
                         type: "view",
                         props: { height: 80 },
@@ -118,27 +117,27 @@ class HomeUI {
                                     placeholder: $l10n("NEW_WIDGET_NAME"),
                                     text: "",
                                     handler: text => {
-                                        let widgetName = sender.object(indexPath).name
+                                        const widgetName = sender.object(indexPath).name
                                         if (!$file.exists(`${this.kernel.widgetRootPath}/${widgetName}/setting.js`) || !$file.exists(`${this.kernel.widgetRootPath}/${widgetName}/config.json`)) {
                                             $ui.error($l10n("CANNOT_COPY_THIS_WIDGET"))
                                             return
                                         }
-                                        let newName = text === "" ? widgetName + "Copy" : text
+                                        const newName = text === "" ? widgetName + "Copy" : text
                                         $file.copy({
                                             src: `${this.kernel.widgetRootPath}/${widgetName}`,
                                             dst: `${this.kernel.widgetRootPath}/${newName}`
                                         })
                                         // 更新设置文件中的NAME常量
                                         let settingjs = $file.read(`${this.kernel.widgetRootPath}/${newName}/setting.js`).string
-                                        let firstLine = settingjs.split("\n")[0]
-                                        let newFirstLine = `const NAME = "${newName}"`
+                                        const firstLine = settingjs.split("\n")[0]
+                                        const newFirstLine = `const NAME = "${newName}"`
                                         settingjs = settingjs.replace(firstLine, newFirstLine)
                                         $file.write({
                                             data: $data({ string: settingjs }),
                                             path: `${this.kernel.widgetRootPath}/${newName}/setting.js`
                                         })
                                         // 更新config.json
-                                        let config = JSON.parse($file.read(`${this.kernel.widgetRootPath}/${newName}/config.json`).string)
+                                        const config = JSON.parse($file.read(`${this.kernel.widgetRootPath}/${newName}/config.json`).string)
                                         config.title = newName
                                         $file.write({
                                             data: $data({ string: JSON.stringify(config) }),
@@ -154,7 +153,7 @@ class HomeUI {
                             title: $l10n("DELETE"),
                             color: $color("red"),
                             handler: (sender, indexPath) => {
-                                let widgetName = sender.object(indexPath).name
+                                const widgetName = sender.object(indexPath).name
                                 let style = {}
                                 if ($alertActionType) {
                                     style = { style: $alertActionType.destructive }
@@ -180,8 +179,8 @@ class HomeUI {
                 },
                 events: {
                     didSelect: (sender, indexPath, data) => {
-                        let widgetName = data.name
-                        let widget = this.kernel.widgetInstance(widgetName)
+                        const widgetName = data.name
+                        const widget = this.kernel.widgetInstance(widgetName)
                         if (widget) {
                             widget.custom()
                         } else {
@@ -189,7 +188,7 @@ class HomeUI {
                         }
                     },
                     pulled: sender => {
-                        sender.data = this.getWidgetListView()
+                        $("waio-home-list").data = this.getWidgetListView()
                         setTimeout(() => { sender.endRefreshing() }, 500)
                     }
                 },

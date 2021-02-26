@@ -226,12 +226,12 @@ class AppKernel extends Kernel {
     }
 
     getWidgetList() {
-        let data = []
+        const data = []
         const widgets = $file.list(this.widgetRootPath)
         for (let widget of widgets) {
-            let widgetPath = `${this.widgetRootPath}/${widget}`
+            const widgetPath = `${this.widgetRootPath}/${widget}`
             if ($file.exists(`${widgetPath}/config.json`)) {
-                let config = JSON.parse($file.read(`${widgetPath}/config.json`).string)
+                const config = JSON.parse($file.read(`${widgetPath}/config.json`).string)
                 if (typeof config.icon !== "object") {
                     config.icon = [config.icon, config.icon]
                 }
