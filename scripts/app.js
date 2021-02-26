@@ -1,5 +1,5 @@
 const { Kernel, VERSION } = require("../EasyJsBox/src/kernel")
-const widgetRootPath = "/scripts/ui/widget"
+const widgetRootPath = "/scripts/widget"
 const widgetAssetsPath = "/assets/widget"
 const backupPath = "/assets/backup"
 
@@ -10,7 +10,7 @@ const backupPath = "/assets/backup"
  */
 function widgetInstance(widget, that) {
     if ($file.exists(`${widgetRootPath}/${widget}/index.js`)) {
-        const { Widget } = require(`./ui/widget/${widget}/index.js`)
+        const { Widget } = require(`./widget/${widget}/index.js`)
         return new Widget(that)
     } else {
         return false
@@ -186,10 +186,6 @@ class AppKernel extends Kernel {
                                             path: `${this.backupPath}/userdata.zip`,
                                             dest: `${this.backupPath}/userdata`
                                         })
-                                        // 删除文件
-                                        $file.delete(`${this.backupPath}/backup.zip`)
-                                        $file.delete(`${this.backupPath}/widgets.zip`)
-                                        $file.delete(`${this.backupPath}/userdata.zip`)
                                         // 恢复
                                         $file.list(`${this.backupPath}/widgets`).forEach(item => {
                                             if ($file.isDirectory(`${this.backupPath}/widgets/${item}`)) {
@@ -204,11 +200,15 @@ class AppKernel extends Kernel {
                                             src: `${this.backupPath}/userdata`,
                                             dst: this.widgetAssetsPath
                                         })
+                                        // 删除文件
+                                        $file.delete(`${this.backupPath}/backup.zip`)
+                                        $file.delete(`${this.backupPath}/widgets.zip`)
+                                        $file.delete(`${this.backupPath}/userdata.zip`)
                                         $file.delete(this.backupPath)
                                         animate.actionDone()
                                     } catch (error) {
                                         animate.actionCancel()
-                                        console.log(error)
+                                        throw error
                                     }
                                 }
                             } else {
