@@ -111,7 +111,7 @@ class CalendarSetting extends Setting {
             animate.actionStart()
             const saveHolidayAction = () => {
                 let year = new Date().getFullYear()
-                $const.get({
+                $http.get({
                     url: `http://timor.tech/api/holiday/year/${year}/`,
                     handler: response => {
                         if (response.error) {
