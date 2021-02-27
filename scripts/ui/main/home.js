@@ -57,7 +57,7 @@ class HomeUI {
                             }
                         }]
                     },
-                    footer: {// 防止list被菜单遮挡
+                    footer: { // 防止list被菜单遮挡
                         type: "view",
                         props: { height: 50 }
                     },
