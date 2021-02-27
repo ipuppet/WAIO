@@ -218,14 +218,14 @@ class Schedule {
      * 获取视图
      */
     scheduleView(family) {
-        const nothingView = text => {
+        const nothingView = (text, alignment = $widget.alignment.top) => {
             return {
                 type: "text",
                 props: {
                     frame: {
                         maxHeight: Infinity,
                         maxWidth: Infinity,
-                        alignment: $widget.alignment.top
+                        alignment: alignment
                     },
                     text: text,
                     widgetURL: this.urlScheme
@@ -259,7 +259,7 @@ class Schedule {
             this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
             // 获取视图
             const view = this.getListView(schedule)
-            if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"))
+            if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"), $widget.alignment.center)
             return listView(view, { widgetURL: this.urlScheme })
         } else {
             // 整理数据
