@@ -14,7 +14,7 @@ class PictureWidget extends Widget {
         this.data = $cache.get("switch.data")
         if (!this.data) { // 首次写入缓存
             this.data = {
-                date: new Date().getTime(),
+                date: Date.now(),
                 index: this.imageSwitchMethod === 0 ? this.randomNum(0, this.pictures.length - 1) : 0
             }
             $cache.set("switch.data", this.data)
@@ -32,9 +32,9 @@ class PictureWidget extends Widget {
         }
     }
 
-    view2x2(family) {
+    view2x2() {
         let index = 0 // 图片索引
-        if (new Date().getTime() - this.data.date > this.switchInterval) { // 下一张
+        if (Date.now() - this.data.date > this.switchInterval) { // 下一张
             if (this.imageSwitchMethod === 0) { // 0随机切换，1顺序切换
                 index = this.randomNum(0, this.pictures.length - 1)
             } else {
@@ -42,7 +42,7 @@ class PictureWidget extends Widget {
                 if (index > this.pictures.length - 1) index = 0
             }
             $cache.set("switch.data", {
-                date: new Date().getTime(),
+                date: Date.now(),
                 index: index
             })
         } else { // 维持不变
@@ -64,21 +64,20 @@ class PictureWidget extends Widget {
                 }
             }
         } else {
+            const urlScheme = this.urlScheme ? this.urlScheme : this.setting.settingUrlScheme
             view = {
                 type: "image",
-                props: Object.assign({
+                props: {
                     image: $image(imagePath),
                     resizable: true,
                     scaledToFill: true,
                     frame: {
                         maxWidth: Infinity,
                         maxHeight: Infinity
-                    }
-                }, family !== this.setting.family.small ? {
-                    link: this.urlScheme ? this.urlScheme : this.setting.settingUrlScheme
-                } : {
-                        widgetURL: this.urlScheme ? this.urlScheme : this.setting.settingUrlScheme
-                    })
+                    },
+                    link: urlScheme,
+                    widgetURL: urlScheme
+                }
             }
         }
         return view
@@ -89,15 +88,15 @@ class PictureWidget extends Widget {
         $widget.setTimeline({
             entries: [
                 {
-                    date: new Date(),
+                    date: Date.now(),
                     info: {}
                 }
             ],
             policy: {
                 afterDate: expireDate
             },
-            render: ctx => {
-                let view = this.view2x2(ctx.family)
+            render: () => {
+                const view = this.view2x2()
                 this.printTimeConsuming()
                 return view
             }

@@ -1,6 +1,6 @@
 class Widget {
     constructor(kernel, setting) {
-        this.startTime = new Date()
+        this.startTime = Date.now()
         this.kernel = kernel
         this.setting = setting // 此设置是小组件的设置，主程序设置需要从kernel中取
         this.cacheDateStartFromZero = false
@@ -19,7 +19,7 @@ class Widget {
 
     printTimeConsuming() {
         if (Boolean(!this.kernel.inWidgetEnv) && this.kernel.setting.get("isPrintTimeConsuming"))
-            console.log(`Use ${new Date() - this.startTime} ms`)
+            console.log(`Use ${Date.now() - this.startTime} ms`)
     }
 
     async view2x2() {
@@ -35,18 +35,14 @@ class Widget {
     }
 
     async joinView(mode) {
-        let view
         switch (mode) {
             case this.setting.joinMode.small:
-                view = this.view2x2(this.setting.joinMode.medium) // 校正family
-                break
+                return this.view2x2()
             case this.setting.joinMode.medium:
-                view = this.view2x4()
-                break
+                return this.view2x4()
             default:
                 return false
         }
-        return view
     }
 }
 

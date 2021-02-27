@@ -9,7 +9,8 @@ class ScheduleWidget extends Widget {
         this.timeSpan = this.setting.get("timeSpan")
     }
 
-    async getCalendar(startDate, hours, nowDate) {
+    async getCalendar(startDate, hours) {
+        const nowDate = Date.now()
         const res = []
         const calendar = await $calendar.fetch({
             startDate: startDate,
@@ -47,13 +48,30 @@ class ScheduleWidget extends Widget {
         return this.schedule.scheduleView(this.setting.family.medium)
     }
 
-    async render() {
-        const nowDate = new Date()
-        const expireDate = new Date(nowDate + this.cacheLife)
+    async joinView(mode) {
         // 获取数据
-        const startDate = new Date().setDate(nowDate.getDate() - parseInt(this.timeSpan / 2))
+        const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2)) // 以今天为中心的前后时间跨度。单位：天
         const hours = this.timeSpan * 24
-        const calendar = await this.getCalendar(startDate, hours, nowDate)
+        const calendar = await this.getCalendar(startDate, hours)
+        const reminder = await this.getReminder(startDate, hours)
+        this.schedule.setData(calendar, reminder)
+        switch (mode) {
+            case this.setting.joinMode.small:
+                return this.view2x2()
+            case this.setting.joinMode.medium:
+                return this.view2x4()
+            default:
+                return false
+        }
+    }
+
+    async render() {
+        const nowDate = Date.now()
+        const expireDate = new Date(nowDate + 1000 * 60 * 10)// 每十分钟切换
+        // 获取数据
+        const startDate = new Date(nowDate - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2)) // 以今天为中心的前后时间跨度。单位：天
+        const hours = this.timeSpan * 24
+        const calendar = await this.getCalendar(startDate, hours)
         const reminder = await this.getReminder(startDate, hours)
         this.schedule.setData(calendar, reminder)
         $widget.setTimeline({

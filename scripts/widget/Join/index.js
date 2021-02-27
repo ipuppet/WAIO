@@ -51,13 +51,13 @@ class JoinWidget extends Widget {
     }
 
     async render() {
-        const switchInterval = 1000 * 60 * this.switchInterval
-        const expireDate = new Date(new Date() + switchInterval)
+        const nowDate = Date.now()
+        const expireDate = new Date(nowDate + 1000 * 60 * 10) // 每十分钟切换
         const view2x4 = await this.view2x4()
         $widget.setTimeline({
             entries: [
                 {
-                    date: new Date(),
+                    date: nowDate,
                     info: {}
                 }
             ],

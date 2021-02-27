@@ -7,7 +7,7 @@ class MyDaysWidget extends Widget {
         this.myday = {
             title: this.setting.get("title"),
             describe: this.setting.get("describe"),
-            date: this.setting.get("date") === 0 ? new Date().getTime() : this.setting.get("date")
+            date: this.setting.get("date") === 0 ? Date.now() : this.setting.get("date")
         }
         this.dateFontSize = this.setting.get("dateFontSize")
         this.dateColor = this.setting.get("dateColor")
@@ -23,11 +23,10 @@ class MyDaysWidget extends Widget {
     }
 
     dateSpan(date) {
-        const now = new Date()
         if (typeof date === "number") date = new Date(date)
         // 重置时间
         date.setHours(0, 0, 0, 0)
-        const span = (date.getTime() - (now.getTime())) / 1000 / 3600 / 24
+        const span = (date.getTime() - (Date.now())) / 1000 / 3600 / 24
         return Math.ceil(span)
     }
 
@@ -44,7 +43,7 @@ class MyDaysWidget extends Widget {
         }
     }
 
-    view2x2(family) {
+    view2x2() {
         const myday = this.myday
         if (!myday) return {
             type: "text",
@@ -53,7 +52,7 @@ class MyDaysWidget extends Widget {
         const remainingDays = this.dateSpan(myday.date)
         return {
             type: "vstack",
-            props: Object.assign({
+            props: {
                 alignment: $widget.verticalAlignment.center,
                 spacing: 0,
                 padding: 10,
@@ -68,12 +67,10 @@ class MyDaysWidget extends Widget {
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
-                }
-            }, family !== this.setting.family.small ? {
-                link: this.setting.settingUrlScheme
-            } : {
-                    widgetURL: this.setting.settingUrlScheme
-                }),
+                },
+                link: this.setting.settingUrlScheme,
+                widgetURL: this.setting.settingUrlScheme
+            },
             views: [
                 {
                     type: "text",
@@ -129,20 +126,21 @@ class MyDaysWidget extends Widget {
     }
 
     render() {
+        // 每天0点切换
         const midnight = new Date()
         midnight.setHours(0, 0, 0, 0)
         const expireDate = new Date(midnight.getTime() + 60 * 60 * 24 * 1000)
         $widget.setTimeline({
             entries: [
                 {
-                    date: new Date(),
+                    date: Date.now(),
                     info: {}
                 }
             ],
             policy: {
                 afterDate: expireDate
             },
-            render: ctx => {
+            render: () => {
                 const view = this.view2x2()
                 this.printTimeConsuming()
                 return view

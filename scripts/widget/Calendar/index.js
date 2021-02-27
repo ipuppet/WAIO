@@ -10,8 +10,8 @@ class CalendarWidget extends Widget {
         this.cacheDateStartFromZero = true
     }
 
-    view2x2(family = this.setting.family.small) {
-        return this.calendar.calendarView(this.setting.family.small, family)
+    view2x2() {
+        return this.calendar.calendarView(this.setting.family.small)
     }
 
     view2x4() {
@@ -23,13 +23,14 @@ class CalendarWidget extends Widget {
     }
 
     render() {
+        // 每天0点切换
         const midnight = new Date()
         midnight.setHours(0, 0, 0, 0)
         const expireDate = new Date(midnight.getTime() + 60 * 60 * 24 * 1000)
         $widget.setTimeline({
             entries: [
                 {
-                    date: new Date(),
+                    date: Date.now(),
                     info: {}
                 }
             ],

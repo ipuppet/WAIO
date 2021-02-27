@@ -410,7 +410,7 @@ class Calendar {
         }
     }
 
-    calendarView(family, reviseFamily) {
+    calendarView(family) {
         const calendarInfo = this.getCalendar(family === this.setting.family.large)
         const calendar = this.formatCalendar(family, calendarInfo, family !== this.setting.family.small)
         const titleBar = this.titleBarTemplate(family, calendarInfo)
@@ -422,22 +422,19 @@ class Calendar {
                     maxHeight: Infinity
                 },
                 spacing: 0,
-                padding: 10
-            }, reviseFamily === this.setting.family.medium ? {
-                link: this.setting.settingUrlScheme
-            } : {
-                    widgetURL: this.setting.settingUrlScheme
-                },
-                $file.exists(this.backgroundImage) ? {
-                    background: {
-                        type: "image",
-                        props: {
-                            image: $image(this.backgroundImage),
-                            resizable: true,
-                            scaledToFill: true
-                        }
+                padding: 10,
+                link: this.setting.settingUrlScheme,
+                widgetURL: this.setting.settingUrlScheme
+            }, $file.exists(this.backgroundImage) ? {
+                background: {
+                    type: "image",
+                    props: {
+                        image: $image(this.backgroundImage),
+                        resizable: true,
+                        scaledToFill: true
                     }
-                } : {}
+                }
+            } : {}
             ),
             views: this.titleAddSpacer ? [
                 { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
