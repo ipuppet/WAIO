@@ -1,7 +1,6 @@
 class HomeUI {
-    constructor(kernel, factory) {
+    constructor(kernel) {
         this.kernel = kernel
-        this.factory = factory
         // 检查是否携带widget参数，携带则打开设置页面
         if (this.kernel.query["widget"]) {
             setTimeout(() => {

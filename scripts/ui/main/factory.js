@@ -9,7 +9,7 @@ class Factory extends BaseView {
 
     home() {
         const HomeUI = require("./home")
-        let interfaceUi = new HomeUI(this.kernel, this)
+        let interfaceUi = new HomeUI(this.kernel)
         return this.kernel.page.view.creator(interfaceUi.getViews(), 0)
     }
 
