@@ -17,6 +17,7 @@ class JoinSetting extends Setting {
             })
             return result
         })()
+        
         // 设置项内需要的函数
         this.setting.getMenu = () => {
             return this.menu
