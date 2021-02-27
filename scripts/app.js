@@ -65,6 +65,7 @@ class AppKernel extends Kernel {
             path: "widget-options.json"
         })
     }
+    
     /**
      * 注入设置中的脚本类型方法
      */
