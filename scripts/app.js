@@ -65,7 +65,7 @@ class AppKernel extends Kernel {
             path: "widget-options.json"
         })
     }
-    
+
     /**
      * 注入设置中的脚本类型方法
      */
@@ -275,11 +275,11 @@ module.exports = {
                 widget.render()
             } else {
                 $widget.setTimeline({
-                    render: ctx => {
+                    render: () => {
                         return {
                             type: "text",
                             props: {
-                                text: "去主程序选择一个Widget，或者参数有误？\n注意，不需要引号"
+                                text: "加载失败，可能是参数有误？去主程序更新参数再来试试？"
                             }
                         }
                     }
