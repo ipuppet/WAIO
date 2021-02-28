@@ -79,7 +79,7 @@ class Setting {
     defaultSettingMethods() {
         this.setting.readme = animate => {
             animate.touchHighlightStart()
-            const content = $file.read(`/scripts/ui/widget/${this.widget}/README.md`).string
+            const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
             this.kernel.UIKit.push({
                 view: [{
                     type: "markdown",
