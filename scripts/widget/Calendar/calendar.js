@@ -345,7 +345,7 @@ class Calendar {
         let content
         let left = "", right = ""
         if (this.titleYear) {
-            let year = !this.titleFullYear ? String(calendarInfo.year).slice(-2) + $l10n("YEAR") : calendarInfo.year + $l10n("YEAR")
+            const year = !this.titleFullYear ? String(calendarInfo.year).slice(-2) + $l10n("YEAR") : calendarInfo.year + $l10n("YEAR")
             left = year + this.localizedMonth(calendarInfo.month)
         } else {
             left = this.localizedMonth(calendarInfo.month)

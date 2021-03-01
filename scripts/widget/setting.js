@@ -59,7 +59,7 @@ class Setting {
 
     push() {
         this.kernel.UIKit.push({
-            view: this.setting.getView(),
+            views: this.setting.getView(),
             title: this.widget,
             hasTopOffset: false
         })
@@ -81,7 +81,7 @@ class Setting {
             animate.touchHighlightStart()
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
             this.kernel.UIKit.push({
-                view: [{
+                views: [{
                     type: "markdown",
                     props: { content: content },
                     layout: (make, view) => {

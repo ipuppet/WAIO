@@ -70,7 +70,7 @@ class Schedule {
         let itemLength = 0
         const dateCollect = {}
         const isReminder = item => item.completed !== undefined
-        const isExpire = date => date ? date.getTime() < new Date().getTime() : false
+        const isExpire = date => date ? date.getTime() < Date.now() : false
         for (let item of list) {
             // 控制显示数目
             if (itemLength >= this.itemLength) break

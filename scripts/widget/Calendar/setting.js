@@ -34,7 +34,7 @@ class CalendarSetting extends Setting {
                     }
                     const content = {
                         holiday: response.data.holiday,
-                        date: new Date().getTime()
+                        date: Date.now()
                     }
                     $file.write({
                         data: $data({ string: JSON.stringify(content) }),
@@ -45,7 +45,7 @@ class CalendarSetting extends Setting {
         }
         if ($file.exists(this.holidayPath)) {
             const holiday = JSON.parse($file.read(this.holidayPath).string)
-            if (new Date().getTime() - holiday.date > life) {
+            if (Date.now() - holiday.date > life) {
                 getHolidayAction()
             }
         } else {
@@ -110,7 +110,7 @@ class CalendarSetting extends Setting {
         this.setting.getHoliday = async animate => {
             animate.actionStart()
             const saveHolidayAction = () => {
-                let year = new Date().getFullYear()
+                const year = new Date().getFullYear()
                 $http.get({
                     url: `http://timor.tech/api/holiday/year/${year}/`,
                     handler: response => {
@@ -126,7 +126,7 @@ class CalendarSetting extends Setting {
                         }
                         const content = {
                             holiday: response.data.holiday,
-                            date: new Date().getTime()
+                            date: Date.now()
                         }
                         $file.write({
                             data: $data({ string: JSON.stringify(content) }),

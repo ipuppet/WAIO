@@ -131,7 +131,7 @@ class Album {
                     items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
                     handler: (title, idx) => {
                         const saveImageAction = data => {
-                            const fileName = new Date().getTime() + data.fileName.slice(data.fileName.lastIndexOf("."))
+                            const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
                             $file.write({
                                 data: data,
                                 path: `${this.albumPath}/${fileName}`
