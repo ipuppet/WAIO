@@ -59,9 +59,9 @@ class Setting {
 
     push() {
         this.kernel.UIKit.push({
+            topOffset: false,
             views: this.setting.getView(),
-            title: this.widget,
-            hasTopOffset: false
+            title: this.widget
         })
     }
 
@@ -78,9 +78,9 @@ class Setting {
 
     defaultSettingMethods() {
         this.setting.readme = animate => {
-            animate.touchHighlightStart()
+            animate.touchHighlight()
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
-            this.kernel.UIKit.push({
+            this.kernel.UIKit.pushPageSheet({
                 views: [{
                     type: "markdown",
                     props: { content: content },
@@ -88,10 +88,7 @@ class Setting {
                         make.size.equalTo(view.super)
                     }
                 }],
-                title: $l10n("README"),
-                disappeared: () => {
-                    animate.touchHighlightEnd()
-                }
+                title: $l10n("README")
             })
         }
 
