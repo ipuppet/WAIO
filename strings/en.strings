@@ -1,10 +1,4 @@
 "ALERT_INFO" = "Alert";
-"OK" = "Ok";
-"CANCEL" = "Cancel";
-"CLEAR" = "Clear";
-"BACK" = "Back";
-"SUCCESS" = "Success";
-"ERROR" = "Error";
 "NONE" = "None";
 "COPY" = "Copy";
 "NEW_WIDGET_NAME" = "New Widget name";
@@ -26,10 +20,6 @@
 "DELETE_SUCCESS" = "Delete success";
 "DELETE_ERROR" = "Delete failed";
 
-"SETTING" = "Setting";
-
-"GENERAL" = "General";
-"TIPS" = "Tips";
 "PRINT_TIME_CONSUMING" = "Print Time Consuming";
 "UPDATE_HOME_SCREEN_WIDGET_OPTIONS" = "Update Home Screen Widget Options";
 
@@ -37,13 +27,6 @@
 "START_BACKUP" = "Start Backup";
 "BACKUP_TO_ICLOUD" = "Backup to iCloud";
 "RECOVER_FROM_ICLOUD" = "Recover from iCloud";
-
-"ADVANCED" = "Advanced";
-
-"ABOUT" = "About";
-"VERSION" = "Version";
-"AUTHOR" = "Author";
-"AT_BOTTOM" = "It's the end~";
 
 "CALENDAR" = "Calendar";
 
