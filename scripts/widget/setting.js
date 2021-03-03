@@ -59,6 +59,7 @@ class Setting {
 
     push() {
         this.kernel.UIKit.push({
+            bgcolor: "insetGroupedBackground",
             topOffset: false,
             views: this.setting.getView(),
             title: this.widget
