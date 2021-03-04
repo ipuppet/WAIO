@@ -126,7 +126,7 @@ class Album {
 
     getAlbumButtons() {
         return [
-            this.kernel.UIKit.navButton("album-add-image", "plus", (start, done, cancel) => { // 添加新图片
+            this.kernel.UIKit.navButton("album-add-image", "plus", animate => { // 添加新图片
                 $ui.menu({
                     items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
                     handler: (title, idx) => {
@@ -156,7 +156,7 @@ class Album {
                                 }
                             })
                         }
-                        start()
+                        animate.start()
                         if (idx === 0) { // 从系统相册选取图片
                             $photo.pick({
                                 format: "data",
@@ -167,26 +167,26 @@ class Album {
                                         return
                                     }
                                     if (!resp.results) {
-                                        cancel()
+                                        animate.cancel()
                                         return
                                     }
                                     resp.results.forEach(image => {
                                         saveImageAction(image.data)
                                     })
                                     $ui.toast($l10n("SUCCESS"))
-                                    done()
+                                    animate.done()
                                 }
                             })
                         } else if (idx === 1) { // 从iCloud选取图片
                             $drive.open({
                                 handler: file => {
                                     if (!file) {
-                                        cancel()
+                                        animate.cancel()
                                         return
                                     }
                                     saveImageAction(file)
                                     $ui.toast($l10n("SUCCESS"))
-                                    done()
+                                    animate.done()
                                 }
                             })
                         }
