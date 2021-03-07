@@ -58,7 +58,10 @@
                 "title": "Github",
                 "type": "info",
                 "key": "github",
-                "value": "https://github.com/ipuppet/WAIO"
+                "value": [
+                    "ipuppet/WAIO",
+                    "https://github.com/ipuppet/WAIO"
+                ]
             },
             {
                 "icon": [
@@ -70,7 +73,7 @@
                 "key": "author",
                 "value": [
                     "ipuppet",
-                    "https://blog.ipuppet.cn"
+                    "https://blog.ipuppet.top"
                 ]
             },
             {

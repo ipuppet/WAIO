@@ -1,10 +1,8 @@
 {
     "info": {
         "name": "WAIO",
-        "url": "https://github.com/ipuppet/WAIO",
         "version": "1.2.18",
         "author": "ipuppet",
-        "website": "https://blog.ipuppet.cn",
         "module": false
     },
     "settings": {
