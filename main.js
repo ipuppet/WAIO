@@ -15,26 +15,43 @@ if ($file.exists(SHARED_PATH)) {
 } else {
     $ui.alert({
         title: "Error",
-        message: "Cannot find EasyJsBox.",
+        message: "Cannot find EasyJsBox.\nOpen EasyJsBoxInstaller?",
         actions: [
             { title: "Cancel" },
             {
-                title: "Install",
+                title: "Open",
                 handler: () => {
-                    $ui.alert({
-                        title: "Error",
-                        message: "Cannot find EasyJsBoxInstaller.",
-                        actions: [
-                            { title: "Cancel" },
-                            {
-                                title: "Install",
-                                handler: () => {
-                                    const link = "https://github.com/ipuppet/EasyJsBoxInstaller/releases/latest"
-                                    $app.openURL(link)
-                                }
-                            }
-                        ]
+                    let hasEasyJsBoxInstaller = false
+                    $addin.list.forEach(script => {
+                        if (script.name === "EasyJsBoxInstaller") {
+                            hasEasyJsBoxInstaller = true
+                            $addin.run(script.name)
+                        }
                     })
+                    if (!hasEasyJsBoxInstaller) {
+                        $ui.alert({
+                            title: "Error",
+                            message: "Cannot find EasyJsBoxInstaller.",
+                            actions: [
+                                { title: "Cancel" },
+                                {
+                                    title: "Install",
+                                    handler: () => {
+                                        const links = {
+                                            Github: "https://github.com/ipuppet/EasyJsBoxInstaller/releases/latest",
+                                            Erots: "jsbox://run?name=Erots&q=show&objectId=6055b974986e9365f49e9feb",
+                                        }
+                                        $ui.menu({
+                                            items: Object.keys(links),
+                                            handler: title => {
+                                                $app.openURL(links[title])
+                                            }
+                                        })
+                                    }
+                                }
+                            ]
+                        })
+                    }
                 }
             }
         ]
