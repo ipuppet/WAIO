@@ -42,7 +42,7 @@ class Setting {
             }
             this.setting = { get: key => cache[key] }
         } else {
-            this.settingComponent = this.kernel.registerComponent("Setting", {
+            this.settingComponent = this.kernel.registerComponent("setting", {
                 name: `${this.widget}Setting`,
                 savePath: savePath,
                 structPath: structPath

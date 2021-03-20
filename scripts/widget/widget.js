@@ -7,7 +7,6 @@ class Widget {
         this.errorView = {
             type: "text",
             props: {
-                // text: $l10n("FAILED_TO_LOAD_VIEW")
                 text: $l10n("VIEW_NOT_PROVIDED")
             }
         }
@@ -18,7 +17,7 @@ class Widget {
     }
 
     printTimeConsuming() {
-        if (Boolean(!this.kernel.inWidgetEnv) && this.kernel.setting.get("isPrintTimeConsuming"))
+        if (!this.kernel.inWidgetEnv && this.kernel.setting.get("isPrintTimeConsuming"))
             console.log(`Use ${Date.now() - this.startTime} ms`)
     }
 

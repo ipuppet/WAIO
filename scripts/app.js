@@ -1,4 +1,6 @@
-const { Kernel, VERSION } = require("../EasyJsBox/src/kernel")
+const { Kernel } = require("../EasyJsBox/src/kernel")
+
+// path
 const widgetRootPath = "/scripts/widget"
 const widgetAssetsPath = "/assets/widget"
 const backupPath = "/assets/backup"
@@ -22,11 +24,11 @@ class AppKernel extends Kernel {
         super()
         this.query = $context.query
         // 注册组件
-        this.settingComponent = this.registerComponent("Setting")
+        this.settingComponent = this.registerComponent("setting")
         this.setting = this.settingComponent.controller
         this.initSettingMethods()
-        this.page = this.registerComponent("Page")
-        this.menu = this.registerComponent("Menu")
+        this.page = this.registerComponent("page")
+        this.menu = this.registerComponent("menu")
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetAssetsPath = widgetAssetsPath
@@ -271,7 +273,7 @@ module.exports = {
             }
         } else if ($app.env === $env.app) {
             const kernel = new AppKernel()
-            const Factory = require("./ui/main/factory")
+            const Factory = require("./ui/factory")
             new Factory(kernel).render()
             // 监听运行状态
             $app.listen({
