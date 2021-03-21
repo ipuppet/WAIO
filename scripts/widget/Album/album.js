@@ -198,7 +198,7 @@ class Album {
                 props: {
                     id: "album-multiple-selection-mode",
                     symbol: "square.on.square",
-                    tintColor: this.kernel.page.view.textColor,
+                    tintColor: this.kernel.UIKit.textColor,
                     bgcolor: $color("clear")
                 },
                 layout: (make, view) => {
@@ -211,7 +211,7 @@ class Album {
                     }
                 }
             },
-            this.kernel.page.view.navButton("album-multiple-selection-mode-delete", "trash", (start, done, cancel) => {
+            this.kernel.UIKit.navButton("album-multiple-selection-mode-delete", "trash", (start, done, cancel) => {
                 let length = Object.keys(this.selected).length
                 if (this.mode === 1 && length > 0) {
                     let style = {}
