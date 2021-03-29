@@ -211,14 +211,14 @@ class Album {
                     }
                 }
             },
-            this.kernel.UIKit.navButton("album-multiple-selection-mode-delete", "trash", (start, done, cancel) => {
+            this.kernel.UIKit.navButton("album-multiple-selection-mode-delete", "trash", animate => {
                 let length = Object.keys(this.selected).length
                 if (this.mode === 1 && length > 0) {
                     let style = {}
                     if ($alertActionType) {
                         style = { style: $alertActionType.destructive }
                     }
-                    start()
+                    animate.start()
                     $ui.alert({
                         title: $l10n("CONFIRM_DELETE_MSG"),
                         actions: [
@@ -234,12 +234,12 @@ class Album {
                                             }
                                         })
                                     }
-                                    done()
+                                    animate.done()
                                 }
                             }, style),
                             {
                                 title: $l10n("CANCEL"),
-                                handler: () => { cancel() }
+                                handler: () => { animate.cancel() }
                             }
                         ]
                     })
