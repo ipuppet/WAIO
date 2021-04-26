@@ -21,7 +21,7 @@ class Setting {
         // 检查目录是否存在，不存在则创建
         if (!$file.exists(rootPath)) { $file.mkdir(rootPath) }
         if (!$file.exists(assetsPath)) { $file.mkdir(assetsPath) }
-        const structPath = `${rootPath}/setting.json`,
+        const structurePath = `${rootPath}/setting.json`,
             savePath = `${assetsPath}/setting.json`
         // 判断当前环境
         if (this.kernel.inWidgetEnv) {
@@ -32,7 +32,7 @@ class Setting {
                 if ($file.exists(savePath)) {
                     user = JSON.parse($file.read(savePath).string)
                 }
-                for (let section of JSON.parse($file.read(structPath).string)) {
+                for (let section of JSON.parse($file.read(structurePath).string)) {
                     for (let item of section.items) {
                         cache[item.key] = item.key in user ? user[item.key] : item.value
                     }
@@ -44,7 +44,7 @@ class Setting {
             this.settingComponent = this.kernel.registerComponent("setting", {
                 name: `${this.widget}Setting`,
                 savePath: savePath,
-                structPath: structPath
+                structurePath: structurePath
             })
             this.setting = this.settingComponent.controller
             // 每次从主程序启动都更新设置项缓存
