@@ -10,16 +10,16 @@ class MyDaysWidget extends Widget {
             date: this.setting.get("date") === 0 ? Date.now() : this.setting.get("date")
         }
         this.dateFontSize = this.setting.get("dateFontSize")
-        this.dateColor = this.setting.get("dateColor")
-        this.dateColorDark = this.setting.get("dateColorDark")
-        this.infoColor = this.setting.get("infoColor")
-        this.infoColorDark = this.setting.get("infoColorDark")
-        this.backgroundColor = this.setting.get("backgroundColor")
-        this.backgroundColorDark = this.setting.get("backgroundColorDark")
+        this.dateColor = this.setting.getColor(this.setting.get("dateColor"))
+        this.dateColorDark = this.setting.getColor(this.setting.get("dateColorDark"))
+        this.infoColor = this.setting.getColor(this.setting.get("infoColor"))
+        this.infoColorDark = this.setting.getColor(this.setting.get("infoColorDark"))
+        this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
+        this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
+        this.overdueColor = this.setting.getColor(this.setting.get("overdueColor"))
         this.backgroundImage = this.setting.getBackgroundImage()
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
-        this.overdueColor = this.setting.get("overdueColor")
     }
 
     dateSpan(date) {
@@ -50,20 +50,13 @@ class MyDaysWidget extends Widget {
             props: { text: $l10n("NONE") }
         }
         const remainingDays = this.dateSpan(myday.date)
-        return {
+        let view = {
             type: "vstack",
             props: {
                 alignment: $widget.verticalAlignment.center,
                 spacing: 0,
                 padding: 10,
-                background: this.isImageBackground ? {
-                    type: "image",
-                    props: {
-                        image: $image(this.backgroundImage),
-                        resizable: true,
-                        scaledToFill: true
-                    }
-                } : $color(this.backgroundColor, this.backgroundColorDark),
+                background: $color(this.backgroundColor, this.backgroundColorDark),
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
@@ -123,6 +116,29 @@ class MyDaysWidget extends Widget {
                 }
             ]
         }
+        if (this.isImageBackground) {
+            return {
+                type: "vstack",
+                props: {
+                    alignment: $widget.verticalAlignment.center,
+                    spacing: 0,
+                    padding: 0,
+                    background: {
+                        type: "image",
+                        props: {
+                            image: $image(this.backgroundImage),
+                            resizable: true,
+                            scaledToFill: true
+                        }
+                    },
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: Infinity
+                    }
+                },
+                views: [view]
+            }
+        } else return view
     }
 
     render() {

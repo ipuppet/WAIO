@@ -22,6 +22,16 @@
             },
             {
                 "icon": [
+                    "archivebox",
+                    "#336699"
+                ],
+                "title": "USE_COMPRESSED_IMAGE",
+                "type": "switch",
+                "key": "compressImage",
+                "value": true
+            },
+            {
+                "icon": [
                     "slider.horizontal.3",
                     "#FF9933"
                 ],
