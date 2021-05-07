@@ -2,9 +2,9 @@ class Schedule {
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
-        this.colorDate = this.setting.get("colorDate")
-        this.colorCalendar = this.setting.get("colorCalendar")
-        this.colorReminder = this.setting.get("colorReminder")
+        this.colorDate = this.setting.getColor(this.setting.get("colorDate"))
+        this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
+        this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
         this.itemLength = this.setting.get("itemLength")
         this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=calshow://`
         this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=x-apple-reminderkit://`
@@ -110,7 +110,7 @@ class Schedule {
                                             width: 2,
                                             height: 12
                                         },
-                                        color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar)
+                                        color: isReminder(item) ? this.colorReminder : this.colorCalendar
                                     }
                                 },
                                 { // 事件名称
@@ -146,7 +146,7 @@ class Schedule {
                                             width: 12,
                                             height: 12
                                         },
-                                        color: isReminder(item) ? $color(this.colorReminder) : $color(this.colorCalendar),
+                                        color: isReminder(item) ? this.colorReminder : this.colorCalendar,
                                         resizable: true
                                     }
                                 },
@@ -193,7 +193,7 @@ class Schedule {
                         type: "text",
                         props: {
                             text: date,
-                            color: $color(this.colorDate),
+                            color: this.colorDate,
                             font: $font("bold", 12),
                             frame: {
                                 maxWidth: Infinity,

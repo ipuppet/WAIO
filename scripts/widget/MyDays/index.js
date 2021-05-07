@@ -70,7 +70,7 @@ class MyDaysWidget extends Widget {
                     props: {
                         text: this.dateSpanToString(remainingDays),
                         font: $font(this.dateFontSize),
-                        color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : $color(this.overdueColor),
+                        color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : this.overdueColor,
                         frame: {
                             alignment: $widget.alignment.topLeading,
                             maxWidth: Infinity,
