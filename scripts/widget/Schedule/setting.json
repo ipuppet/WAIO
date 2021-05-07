@@ -40,8 +40,7 @@
         "items": [
             {
                 "icon": [
-                    "wand.and.rays",
-                    "#FF9933"
+                    "wand.and.rays"
                 ],
                 "title": "DATE_COLOR",
                 "type": "color",
