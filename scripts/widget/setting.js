@@ -23,32 +23,14 @@ class Setting {
         if (!$file.exists(assetsPath)) { $file.mkdir(assetsPath) }
         const structurePath = `${rootPath}/setting.json`,
             savePath = `${assetsPath}/setting.json`
+        this.settingComponent = this.kernel.registerComponent("setting", {
+            name: `${this.widget}Setting`,
+            savePath: savePath,
+            structurePath: structurePath
+        })
+        this.setting = this.settingComponent.controller
         // 判断当前环境
-        if (this.kernel.inWidgetEnv) {
-            let cache = $cache.get(`setting-${this.widget}`)
-            if (!cache) {
-                cache = {}
-                let user = {} // 用户的设置
-                if ($file.exists(savePath)) {
-                    user = JSON.parse($file.read(savePath).string)
-                }
-                for (let section of JSON.parse($file.read(structurePath).string)) {
-                    for (let item of section.items) {
-                        cache[item.key] = item.key in user ? user[item.key] : item.value
-                    }
-                }
-                $cache.set(`setting-${this.widget}`, cache)
-            }
-            this.setting = { get: key => cache[key] }
-        } else {
-            this.settingComponent = this.kernel.registerComponent("setting", {
-                name: `${this.widget}Setting`,
-                savePath: savePath,
-                structurePath: structurePath
-            })
-            this.setting = this.settingComponent.controller
-            // 每次从主程序启动都更新设置项缓存
-            $cache.set(`setting-${this.widget}`, this.setting.setting)
+        if (!this.kernel.inWidgetEnv) {
             this.setting.isSecondaryPage(true, () => { $ui.pop() })
             this.setting.setFooter({ type: "view" })
             this.defaultSettingMethods()
