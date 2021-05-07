@@ -4,10 +4,10 @@ class Calendar {
         this.setting = setting
         this.sloarToLunar = this.kernel.registerPlugin("sloarToLunar")
         this.onlyCurrentMonth = this.setting.get("onlyCurrentMonth")
-        this.colorTone = this.setting.get("colorTone")
+        this.colorTone = this.setting.getColor(this.setting.get("colorTone"))
         this.hasHoliday = this.setting.get("holiday")
-        this.holidayColor = this.setting.get("holidayColor")
-        this.holidayNoRestColor = this.setting.get("holidayNoRestColor")// 调休
+        this.holidayColor = this.setting.getColor(this.setting.get("holidayColor"))
+        this.holidayNoRestColor = this.setting.getColor(this.setting.get("holidayNoRestColor"))// 调休
         if (this.hasHoliday && $file.exists(this.setting.holidayPath)) {// 假期信息
             this.holiday = JSON.parse($file.read(this.setting.holidayPath).string).holiday
         }
@@ -127,10 +127,10 @@ class Calendar {
                             date: nextMonth++,
                             day: formatDay
                         } : {
-                                month: month,
-                                date: date,
-                                day: formatDay
-                            }
+                            month: month,
+                            date: date,
+                            day: formatDay
+                        }
                     } else {
                         // 补齐第一周前面空缺的日期
                         formatDate = {
@@ -203,9 +203,9 @@ class Calendar {
         // 节假日
         if (date.holiday) {
             if (date.holiday.holiday) {
-                props.ext.color = props.text.color = $color(this.holidayColor)
+                props.ext.color = props.text.color = this.holidayColor
             } else {
-                props.ext.color = props.text.color = $color(this.holidayNoRestColor)
+                props.ext.color = props.text.color = this.holidayNoRestColor
             }
         }
         // 当天
@@ -213,12 +213,12 @@ class Calendar {
             props.text.color = $color("white")
             props.ext.color = $color("white")
             if (!date.holiday) {
-                props.box.background = $color(this.colorTone)
+                props.box.background = this.colorTone
             } else {
                 if (date.holiday.holiday)
-                    props.box.background = $color(this.holidayColor)
+                    props.box.background = this.holidayColor
                 else
-                    props.box.background = $color(this.holidayNoRestColor)
+                    props.box.background = this.holidayNoRestColor
             }
         }
         // 本月前后补位日期
@@ -304,7 +304,7 @@ class Calendar {
         const title = []
         for (let i = 0; i < 7; i++) {
             title.push(this.dayTemplate(this.localizedWeek(i), {
-                text: { color: $color(this.colorTone) }
+                text: { color: this.colorTone }
             }))
         }
         return title
@@ -383,7 +383,7 @@ class Calendar {
                     props: {
                         text: content.left,
                         lineLimit: 1,
-                        color: $color(this.colorTone),
+                        color: this.colorTone,
                         font: $font("bold", content.size),
                         frame: {
                             alignment: $widget.alignment.leading,
@@ -397,7 +397,7 @@ class Calendar {
                     props: {
                         text: content.right,
                         lineLimit: 1,
-                        color: $color(this.colorTone),
+                        color: this.colorTone,
                         font: $font("bold", content.size),
                         frame: {
                             alignment: $widget.alignment.trailing,
@@ -439,8 +439,8 @@ class Calendar {
             views: this.titleAddSpacer ? [
                 { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
             ] : [
-                    { type: "spacer" }, titleBar, calendar, { type: "spacer" }
-                ]
+                { type: "spacer" }, titleBar, calendar, { type: "spacer" }
+            ]
         }
     }
 
@@ -484,8 +484,8 @@ class Calendar {
             }, family === this.setting.family.medium ? {
                 link: this.setting.settingUrlScheme
             } : {
-                    widgetURL: this.setting.settingUrlScheme
-                },
+                widgetURL: this.setting.settingUrlScheme
+            },
                 $file.exists(this.backgroundImage) ? {
                     background: {
                         type: "image",
