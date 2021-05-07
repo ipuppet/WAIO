@@ -76,6 +76,10 @@ class Setting {
         return this.setting.get(key)
     }
 
+    getColor(color) {
+        return this.setting.getColor(color)
+    }
+
     defaultSettingMethods() {
         this.setting.readme = animate => {
             animate.touchHighlight()
