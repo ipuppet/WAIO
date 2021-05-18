@@ -165,7 +165,7 @@ class HomeUI {
                                             handler: () => {
                                                 $file.delete(`${this.kernel.widgetRootPath}/${widgetName}`)
                                                 // 删除assets
-                                                $file.delete(`${this.kernel.widgetAssetsPath}/${widgetName}`)
+                                                $file.delete(`${this.kernel.widgetDataPath}/${widgetName}`)
                                                 sender.delete(indexPath)
                                             }
                                         }, style),

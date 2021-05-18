@@ -6,9 +6,9 @@
                 "icon": [
                     "clock.fill"
                 ],
-                "title": "PRINT_TIME_CONSUMING",
+                "title": "DEBUG_MODE",
                 "type": "switch",
-                "key": "isPrintTimeConsuming",
+                "key": "debugMode",
                 "value": false
             },
             {

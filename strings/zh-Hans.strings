@@ -20,7 +20,7 @@
 "DELETE_SUCCESS" = "删除成功";
 "DELETE_ERROR" = "删除失败";
 
-"PRINT_TIME_CONSUMING" = "打印加载耗时";
+"DEBUG_MODE" = "Debug模式";
 "UPDATE_HOME_SCREEN_WIDGET_OPTIONS" = "更新主屏幕widget参数";
 
 "BACKUP" = "备份";

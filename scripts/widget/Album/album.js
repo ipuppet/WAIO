@@ -2,7 +2,7 @@ class Album {
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
-        this.albumPath = `${this.kernel.widgetAssetsPath}/${this.setting.widget}/pictures`
+        this.albumPath = `${this.kernel.widgetDataPath}/${this.setting.widget}/pictures`
         this.imageMaxSize = 50 // kb
         this.mode = 0 // 0: 正常模式  1: 多选模式
         this.selected = {}

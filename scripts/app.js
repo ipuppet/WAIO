@@ -2,8 +2,8 @@ const { Kernel } = require("../EasyJsBox/src/kernel")
 
 // path
 const widgetRootPath = "/scripts/widget"
-const widgetAssetsPath = "/assets/widget"
-const backupPath = "/assets/backup"
+const widgetDataPath = "/storage/widget"
+const backupPath = "/storage/backup"
 
 /**
  * 实例化一个小组件
@@ -31,13 +31,21 @@ class AppKernel extends Kernel {
         this.menu = this.registerComponent("menu")
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
-        this.widgetAssetsPath = widgetAssetsPath
+        this.widgetDataPath = widgetDataPath
         // backup
         this.backupPath = backupPath
         // 检查是否携带URL scheme
         if (this.query["url-scheme"]) {
             // 延时500ms后跳转
             setTimeout(() => { $app.openURL(this.query["url-scheme"]) }, 500)
+        }
+        // TODO 兼容旧数据，于未来删除
+        if (!$file.exists(this.widgetDataPath) && $file.exists("/assets/widget")) {
+            $file.move({
+                src: "/assets/widget",
+                dst: this.widgetDataPath
+            })
+            console.log("已迁移数据至: '/storage'")
         }
     }
 
@@ -99,7 +107,7 @@ class AppKernel extends Kernel {
                         dest: `${this.backupPath}/widgets.zip`
                     })
                     await $archiver.zip({
-                        directory: this.widgetAssetsPath,
+                        directory: this.widgetDataPath,
                         dest: `${this.backupPath}/userdata.zip`
                     })
                     await $archiver.zip({
@@ -185,7 +193,7 @@ class AppKernel extends Kernel {
                                         })
                                         $file.move({
                                             src: `${this.backupPath}/userdata`,
-                                            dst: this.widgetAssetsPath
+                                            dst: this.widgetDataPath
                                         })
                                         // 删除文件
                                         $file.delete(`${this.backupPath}/backup.zip`)
@@ -243,7 +251,7 @@ class WidgetKernel extends Kernel {
         this.inWidgetEnv = true
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
-        this.widgetAssetsPath = widgetAssetsPath
+        this.widgetDataPath = widgetDataPath
     }
 
     widgetInstance(widget) {

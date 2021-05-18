@@ -17,12 +17,12 @@ class Setting {
 
     init() {
         const rootPath = `${this.kernel.widgetRootPath}/${this.widget}`,
-            assetsPath = `${this.kernel.widgetAssetsPath}/${this.widget}`
+            dataPath = `${this.kernel.widgetDataPath}/${this.widget}`
         // 检查目录是否存在，不存在则创建
         if (!$file.exists(rootPath)) { $file.mkdir(rootPath) }
-        if (!$file.exists(assetsPath)) { $file.mkdir(assetsPath) }
+        if (!$file.exists(dataPath)) { $file.mkdir(dataPath) }
         const structurePath = `${rootPath}/setting.json`,
-            savePath = `${assetsPath}/setting.json`
+            savePath = `${dataPath}/setting.json`
         this.settingComponent = this.kernel.registerComponent("setting", {
             name: `${this.widget}Setting`,
             savePath: savePath,

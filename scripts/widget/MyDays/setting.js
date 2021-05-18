@@ -4,7 +4,7 @@ const Setting = require("../setting")
 class MyDaysSetting extends Setting {
     constructor(kernel) {
         super(kernel, NAME)
-        this.path = `${this.kernel.widgetAssetsPath}/${NAME}`
+        this.path = `${this.kernel.widgetDataPath}/${NAME}`
         if (!$file.exists(this.path)) {
             $file.mkdir(this.path)
         }

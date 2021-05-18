@@ -17,8 +17,8 @@ class Widget {
     }
 
     printTimeConsuming() {
-        if (!this.kernel.inWidgetEnv && this.kernel.setting.get("isPrintTimeConsuming"))
-            console.log(`Use ${Date.now() - this.startTime} ms`)
+        if (!this.kernel.inWidgetEnv && this.kernel.setting.get("debugMode"))
+            this.kernel.print(`Use ${Date.now() - this.startTime} ms`)
     }
 
     async view2x2() {
