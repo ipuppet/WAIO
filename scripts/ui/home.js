@@ -61,8 +61,8 @@ class HomeUI {
                 })
                 // 更新config.json
                 const config = JSON.parse($file.read(`${newPath}/config.json`).string)
-                config.title = text === "" ? from + "Copy" : text
-                config.from = from
+                config.title = text === "" ? newName : text
+                if (config.from === undefined) config.from = from
                 config.name = newName
                 $file.write({
                     data: $data({ string: JSON.stringify(config) }),
