@@ -68,6 +68,7 @@ class HomeUI {
                     data: $data({ string: JSON.stringify(config) }),
                     path: `${newPath}/config.json`
                 })
+                this.kernel.updateHomeScreenWidgetOptions()
                 if (typeof callback === "function") callback()
             }
         })
