@@ -6,8 +6,8 @@ class Schedule {
         this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
         this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
         this.itemLength = this.setting.get("itemLength")
-        this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=calshow://`
-        this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=x-apple-reminderkit://`
+        this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("calshow://")}`
+        this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("x-apple-reminderkit://")}`
         switch (this.setting.get("clickEvent")) {
             case 0:
                 this.urlScheme = this.setting.settingUrlScheme
