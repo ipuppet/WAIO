@@ -11,33 +11,42 @@ const backupPath = "/storage/backup"
  * @param {Kernel} that Kernel实例
  */
 function widgetInstance(widget, that) {
-    if (
-        !$file.exists(`${widgetRootPath}/${widget}/index.js`)
-        && $file.exists(`${widgetRootPath}/${widget}/config.json`)
-    ) {
-        const config = JSON.parse($file.read(`${widgetRootPath}/${widget}/config.json`).string)
-        if (config.from) {
-            $file.list(`${widgetRootPath}/${config.from}`).forEach(file => {
-                if (file !== "config.json") {
-                    $file.copy({
-                        src: `${widgetRootPath}/${config.from}/${file}`,
-                        dst: `${widgetRootPath}/${widget}/${file}`
-                    })
-                }
-            })
-            // 更新设置文件中的NAME常量
-            let settingjs = $file.read(`${widgetRootPath}/${widget}/setting.js`).string
-            const firstLine = `const NAME = "${config.from}"`
-            const newFirstLine = `const NAME = "${widget}"`
-            settingjs = settingjs.replace(firstLine, newFirstLine)
-            $file.write({
-                data: $data({ string: settingjs }),
-                path: `${widgetRootPath}/${widget}/setting.js`
+    const recover = name => {
+        if (
+            !$file.exists(`${widgetRootPath}/${name}/index.js`)
+            && $file.exists(`${widgetRootPath}/${name}/config.json`)
+        ) {
+            const config = JSON.parse($file.read(`${widgetRootPath}/${name}/config.json`).string)
+            if (config.from) {
+                const configFrom = JSON.parse($file.read(`${widgetRootPath}/${config.from}/config.json`).string)
+                // 检查from是否需要恢复
+                if (configFrom.from) recover(config.from)
+                $file.list(`${widgetRootPath}/${config.from}`).forEach(file => {
+                    if (file !== "config.json") {
+                        $file.copy({
+                            src: `${widgetRootPath}/${config.from}/${file}`,
+                            dst: `${widgetRootPath}/${name}/${file}`
+                        })
+                    }
+                })
+                // 更新设置文件中的NAME常量
+                let settingjs = $file.read(`${widgetRootPath}/${name}/setting.js`).string
+                const firstLine = `const NAME = "${config.from}"`
+                const newFirstLine = `const NAME = "${name}"`
+                settingjs = settingjs.replace(firstLine, newFirstLine)
+                $file.write({
+                    data: $data({ string: settingjs }),
+                    path: `${widgetRootPath}/${name}/setting.js`
+                })
+            }
+        } else if (!$file.exists(`${widgetRootPath}/${name}/config.json`)) {
+            $ui.alert({
+                title: $l10n("ERROR"),
+                message: $l10n("CANNOT_TRACE_TO_THE_SOURCE") + `: ${name}`,
             })
         }
-    } else if (!$file.exists(`${widgetRootPath}/${widget}/index.js`)) {
-        return false
     }
+    recover(widget)
     const { Widget } = require(`./widget/${widget}/index.js`)
     return new Widget(that)
 }

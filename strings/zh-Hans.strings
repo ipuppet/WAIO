@@ -8,6 +8,7 @@
 "VIEW_NOT_PROVIDED" = "未提供该视图";
 
 "HOME" = "首页";
+"CANNOT_TRACE_TO_THE_SOURCE" = "无法溯源该widget";
 "PREVIEW" = "预览";
 
 "CUSTOM" = "定制";

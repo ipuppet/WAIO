@@ -8,6 +8,7 @@
 "VIEW_NOT_PROVIDED" = "The view is not provided";
 
 "HOME" = "Home";
+"CANNOT_TRACE_TO_THE_SOURCE" = "The widget cannot be traced";
 "PREVIEW" = "Preview";
 
 "CUSTOM" = "Custom";
