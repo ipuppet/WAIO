@@ -37,7 +37,7 @@ class AppKernel extends Kernel {
         // 检查是否携带URL scheme
         if (this.query["url-scheme"]) {
             // 延时500ms后跳转
-            setTimeout(() => { $app.openURL(this.query["url-scheme"]) }, 500)
+            setTimeout(() => { $app.openURL($text.URLDecode(this.query["url-scheme"])) }, 500)
         }
         // TODO 兼容旧数据，于未来删除
         if (!$file.exists(this.widgetDataPath) && $file.exists("/assets/widget")) {
