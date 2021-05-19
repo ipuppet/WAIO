@@ -2,6 +2,8 @@ class Setting {
     constructor(kernel, widget) {
         this.kernel = kernel
         this.widget = widget
+        // settingUrlScheme
+        this.settingUrlScheme = `jsbox://run?name=${this.kernel.name}&widget=${this.widget}`
         // 初始化
         this.init()
         this.family = {
