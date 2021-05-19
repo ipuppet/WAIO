@@ -11,12 +11,35 @@ const backupPath = "/storage/backup"
  * @param {Kernel} that Kernel实例
  */
 function widgetInstance(widget, that) {
-    if ($file.exists(`${widgetRootPath}/${widget}/index.js`)) {
-        const { Widget } = require(`./widget/${widget}/index.js`)
-        return new Widget(that)
-    } else {
+    if (
+        !$file.exists(`${widgetRootPath}/${widget}/index.js`)
+        && $file.exists(`${widgetRootPath}/${widget}/config.json`)
+    ) {
+        const config = JSON.parse($file.read(`${widgetRootPath}/${widget}/config.json`).string)
+        if (config.from) {
+            $file.list(`${widgetRootPath}/${config.from}`).forEach(file => {
+                if (file !== "config.json") {
+                    $file.copy({
+                        src: `${widgetRootPath}/${config.from}/${file}`,
+                        dst: `${widgetRootPath}/${widget}/${file}`
+                    })
+                }
+            })
+            // 更新设置文件中的NAME常量
+            let settingjs = $file.read(`${widgetRootPath}/${widget}/setting.js`).string
+            const firstLine = `const NAME = "${config.from}"`
+            const newFirstLine = `const NAME = "${widget}"`
+            settingjs = settingjs.replace(firstLine, newFirstLine)
+            $file.write({
+                data: $data({ string: settingjs }),
+                path: `${widgetRootPath}/${widget}/setting.js`
+            })
+        }
+    } else if (!$file.exists(`${widgetRootPath}/${widget}/index.js`)) {
         return false
     }
+    const { Widget } = require(`./widget/${widget}/index.js`)
+    return new Widget(that)
 }
 
 class AppKernel extends Kernel {

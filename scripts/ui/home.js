@@ -33,6 +33,68 @@ class HomeUI {
         return data.map(item => template(item))
     }
 
+    copyWidget(from, callback) {
+        $input.text({
+            placeholder: $l10n("NEW_WIDGET_NAME"),
+            text: "",
+            handler: text => {
+                text = text.trim()
+                const fromPath = `${this.kernel.widgetRootPath}/${from}`
+                if (!$file.exists(`${fromPath}/setting.js`) || !$file.exists(`${fromPath}/config.json`)) {
+                    $ui.error($l10n("CANNOT_COPY_THIS_WIDGET"))
+                    return
+                }
+                const newName = this.kernel.uuid()
+                const newPath = `${this.kernel.widgetRootPath}/${newName}`
+                $file.copy({
+                    src: fromPath,
+                    dst: newPath
+                })
+                // 更新设置文件中的NAME常量
+                let settingjs = $file.read(`${newPath}/setting.js`).string
+                const firstLine = `const NAME = "${from}"`
+                const newFirstLine = `const NAME = "${newName}"`
+                settingjs = settingjs.replace(firstLine, newFirstLine)
+                $file.write({
+                    data: $data({ string: settingjs }),
+                    path: `${newPath}/setting.js`
+                })
+                // 更新config.json
+                const config = JSON.parse($file.read(`${newPath}/config.json`).string)
+                config.title = text === "" ? from + "Copy" : text
+                config.from = from
+                config.name = newName
+                $file.write({
+                    data: $data({ string: JSON.stringify(config) }),
+                    path: `${newPath}/config.json`
+                })
+                if (typeof callback === "function") callback()
+            }
+        })
+    }
+
+    deleteWidget(name, callback) {
+        let style = {}
+        if ($alertActionType) {
+            style = { style: $alertActionType.destructive }
+        }
+        $ui.alert({
+            title: $l10n("CONFIRM_DELETE_MSG"),
+            actions: [
+                Object.assign({
+                    title: $l10n("DELETE"),
+                    handler: () => {
+                        $file.delete(`${this.kernel.widgetRootPath}/${name}`)
+                        // 删除数据文件
+                        $file.delete(`${this.kernel.widgetDataPath}/${name}`)
+                        if (typeof callback === "function") callback()
+                    }
+                }, style),
+                { title: $l10n("CANCEL") }
+            ]
+        })
+    }
+
     getViews() {
         return [
             {
@@ -112,39 +174,9 @@ class HomeUI {
                             title: $l10n("COPY"),
                             color: $color("orange"),
                             handler: (sender, indexPath) => {
-                                $input.text({
-                                    placeholder: $l10n("NEW_WIDGET_NAME"),
-                                    text: "",
-                                    handler: text => {
-                                        const widgetName = sender.object(indexPath).name
-                                        if (!$file.exists(`${this.kernel.widgetRootPath}/${widgetName}/setting.js`) || !$file.exists(`${this.kernel.widgetRootPath}/${widgetName}/config.json`)) {
-                                            $ui.error($l10n("CANNOT_COPY_THIS_WIDGET"))
-                                            return
-                                        }
-                                        const newName = text === "" ? widgetName + "Copy" : text
-                                        $file.copy({
-                                            src: `${this.kernel.widgetRootPath}/${widgetName}`,
-                                            dst: `${this.kernel.widgetRootPath}/${newName}`
-                                        })
-                                        // 更新设置文件中的NAME常量
-                                        let settingjs = $file.read(`${this.kernel.widgetRootPath}/${newName}/setting.js`).string
-                                        const firstLine = settingjs.split("\n")[0]
-                                        const newFirstLine = `const NAME = "${newName}"`
-                                        settingjs = settingjs.replace(firstLine, newFirstLine)
-                                        $file.write({
-                                            data: $data({ string: settingjs }),
-                                            path: `${this.kernel.widgetRootPath}/${newName}/setting.js`
-                                        })
-                                        // 更新config.json
-                                        const config = JSON.parse($file.read(`${this.kernel.widgetRootPath}/${newName}/config.json`).string)
-                                        config.title = newName
-                                        $file.write({
-                                            data: $data({ string: JSON.stringify(config) }),
-                                            path: `${this.kernel.widgetRootPath}/${newName}/config.json`
-                                        })
-                                        // 更新列表
-                                        setTimeout(() => { sender.data = this.getWidgetListView() }, 200)
-                                    }
+                                this.copyWidget(sender.object(indexPath).name, () => {
+                                    // 更新列表
+                                    setTimeout(() => { sender.data = this.getWidgetListView() }, 200)
                                 })
                             }
                         },
@@ -152,25 +184,8 @@ class HomeUI {
                             title: $l10n("DELETE"),
                             color: $color("red"),
                             handler: (sender, indexPath) => {
-                                const widgetName = sender.object(indexPath).name
-                                let style = {}
-                                if ($alertActionType) {
-                                    style = { style: $alertActionType.destructive }
-                                }
-                                $ui.alert({
-                                    title: $l10n("CONFIRM_DELETE_MSG"),
-                                    actions: [
-                                        Object.assign({
-                                            title: $l10n("DELETE"),
-                                            handler: () => {
-                                                $file.delete(`${this.kernel.widgetRootPath}/${widgetName}`)
-                                                // 删除assets
-                                                $file.delete(`${this.kernel.widgetDataPath}/${widgetName}`)
-                                                sender.delete(indexPath)
-                                            }
-                                        }, style),
-                                        { title: $l10n("CANCEL") }
-                                    ]
+                                this.deleteWidget(sender.object(indexPath).name, () => {
+                                    sender.delete(indexPath)
                                 })
                             }
                         }

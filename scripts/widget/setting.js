@@ -20,6 +20,7 @@ class Setting {
     init() {
         const rootPath = `${this.kernel.widgetRootPath}/${this.widget}`,
             dataPath = `${this.kernel.widgetDataPath}/${this.widget}`
+        this.config = JSON.parse($file.read(`${rootPath}/config.json`).string)
         // 检查目录是否存在，不存在则创建
         if (!$file.exists(rootPath)) { $file.mkdir(rootPath) }
         if (!$file.exists(dataPath)) { $file.mkdir(dataPath) }
@@ -45,7 +46,7 @@ class Setting {
             bgcolor: "insetGroupedBackground",
             topOffset: false,
             views: this.setting.getView(),
-            title: this.widget
+            title: this.config.title
         })
     }
 
