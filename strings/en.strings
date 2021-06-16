@@ -130,6 +130,7 @@
 "ITEM_LENGTH" = "Items to display";
 "CLICK_EVENT" = "Click Event";
 "REMINDER" = "Reminder";
+"MIXED_MODE" = "Mixed Mode";
 
 "JOIN" = "Join";
 "JOIN_MODE" = "Join Mode";

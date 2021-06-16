@@ -5,7 +5,9 @@ class Schedule {
         this.colorDate = this.setting.getColor(this.setting.get("colorDate"))
         this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
         this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
-        this.itemLength = this.setting.get("itemLength")
+        this.itemLength2x2 = this.setting.get("itemLength2x2")
+        this.itemLength2x4 = this.setting.get("itemLength2x4")
+        this.itemLength4x4 = this.setting.get("itemLength4x4")
         this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("calshow://")}`
         this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("x-apple-reminderkit://")}`
         switch (this.setting.get("clickEvent")) {
@@ -65,7 +67,8 @@ class Schedule {
 
     }
 
-    getListView(list) {
+    getListView(list, maxItemLength = null) {
+        if (maxItemLength === null) maxItemLength = this.itemLength2x2
         if (list.length === 0) return null
         let itemLength = 0
         const dateCollect = {}
@@ -73,7 +76,7 @@ class Schedule {
         const isExpire = date => date ? date.getTime() < Date.now() : false
         for (let item of list) {
             // 控制显示数目
-            if (itemLength >= this.itemLength) break
+            if (itemLength >= maxItemLength) break
             const dateString = isReminder(item) ? this.formatDate(item.alarmDate) : this.formatDate(item.endDate)
             if (!dateCollect[dateString])
                 dateCollect[dateString] = []
@@ -261,6 +264,30 @@ class Schedule {
             const view = this.getListView(schedule)
             if (null === view) return nothingView($l10n("NO_CALENDAR&REMINDER"), $widget.alignment.center)
             return listView(view, { widgetURL: this.urlScheme })
+        } else if (this.setting.get("mixedMode", false)) {
+            // 混合日程和提醒事项
+            const schedule = [].concat(this.calendar).concat(this.reminder)
+            // 按结束日期排序
+            this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
+            // 获取视图
+            const eachCont = family === this.setting.family.large ? this.itemLength4x4 : this.itemLength2x4
+            const leftView = this.getListView(schedule.slice(0, eachCont), eachCont)
+            const rightView = this.getListView(schedule.slice(eachCont, eachCont * 2), eachCont)
+            return {
+                type: "hstack",
+                props: {
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: Infinity,
+                        alignment: $widget.verticalAlignment.firstTextBaseline
+                    },
+                    spacing: 0
+                },
+                views: [
+                    listView(leftView, { link: this.urlScheme }),
+                    listView(rightView, { link: this.urlScheme })
+                ]
+            }
         } else {
             // 整理数据
             this.quicksort(this.calendar, 0, this.calendar.length - 1, compareByDate)

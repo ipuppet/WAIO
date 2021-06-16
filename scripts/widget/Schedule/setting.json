@@ -13,18 +13,6 @@
             },
             {
                 "icon": [
-                    "pencil.and.ellipsis.rectangle",
-                    "#FF9900"
-                ],
-                "title": "ITEM_LENGTH",
-                "type": "stepper",
-                "key": "itemLength",
-                "min": 2,
-                "max": 5,
-                "value": 3
-            },
-            {
-                "icon": [
                     "rectangle.split.3x1.fill",
                     "#FF6666"
                 ],
@@ -74,6 +62,18 @@
         "items": [
             {
                 "icon": [
+                    "pencil.and.ellipsis.rectangle",
+                    "#FF9900"
+                ],
+                "title": "ITEM_LENGTH",
+                "type": "stepper",
+                "key": "itemLength2x2",
+                "min": 2,
+                "max": 5,
+                "value": 3
+            },
+            {
+                "icon": [
                     "paperplane.fill"
                 ],
                 "title": "CLICK_EVENT",
@@ -85,6 +85,49 @@
                     "CALENDAR"
                 ],
                 "value": 0
+            }
+        ]
+    },
+    {
+        "title": "2x4",
+        "items": [
+            {
+                "icon": [
+                    "pencil.and.ellipsis.rectangle",
+                    "#FF9900"
+                ],
+                "title": "ITEM_LENGTH",
+                "type": "stepper",
+                "key": "itemLength2x4",
+                "min": 2,
+                "max": 5,
+                "value": 3
+            },
+            {
+                "icon": [
+                    "rectangle.3.offgrid"
+                ],
+                "title": "MIXED_MODE",
+                "type": "switch",
+                "key": "mixedMode",
+                "value": false
+            }
+        ]
+    },
+    {
+        "title": "4x4",
+        "items": [
+            {
+                "icon": [
+                    "pencil.and.ellipsis.rectangle",
+                    "#FF9900"
+                ],
+                "title": "ITEM_LENGTH",
+                "type": "stepper",
+                "key": "itemLength4x4",
+                "min": 2,
+                "max": 10,
+                "value": 6
             }
         ]
     },

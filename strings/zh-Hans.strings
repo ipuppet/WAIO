@@ -130,6 +130,7 @@
 "ITEM_LENGTH" = "显示条目数量";
 "CLICK_EVENT" = "点击事件";
 "REMINDER" = "提醒事项";
+"MIXED_MODE" = "混合模式";
 
 "JOIN" = "拼接";
 "JOIN_MODE" = "拼接模式";

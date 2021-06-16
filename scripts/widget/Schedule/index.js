@@ -40,12 +40,16 @@ class ScheduleWidget extends Widget {
         return res
     }
 
+    view(family) {
+        return this.schedule.scheduleView(family)
+    }
+
     view2x2() {
-        return this.schedule.scheduleView(this.setting.family.small)
+        return this.view(this.setting.family.small)
     }
 
     view2x4() {
-        return this.schedule.scheduleView(this.setting.family.medium)
+        return this.view(this.setting.family.medium)
     }
 
     async joinView(mode) {
@@ -86,12 +90,7 @@ class ScheduleWidget extends Widget {
             },
             render: ctx => {
                 // 获取视图
-                let view
-                if (ctx.family === this.setting.family.small) {
-                    view = this.view2x2()
-                } else {
-                    view = this.view2x4()
-                }
+                const view = this.view(ctx.family)
                 this.printTimeConsuming()
                 return view
             }
