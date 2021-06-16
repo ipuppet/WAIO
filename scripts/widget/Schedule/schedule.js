@@ -293,8 +293,9 @@ class Schedule {
             this.quicksort(this.calendar, 0, this.calendar.length - 1, compareByDate)
             this.quicksort(this.reminder, 0, this.reminder.length - 1, compareByDate)
             // 获取视图
-            const calendarView = this.getListView(this.calendar) ?? [nothingView($l10n("NO_CALENDAR"))]
-            const reminderView = this.getListView(this.reminder) ?? [nothingView($l10n("NO_REMINDER"))]
+            const eachCont = family === this.setting.family.large ? this.itemLength4x4 : this.itemLength2x4
+            const calendarView = this.getListView(this.calendar, eachCont) ?? [nothingView($l10n("NO_CALENDAR"))]
+            const reminderView = this.getListView(this.reminder, eachCont) ?? [nothingView($l10n("NO_REMINDER"))]
             return {
                 type: "hstack",
                 props: {
