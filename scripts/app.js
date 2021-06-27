@@ -55,6 +55,15 @@ class AppKernel extends Kernel {
     constructor() {
         super()
         this.query = $context.query
+        this.UIKit.disableLargeTitle()
+        this.UIKit.setNavButtons([
+            this.UIKit.navButton("setting", "gear", () => {
+                this.UIKit.push({
+                    title: $l10n("SETTING"),
+                    views: this.setting.getView()
+                })
+            })
+        ])
         // 注册组件
         this.settingComponent = this.registerComponent("setting")
         this.setting = this.settingComponent.controller
@@ -79,6 +88,7 @@ class AppKernel extends Kernel {
             })
             console.log("已迁移数据至: '/storage'")
         }
+        // 兼容旧数据，于未来删除
     }
 
     updateHomeScreenWidgetOptions() {
@@ -313,8 +323,9 @@ module.exports = {
             }
         } else if ($app.env === $env.app) {
             const kernel = new AppKernel()
-            const Factory = require("./ui/factory")
-            new Factory(kernel).render()
+            const HomeUI = require("./ui/home")
+            const interfaceUi = new HomeUI(kernel)
+            kernel.UIRender(interfaceUi.getViews())
             // 监听运行状态
             $app.listen({
                 pause: () => {

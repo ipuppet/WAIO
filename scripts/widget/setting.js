@@ -32,9 +32,9 @@ class Setting {
             structurePath: structurePath
         })
         this.setting = this.settingComponent.controller
+        this.setting.setLargeTitle(false)
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
-            this.setting.isSecondaryPage(true, () => { $ui.pop() })
             this.setting.setFooter({ type: "view" })
             this.defaultSettingMethods()
             this.initSettingMethods()
@@ -46,7 +46,17 @@ class Setting {
             bgcolor: "insetGroupedBackground",
             topOffset: false,
             views: this.setting.getView(),
-            title: this.config.title
+            title: this.config.title,
+            navButtons: [
+                this.kernel.UIKit.navButton("preview", "rectangle.3.offgrid.fill", () => {
+                    const widget = this.kernel.widgetInstance(this.widget)
+                    if (widget) {
+                        widget.render()
+                    } else {
+                        $ui.error($l10n("ERROR"))
+                    }
+                })
+            ]
         })
     }
 
@@ -79,16 +89,6 @@ class Setting {
                 }],
                 title: $l10n("README")
             })
-        }
-
-        this.setting.preview = animate => {
-            animate.touchHighlight()
-            const widget = this.kernel.widgetInstance(this.widget)
-            if (widget) {
-                widget.render()
-            } else {
-                $ui.error($l10n("ERROR"))
-            }
         }
     }
 

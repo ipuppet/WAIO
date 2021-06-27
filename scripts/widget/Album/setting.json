@@ -1,19 +1,5 @@
 [
     {
-        "title": "GENERAL",
-        "items": [
-            {
-                "icon": [
-                    "rectangle.3.offgrid.fill"
-                ],
-                "title": "PREVIEW",
-                "type": "script",
-                "key": "preview",
-                "value": "this.controller.preview"
-            }
-        ]
-    },
-    {
         "title": "ALBUM",
         "items": [
             {

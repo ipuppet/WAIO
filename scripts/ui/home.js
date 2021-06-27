@@ -105,21 +105,6 @@ class HomeUI {
                     rowHeight: 100,
                     indicatorInsets: $insets(30, 0, 50, 0),
                     data: this.getWidgetListView(),
-                    header: {
-                        type: "view",
-                        props: { height: 80 },
-                        views: [{
-                            type: "label",
-                            props: {
-                                text: "WAIO",
-                                font: $font(36)
-                            },
-                            layout: (make, view) => {
-                                make.left.inset(20)
-                                make.centerY.equalTo(view.super)
-                            }
-                        }]
-                    },
                     footer: { // 防止list被菜单遮挡
                         type: "view",
                         props: { height: 50 }
