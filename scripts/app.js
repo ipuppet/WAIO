@@ -325,7 +325,7 @@ module.exports = {
             const kernel = new AppKernel()
             const HomeUI = require("./ui/home")
             const interfaceUi = new HomeUI(kernel)
-            kernel.UIRender(interfaceUi.getViews())
+            kernel.UIRender(interfaceUi.getView())
             // 监听运行状态
             $app.listen({
                 pause: () => {

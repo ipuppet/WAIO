@@ -96,7 +96,7 @@ class HomeUI {
         })
     }
 
-    getViews() {
+    getView() {
         return [
             {
                 type: "list",
