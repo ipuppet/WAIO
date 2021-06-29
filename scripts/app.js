@@ -68,8 +68,6 @@ class AppKernel extends Kernel {
         this.settingComponent = this.registerComponent("setting")
         this.setting = this.settingComponent.controller
         this.initSettingMethods()
-        this.page = this.registerComponent("page")
-        this.menu = this.registerComponent("menu")
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetDataPath = widgetDataPath
@@ -80,15 +78,6 @@ class AppKernel extends Kernel {
             // 延时500ms后跳转
             setTimeout(() => { $app.openURL(this.query["url-scheme"]) }, 500)
         }
-        // TODO 兼容旧数据，于未来删除
-        if (!$file.exists(this.widgetDataPath) && $file.exists("/assets/widget")) {
-            $file.move({
-                src: "/assets/widget",
-                dst: this.widgetDataPath
-            })
-            console.log("已迁移数据至: '/storage'")
-        }
-        // 兼容旧数据，于未来删除
     }
 
     updateHomeScreenWidgetOptions() {
