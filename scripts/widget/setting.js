@@ -32,7 +32,7 @@ class Setting {
             structurePath: structurePath
         })
         this.setting = this.settingComponent.controller
-        this.setting.setLargeTitle(false)
+        this.setting.setChildPage(true)
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
             this.setting.setFooter({ type: "view" })

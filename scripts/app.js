@@ -67,7 +67,7 @@ class AppKernel extends Kernel {
         // 注册组件
         this.settingComponent = this.registerComponent("setting")
         this.setting = this.settingComponent.controller
-        this.setting.setLargeTitle(false)
+        this.setting.setChildPage(true)
         this.initSettingMethods()
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
