@@ -8,6 +8,7 @@
 "VIEW_NOT_PROVIDED" = "The view is not provided";
 
 "HOME" = "Home";
+"MENU" = "Menu";
 "CANNOT_TRACE_TO_THE_SOURCE" = "The widget cannot be traced";
 "PREVIEW" = "Preview";
 
@@ -112,6 +113,8 @@
 "NO_IMAGE" = "Image not Found";
 "CLEAR_CACHE" = "Clear Cache";
 "NO_IMAGES" = "No Images";
+"SELECT" = "Select";
+"NO_SELECTED_IMAGE" = "No Selected Image";
 
 "TIME_SPAN" = "Time Span (Day)";
 "DATE" = " ";

@@ -8,6 +8,7 @@
 "VIEW_NOT_PROVIDED" = "未提供该视图";
 
 "HOME" = "首页";
+"MENU" = "菜单";
 "CANNOT_TRACE_TO_THE_SOURCE" = "无法溯源该widget";
 "PREVIEW" = "预览";
 
@@ -112,6 +113,8 @@
 "NO_IMAGE" = "无该图片";
 "CLEAR_CACHE" = "清除缓存";
 "NO_IMAGES" = "无图片";
+"SELECT" = "选择";
+"NO_SELECTED_IMAGE" = "无选中的图片";
 
 "TIME_SPAN" = "时间跨度(天)";
 "DATE" = "日";

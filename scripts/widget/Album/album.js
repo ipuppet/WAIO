@@ -12,6 +12,8 @@ class Album {
         if (!$file.exists(`${this.albumPath}/archive`)) {
             $file.mkdir(`${this.albumPath}/archive`)
         }
+        this.selectedImageCounter = "selectedImageCounter"
+        this.selectedImageCount = "selectedImageCount"
     }
 
     /**
@@ -30,20 +32,40 @@ class Album {
         return list
     }
 
-    deleteImage(src, indexPath) {
-        $file.delete(src)
-        // 同时删除压缩过的文件
-        const name = src.slice(src.lastIndexOf("/"))
-        $file.delete(`${this.albumPath}/archive/${name}`)
-        if (indexPath) {
-            const sender = $("picture-edit-matrix")
-            sender.delete(indexPath)
-            // 检查是否已经为空，为空则显示提示字样
-            if (sender.data.length === 0) {
-                $("no-image-text").hidden = false
-                sender.hidden = true
+    deleteImage(src, indexPath, alert = true) {
+        const action = () => {
+            $file.delete(src)
+            // 同时删除压缩过的文件
+            const name = src.slice(src.lastIndexOf("/"))
+            $file.delete(`${this.albumPath}/archive/${name}`)
+            if (indexPath) {
+                const sender = $("picture-edit-matrix")
+                sender.delete(indexPath)
+                // 检查是否已经为空，为空则显示提示字样
+                if (sender.data.length === 0) {
+                    $("no-image-text").hidden = false
+                    sender.hidden = true
+                }
             }
         }
+        if (alert) {
+            let style = {}
+            if ($alertActionType) {
+                style = { style: $alertActionType.destructive }
+            }
+            $ui.alert({
+                title: $l10n("CONFIRM_DELETE_MSG"),
+                actions: [
+                    Object.assign({
+                        title: $l10n("DELETE"),
+                        handler: () => {
+                            action()
+                        }
+                    }, style),
+                    { title: $l10n("CANCEL") }
+                ]
+            })
+        } else { action() }
     }
 
     normalMode(indexPath, data) {
@@ -61,22 +83,7 @@ class Album {
                         }
                     })
                 } else if (idx === 1) {
-                    let style = {}
-                    if ($alertActionType) {
-                        style = { style: $alertActionType.destructive }
-                    }
-                    $ui.alert({
-                        title: $l10n("CONFIRM_DELETE_MSG"),
-                        actions: [
-                            Object.assign({
-                                title: $l10n("DELETE"),
-                                handler: () => {
-                                    this.deleteImage(data.image.src, indexPath)
-                                }
-                            }, style),
-                            { title: $l10n("CANCEL") }
-                        ]
-                    })
+                    this.deleteImage(data.image.src, indexPath)
                 }
             }
         })
@@ -93,25 +100,23 @@ class Album {
                 data: data
             }
         }
+        $(this.selectedImageCount).text = Object.keys(this.selected).length
     }
 
     changemode() {
         const matrix = $("picture-edit-matrix")
-        const button = $("album-multiple-selection-mode")
         switch (this.mode) {
-            case 0: // 多选模式，显示删除按钮
+            case 0: // 切换到多选模式
                 if (matrix.data.length === 0) {
                     $ui.toast($l10n("NO_IMAGES"))
                     break
                 }
-                button.symbol = "square.fill.on.square.fill"
                 this.mode = 1
-                $("album-multiple-selection-mode-delete").hidden = false
+                $(this.selectedImageCounter).hidden = false // 计数器控制
                 break
-            case 1: // 隐藏删除按钮
-                button.symbol = "square.on.square"
+            case 1:
                 this.mode = 0
-                $("album-multiple-selection-mode-delete").hidden = true
+                $(this.selectedImageCounter).hidden = true
                 // 恢复选中的选项
                 try {
                     Object.values(this.selected).forEach(item => {
@@ -126,125 +131,108 @@ class Album {
 
     getAlbumButtons() {
         return [
-            this.kernel.UIKit.navButton("album-add-image", "plus", animate => { // 添加新图片
-                $ui.menu({
-                    items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
-                    handler: (title, idx) => {
-                        const saveImageAction = data => {
-                            const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
-                            $file.write({
-                                data: data,
-                                path: `${this.albumPath}/${fileName}`
-                            })
-                            // 同时保留一份压缩后的图片
-                            // TODO 控制压缩图片大小
-                            const image = data.image.jpg(this.imageMaxSize * 1024 / data.info.size)
-                            $file.write({
-                                data: image,
-                                path: `${this.albumPath}/archive/${fileName}`
-                            })
-                            // UI隐藏无图片提示字符
-                            if (!$("no-image-text").hidden)
-                                $("no-image-text").hidden = true
-                            // UI插入图片
-                            const matrix = $("picture-edit-matrix")
-                            matrix.hidden = false
-                            matrix.insert({
-                                indexPath: $indexPath(0, matrix.data.length),
-                                value: {
-                                    image: { src: `${this.albumPath}/${fileName}` }
-                                }
-                            })
-                        }
-                        animate.start()
-                        if (idx === 0) { // 从系统相册选取图片
-                            $photo.pick({
-                                format: "data",
-                                multi: true,
-                                handler: resp => {
-                                    if (!resp.status && resp.error.description !== "canceled") {
-                                        $ui.error($l10n("ERROR"))
-                                        return
+            { // 添加新图片
+                symbol: "plus",
+                handler: () => {
+                    $ui.menu({
+                        items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
+                        handler: (title, idx) => {
+                            const saveImageAction = data => {
+                                const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
+                                $file.write({
+                                    data: data,
+                                    path: `${this.albumPath}/${fileName}`
+                                })
+                                // 同时保留一份压缩后的图片
+                                // TODO 控制压缩图片大小
+                                const image = data.image.jpg(this.imageMaxSize * 1024 / data.info.size)
+                                $file.write({
+                                    data: image,
+                                    path: `${this.albumPath}/archive/${fileName}`
+                                })
+                                // UI隐藏无图片提示字符
+                                if (!$("no-image-text").hidden)
+                                    $("no-image-text").hidden = true
+                                // UI插入图片
+                                const matrix = $("picture-edit-matrix")
+                                matrix.hidden = false
+                                matrix.insert({
+                                    indexPath: $indexPath(0, matrix.data.length),
+                                    value: {
+                                        image: { src: `${this.albumPath}/${fileName}` }
                                     }
-                                    if (!resp.results) {
-                                        animate.cancel()
-                                        return
-                                    }
-                                    resp.results.forEach(image => {
-                                        saveImageAction(image.data)
-                                    })
-                                    $ui.toast($l10n("SUCCESS"))
-                                    animate.done()
-                                }
-                            })
-                        } else if (idx === 1) { // 从iCloud选取图片
-                            $drive.open({
-                                handler: file => {
-                                    if (!file) {
-                                        animate.cancel()
-                                        return
-                                    }
-                                    saveImageAction(file)
-                                    $ui.toast($l10n("SUCCESS"))
-                                    animate.done()
-                                }
-                            })
-                        }
-                    }
-                })
-            }),
-            { // 多选
-                type: "button",
-                props: {
-                    id: "album-multiple-selection-mode",
-                    symbol: "square.on.square",
-                    tintColor: this.kernel.UIKit.textColor,
-                    bgcolor: $color("clear")
-                },
-                layout: (make, view) => {
-                    make.right.equalTo(view.prev.left).offset(-10)
-                    make.size.equalTo(view.prev)
-                },
-                events: {
-                    tapped: () => {
-                        this.changemode()
-                    }
-                }
-            },
-            this.kernel.UIKit.navButton("album-multiple-selection-mode-delete", "trash", animate => {
-                let length = Object.keys(this.selected).length
-                if (this.mode === 1 && length > 0) {
-                    let style = {}
-                    if ($alertActionType) {
-                        style = { style: $alertActionType.destructive }
-                    }
-                    animate.start()
-                    $ui.alert({
-                        title: $l10n("CONFIRM_DELETE_MSG"),
-                        actions: [
-                            Object.assign({
-                                title: $l10n("DELETE"),
-                                handler: () => {
-                                    for (let i = $("picture-edit-matrix").data.length - 1; i >= 0; i--) {
-                                        if (length === 0) break
-                                        Object.values(this.selected).forEach(item => {
-                                            if (i === item.indexPath.item) {
-                                                this.deleteImage(item.data.image.src, item.indexPath)
-                                                length--
-                                            }
-                                        })
-                                    }
-                                    animate.done()
-                                }
-                            }, style),
-                            {
-                                title: $l10n("CANCEL"),
-                                handler: () => { animate.cancel() }
+                                })
                             }
-                        ]
+                            if (idx === 0) { // 从系统相册选取图片
+                                $photo.pick({
+                                    format: "data",
+                                    multi: true,
+                                    handler: resp => {
+                                        if (!resp.status && resp.error.description !== "canceled") {
+                                            $ui.error($l10n("ERROR"))
+                                            return
+                                        }
+                                        if (!resp.results) {
+                                            return
+                                        }
+                                        resp.results.forEach(image => {
+                                            saveImageAction(image.data)
+                                        })
+                                        $ui.toast($l10n("SUCCESS"))
+                                    }
+                                })
+                            } else if (idx === 1) { // 从iCloud选取图片
+                                $drive.open({
+                                    handler: file => {
+                                        if (!file) {
+                                            return
+                                        }
+                                        saveImageAction(file)
+                                        $ui.toast($l10n("SUCCESS"))
+                                    }
+                                })
+                            }
+                        }
                     })
                 }
-            }, true)
+            },
+            {
+                symbol: "trash",
+                handler: () => {
+                    let length = Object.keys(this.selected).length
+                    if (this.mode === 1 && length > 0) {
+                        let style = {}
+                        if ($alertActionType) {
+                            style = { style: $alertActionType.destructive }
+                        }
+                        $ui.alert({
+                            title: $l10n("CONFIRM_DELETE_MSG"),
+                            actions: [
+                                Object.assign({
+                                    title: $l10n("DELETE"),
+                                    handler: () => {
+                                        for (let i = $("picture-edit-matrix").data.length - 1; i >= 0; i--) {
+                                            if (length === 0) break
+                                            Object.values(this.selected).forEach(item => {
+                                                if (i === item.indexPath.item) {
+                                                    this.deleteImage(item.data.image.src, item.indexPath, false)
+                                                    length--
+                                                }
+                                            })
+                                        }
+                                        this.changemode() // 切换回普通模式
+                                    }
+                                }, style),
+                                {
+                                    title: $l10n("CANCEL")
+                                }
+                            ]
+                        })
+                    } else {
+                        $ui.toast($l10n("NO_SELECTED_IMAGE"))
+                    }
+                }
+            }
         ]
     }
 
@@ -278,6 +266,29 @@ class Album {
                     columns: this.setting.get("columns"),
                     square: true,
                     data: data,
+                    menu: {
+                        title: $l10n("MENU"),
+                        items: [
+                            {
+                                title: $l10n("SELECT"),
+                                handler: (sender, indexPath) => {
+                                    this.changemode()
+                                    setTimeout(() => {
+                                        const data = sender.object(indexPath)
+                                        this.multipleSelectionMode(sender, indexPath, data)
+                                    }, 10)
+                                }
+                            },
+                            {
+                                title: $l10n("DELETE"),
+                                destructive: true,
+                                handler: (sender, indexPath) => {
+                                    const data = sender.object(indexPath)
+                                    this.deleteImage(data.image.src, indexPath)
+                                }
+                            }
+                        ]
+                    },
                     template: {
                         props: {},
                         views: [
@@ -306,7 +317,66 @@ class Album {
                     }
                 },
                 layout: $layout.fill
-            }]
+            },
+            { // 选中图片指示器
+                type: "view",
+                props: {
+                    id: this.selectedImageCounter,
+                    hidden: true
+                },
+                layout: (make, view) => {
+                    make.left.top.equalTo(10)
+                    make.width.equalTo(100)
+                    make.height.equalTo(30)
+                },
+                views: [
+                    {
+                        type: "view",
+                        props: {
+                            alpha: 0.8,
+                            bgcolor: $color("#adadad"),
+                            cornerRadius: 5,
+                            smoothCorners: true
+                        },
+                        layout: $layout.fill
+                    },
+                    {
+                        type: "label",
+                        props: {
+                            id: this.selectedImageCount,
+                            text: "1",
+                            lines: 1,
+                            textColor: $color("#ffffff"),
+                            align: $align.center
+                        },
+                        layout: (make, view) => {
+                            make.left.equalTo(10)
+                            make.top.inset(5)
+                        }
+                    },
+                    {
+                        type: "button",
+                        props: {
+                            bgcolor: $color("clear"),
+                            fot: $font(12),
+                            title: $l10n("CANCEL"),
+                            titleColor: $color("#ffffff")
+                        },
+                        events: {
+                            tapped: () => {
+                                if (this.mode === 0) return
+                                this.changemode()
+                            }
+                        },
+                        layout: (make, view) => {
+                            make.right.equalTo(view.super).offset(-5)
+                            make.height.equalTo(30)
+                            make.top.inset(0)
+                        }
+                    }
+                ]
+            }
+        ]
     }
 }
 
