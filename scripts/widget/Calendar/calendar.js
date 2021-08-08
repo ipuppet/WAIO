@@ -7,18 +7,20 @@ class Calendar {
         this.colorTone = this.setting.getColor(this.setting.get("colorTone"))
         this.hasHoliday = this.setting.get("holiday")
         this.holidayColor = this.setting.getColor(this.setting.get("holidayColor"))
-        this.holidayNoRestColor = this.setting.getColor(this.setting.get("holidayNoRestColor"))// 调休
-        if (this.hasHoliday && $file.exists(this.setting.holidayPath)) {// 假期信息
+        this.holidayNoRestColor = this.setting.getColor(this.setting.get("holidayNoRestColor")) // 调休
+        if (this.hasHoliday && $file.exists(this.setting.holidayPath)) { // 假期信息
             this.holiday = JSON.parse($file.read(this.setting.holidayPath).string).holiday
         }
-        this.monthDisplayMode = this.setting.get("monthDisplayMode")// 月份显示模式
-        this.firstDayOfWeek = this.setting.get("firstDayOfWeek")// 每周第一天
-        this.titleYear = this.setting.get("title.year")// 标题是否显示年
-        this.titleFullYear = this.setting.get("title.fullYear")// 标题是否显示完整年
-        this.titleLunar = this.setting.get("title.lunar")// 标题是否显示农历
-        this.titleLunarYear = this.setting.get("title.lunarYear")// 标题是否显示农历年
-        this.titleAddSpacer = this.setting.get("title.addSpacer")// 是否在标题和日历间增加spacer
-        this.backgroundImage = this.setting.getBackgroundImage()// 背景图片
+        this.monthDisplayMode = this.setting.get("monthDisplayMode") // 月份显示模式
+        this.firstDayOfWeek = this.setting.get("firstDayOfWeek") // 每周第一天
+        this.titleYear = this.setting.get("title.year") // 标题是否显示年
+        this.titleFullYear = this.setting.get("title.fullYear") // 标题是否显示完整年
+        this.titleLunar = this.setting.get("title.lunar") // 标题是否显示农历
+        this.titleLunarYear = this.setting.get("title.lunarYear") // 标题是否显示农历年
+        this.titleAddSpacer = this.setting.get("title.addSpacer") // 是否在标题和日历间增加spacer
+        this.backgroundImage = this.setting.getBackgroundImage() // 背景图片
+        this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
+        this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
     }
 
     localizedWeek(index) {
@@ -410,13 +412,29 @@ class Calendar {
         }
     }
 
+    getBackground() {
+        if ($file.exists(this.backgroundImage)) {
+            return {
+                type: "image",
+                props: {
+                    image: $image(this.backgroundImage),
+                    resizable: true,
+                    scaledToFill: true
+                }
+            }
+        } else {
+            return $color(this.backgroundColor, this.backgroundColorDark)
+        }
+    }
+
     calendarView(family) {
         const calendarInfo = this.getCalendar(family === this.setting.family.large)
         const calendar = this.formatCalendar(family, calendarInfo, family !== this.setting.family.small)
         const titleBar = this.titleBarTemplate(family, calendarInfo)
         return {
             type: "vstack",
-            props: Object.assign({
+            props: {
+                background: this.getBackground(),
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
@@ -425,17 +443,7 @@ class Calendar {
                 padding: 10,
                 link: this.setting.settingUrlScheme,
                 widgetURL: this.setting.settingUrlScheme
-            }, $file.exists(this.backgroundImage) ? {
-                background: {
-                    type: "image",
-                    props: {
-                        image: $image(this.backgroundImage),
-                        resizable: true,
-                        scaledToFill: true
-                    }
-                }
-            } : {}
-            ),
+            },
             views: this.titleAddSpacer ? [
                 { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
             ] : [
@@ -475,6 +483,7 @@ class Calendar {
         return {
             type: "vstack",
             props: Object.assign({
+                background: this.getBackground(),
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
@@ -485,18 +494,7 @@ class Calendar {
                 link: this.setting.settingUrlScheme
             } : {
                 widgetURL: this.setting.settingUrlScheme
-            },
-                $file.exists(this.backgroundImage) ? {
-                    background: {
-                        type: "image",
-                        props: {
-                            image: $image(this.backgroundImage),
-                            resizable: true,
-                            scaledToFill: true
-                        }
-                    }
-                } : {}
-            ),
+            }),
             views: [{ type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }]
         }
     }

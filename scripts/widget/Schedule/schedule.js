@@ -5,6 +5,8 @@ class Schedule {
         this.colorDate = this.setting.getColor(this.setting.get("colorDate"))
         this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
         this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
+        this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
+        this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
         this.itemLength2x2 = this.setting.get("itemLength2x2")
         this.itemLength2x4 = this.setting.get("itemLength2x4")
         this.itemLength4x4 = this.setting.get("itemLength4x4")
@@ -225,6 +227,7 @@ class Schedule {
             return {
                 type: "text",
                 props: {
+                    background: $color(this.backgroundColor, this.backgroundColorDark),
                     frame: {
                         maxHeight: Infinity,
                         maxWidth: Infinity,
@@ -239,6 +242,7 @@ class Schedule {
             return {
                 type: "vstack",
                 props: Object.assign({
+                    background: $color(this.backgroundColor, this.backgroundColorDark),
                     frame: {
                         maxHeight: Infinity,
                         alignment: $widget.verticalAlignment.firstTextBaseline

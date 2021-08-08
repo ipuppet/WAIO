@@ -3,165 +3,270 @@
         "title": "GENERAL",
         "items": [
             {
+                "type": "child",
+                "title": "BACKGROUND_AND_COLOR",
                 "icon": [
-                    "photo"
-                ],
-                "title": "BACKGROUND_IMAGE",
-                "type": "script",
-                "key": "backgroundImage",
-                "value": "this.controller.backgroundImage"
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
-                    "orange"
-                ],
-                "title": "COLOR_TONE",
-                "type": "color",
-                "key": "colorTone",
-                "value": "orange"
-            },
-            {
-                "icon": [
-                    "flag.fill",
-                    "#FFCC00"
-                ],
-                "title": "FIRST_DAY_OF_WEEK",
-                "type": "tab",
-                "key": "firstDayOfWeek",
-                "items": [
-                    "_SUNDAY",
-                    "_MONDAY"
-                ],
-                "value": 0
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
+                    "photo",
                     "#0099CC"
                 ],
-                "title": "MONTH_DISPLAY_MODE",
-                "type": "tab",
-                "key": "monthDisplayMode",
-                "items": [
-                    "CHINESE_CHARACTERS",
-                    "NUMBER"
-                ],
-                "value": 1
+                "key": "BACKGROUND_AND_COLOR-parent",
+                "children": [
+                    {
+                        "title": "BACKGROUND",
+                        "items": [
+                            {
+                                "icon": [
+                                    "photo",
+                                    "#0099CC"
+                                ],
+                                "title": "BACKGROUND_IMAGE",
+                                "type": "script",
+                                "key": "backgroundImage",
+                                "value": "this.controller.backgroundImage"
+                            },
+                            {
+                                "type": "child",
+                                "title": "BACKGROUND",
+                                "icon": [
+                                    "wand.and.rays"
+                                ],
+                                "key": "BACKGROUND_AND_COLOR-parent-BACKGROUND-parent",
+                                "children": [
+                                    {
+                                        "title": "LIGHT_MODE",
+                                        "items": [
+                                            {
+                                                "icon": [
+                                                    "wand.and.rays",
+                                                    "#FF9933"
+                                                ],
+                                                "title": "BACKGROUND_COLOR",
+                                                "type": "color",
+                                                "key": "backgroundColor",
+                                                "value": "#FFFFFF"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "title": "DARK_MODE",
+                                        "items": [
+                                            {
+                                                "icon": [
+                                                    "wand.and.rays",
+                                                    "#FF9933"
+                                                ],
+                                                "title": "BACKGROUND_COLOR",
+                                                "type": "color",
+                                                "key": "backgroundColorDark",
+                                                "value": "#333333"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "title": "COLOR",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "orange"
+                                ],
+                                "title": "COLOR_TONE",
+                                "type": "color",
+                                "key": "colorTone",
+                                "value": "orange"
+                            }
+                        ]
+                    }
+                ]
             },
             {
-                "icon": [
-                    "calendar",
-                    "#FFCC00"
-                ],
-                "title": "ONLY_CURRENT_MONTH",
-                "type": "switch",
-                "key": "onlyCurrentMonth",
-                "value": false
-            }
-        ]
-    },
-    {
-        "title": "TITLE",
-        "items": [
-            {
-                "title": "SHOW_YEAR",
-                "type": "switch",
-                "key": "title.year",
-                "value": true
+                "type": "child",
+                "title": "DISPLAY_MODE",
+                "key": "display-parent",
+                "children": [
+                    {
+                        "title": "DISPLAY_MODE",
+                        "items": [
+                            {
+                                "icon": [
+                                    "flag.fill",
+                                    "#FFCC00"
+                                ],
+                                "title": "FIRST_DAY_OF_WEEK",
+                                "type": "tab",
+                                "key": "firstDayOfWeek",
+                                "items": [
+                                    "_SUNDAY",
+                                    "_MONDAY"
+                                ],
+                                "value": 0
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#0099CC"
+                                ],
+                                "title": "MONTH_DISPLAY_MODE",
+                                "type": "tab",
+                                "key": "monthDisplayMode",
+                                "items": [
+                                    "CHINESE_CHARACTERS",
+                                    "NUMBER"
+                                ],
+                                "value": 1
+                            },
+                            {
+                                "icon": [
+                                    "calendar",
+                                    "#FFCC00"
+                                ],
+                                "title": "ONLY_CURRENT_MONTH",
+                                "type": "switch",
+                                "key": "onlyCurrentMonth",
+                                "value": false
+                            }
+                        ]
+                    }
+                ]
             },
             {
-                "icon": [
-                    "pencil.and.ellipsis.rectangle",
-                    "#99CCCC"
-                ],
-                "title": "SHOW_FULL_YEAR",
-                "type": "switch",
-                "key": "title.fullYear",
-                "value": true
-            },
-            {
+                "type": "child",
+                "title": "TITLE",
                 "icon": [
                     "rectangle.and.paperclip",
                     "#CCCC00"
                 ],
-                "title": "SHOW_LUNAR",
-                "type": "switch",
-                "key": "title.lunar",
-                "value": true
+                "key": "title-parent",
+                "children": [
+                    {
+                        "title": "TITLE",
+                        "items": [
+                            {
+                                "title": "SHOW_YEAR",
+                                "type": "switch",
+                                "key": "title.year",
+                                "value": true
+                            },
+                            {
+                                "icon": [
+                                    "pencil.and.ellipsis.rectangle",
+                                    "#99CCCC"
+                                ],
+                                "title": "SHOW_FULL_YEAR",
+                                "type": "switch",
+                                "key": "title.fullYear",
+                                "value": true
+                            },
+                            {
+                                "icon": [
+                                    "rectangle.and.paperclip",
+                                    "#CCCC00"
+                                ],
+                                "title": "SHOW_LUNAR",
+                                "type": "switch",
+                                "key": "title.lunar",
+                                "value": true
+                            },
+                            {
+                                "icon": [
+                                    "rectangle.and.paperclip",
+                                    "#FFCC00"
+                                ],
+                                "title": "SHOW_LUNAR_YEAR",
+                                "type": "switch",
+                                "key": "title.lunarYear",
+                                "value": true
+                            },
+                            {
+                                "icon": [
+                                    "crop"
+                                ],
+                                "title": "ADD_SPACER",
+                                "type": "switch",
+                                "key": "title.addSpacer",
+                                "value": true
+                            }
+                        ]
+                    }
+                ]
             },
             {
-                "icon": [
-                    "rectangle.and.paperclip",
-                    "#FFCC00"
-                ],
-                "title": "SHOW_LUNAR_YEAR",
-                "type": "switch",
-                "key": "title.lunarYear",
-                "value": true
-            },
-            {
-                "icon": [
-                    "crop"
-                ],
-                "title": "ADD_SPACER",
-                "type": "switch",
-                "key": "title.addSpacer",
-                "value": true
-            }
-        ]
-    },
-    {
-        "title": "HOLIDAY",
-        "items": [
-            {
+                "type": "child",
                 "icon": [
                     "photo"
                 ],
                 "title": "HOLIDAY",
-                "type": "switch",
-                "key": "holiday",
-                "value": true
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
-                    "#0099CC"
-                ],
-                "title": "HOLIDAT_COLOR",
-                "type": "color",
-                "key": "holidayColor",
-                "value": "#0099CC"
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
-                    "#FF6600"
-                ],
-                "title": "HOLIDAT_REST_NO_COLOR",
-                "type": "color",
-                "key": "holidayNoRestColor",
-                "value": "red"
-            },
-            {
-                "icon": [
-                    "cloud.fill",
-                    "#996699"
-                ],
-                "title": "GET_HOLIDAY",
-                "type": "script",
-                "key": "get_holiday",
-                "value": "this.controller.getHoliday"
-            },
-            {
-                "icon": [
-                    "trash.fill",
-                    "#FF6666"
-                ],
-                "title": "CLEAR_HOLIDAY_DATA",
-                "type": "script",
-                "key": "clear_holiday",
-                "value": "this.controller.clearHoliday"
+                "key": "holiday-parent",
+                "children": [
+                    {
+                        "title": "HOLIDAY",
+                        "items": [
+                            {
+                                "icon": [
+                                    "photo"
+                                ],
+                                "title": "HOLIDAY",
+                                "type": "switch",
+                                "key": "holiday",
+                                "value": true
+                            }
+                        ]
+                    },
+                    {
+                        "title": "COLOR",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#0099CC"
+                                ],
+                                "title": "HOLIDAT_COLOR",
+                                "type": "color",
+                                "key": "holidayColor",
+                                "value": "#0099CC"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF6600"
+                                ],
+                                "title": "HOLIDAT_REST_NO_COLOR",
+                                "type": "color",
+                                "key": "holidayNoRestColor",
+                                "value": "red"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "ADVANCED",
+                        "items": [
+                            {
+                                "icon": [
+                                    "cloud.fill",
+                                    "#996699"
+                                ],
+                                "title": "GET_HOLIDAY",
+                                "type": "script",
+                                "key": "get_holiday",
+                                "value": "this.controller.getHoliday"
+                            },
+                            {
+                                "icon": [
+                                    "trash.fill",
+                                    "#FF6666"
+                                ],
+                                "title": "CLEAR_HOLIDAY_DATA",
+                                "type": "script",
+                                "key": "clear_holiday",
+                                "value": "this.controller.clearHoliday"
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     },

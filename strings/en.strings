@@ -32,6 +32,10 @@
 
 "CALENDAR" = "Calendar";
 
+"BACKGROUND_AND_COLOR" = "Background & Color";
+"BACKGROUND" = "Background";
+"DISPLAY_MODE" = "Display Mode";
+
 "_SUNDAY" = "Sunday";
 "_MONDAY" = "Monday";
 

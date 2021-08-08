@@ -11,40 +11,81 @@
                 "type": "number",
                 "key": "timeSpan",
                 "value": 10
-            }
-        ]
-    },
-    {
-        "title": "COLOR_SETTING",
-        "items": [
-            {
-                "icon": [
-                    "wand.and.rays"
-                ],
-                "title": "DATE_COLOR",
-                "type": "color",
-                "key": "colorDate",
-                "value": "#FF9933"
             },
             {
+                "type": "child",
+                "title": "COLOR_SETTING",
                 "icon": [
                     "wand.and.rays",
-                    "#FF9933"
+                    "#FF0033"
                 ],
-                "title": "CALENDAR_COLOR",
-                "type": "color",
-                "key": "colorCalendar",
-                "value": "#FF9933"
-            },
-            {
-                "icon": [
-                    "wand.and.rays",
-                    "#3366CC"
-                ],
-                "title": "REMINDER_COLOR",
-                "type": "color",
-                "key": "colorReminder",
-                "value": "#3366CC"
+                "key": "COLOR_SETTING-parent",
+                "children": [
+                    {
+                        "title": "GENERAL",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays"
+                                ],
+                                "title": "DATE_COLOR",
+                                "type": "color",
+                                "key": "colorDate",
+                                "value": "#FF9933"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF9933"
+                                ],
+                                "title": "CALENDAR_COLOR",
+                                "type": "color",
+                                "key": "colorCalendar",
+                                "value": "#FF9933"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#3366CC"
+                                ],
+                                "title": "REMINDER_COLOR",
+                                "type": "color",
+                                "key": "colorReminder",
+                                "value": "#3366CC"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "LIGHT_MODE",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF9933"
+                                ],
+                                "title": "BACKGROUND_COLOR",
+                                "type": "color",
+                                "key": "backgroundColor",
+                                "value": "#FFFFFF"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "DARK_MODE",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF9933"
+                                ],
+                                "title": "BACKGROUND_COLOR",
+                                "type": "color",
+                                "key": "backgroundColorDark",
+                                "value": "#333333"
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     },
