@@ -12,7 +12,7 @@
                 "key": "BACKGROUND_AND_COLOR-parent",
                 "children": [
                     {
-                        "title": "BACKGROUND",
+                        "title": "GENERAL",
                         "items": [
                             {
                                 "icon": [
@@ -25,51 +25,6 @@
                                 "value": "this.controller.backgroundImage"
                             },
                             {
-                                "type": "child",
-                                "title": "BACKGROUND",
-                                "icon": [
-                                    "wand.and.rays"
-                                ],
-                                "key": "BACKGROUND_AND_COLOR-parent-BACKGROUND-parent",
-                                "children": [
-                                    {
-                                        "title": "LIGHT_MODE",
-                                        "items": [
-                                            {
-                                                "icon": [
-                                                    "wand.and.rays",
-                                                    "#FF9933"
-                                                ],
-                                                "title": "BACKGROUND_COLOR",
-                                                "type": "color",
-                                                "key": "backgroundColor",
-                                                "value": "#FFFFFF"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "title": "DARK_MODE",
-                                        "items": [
-                                            {
-                                                "icon": [
-                                                    "wand.and.rays",
-                                                    "#FF9933"
-                                                ],
-                                                "title": "BACKGROUND_COLOR",
-                                                "type": "color",
-                                                "key": "backgroundColorDark",
-                                                "value": "#333333"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "title": "COLOR",
-                        "items": [
-                            {
                                 "icon": [
                                     "wand.and.rays",
                                     "orange"
@@ -78,6 +33,56 @@
                                 "type": "color",
                                 "key": "colorTone",
                                 "value": "orange"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "LIGHT_MODE",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FFCC00"
+                                ],
+                                "title": "TEXT_COLOR",
+                                "type": "color",
+                                "key": "textColor",
+                                "value": "#333333"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF9933"
+                                ],
+                                "title": "BACKGROUND_COLOR",
+                                "type": "color",
+                                "key": "backgroundColor",
+                                "value": "#FFFFFF"
+                            }
+                        ]
+                    },
+                    {
+                        "title": "DARK_MODE",
+                        "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FFCC00"
+                                ],
+                                "title": "TEXT_COLOR",
+                                "type": "color",
+                                "key": "textColorDark",
+                                "value": "#FFFFFF"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF9933"
+                                ],
+                                "title": "BACKGROUND_COLOR",
+                                "type": "color",
+                                "key": "backgroundColorDark",
+                                "value": "#333333"
                             }
                         ]
                     }
@@ -89,7 +94,7 @@
                 "key": "display-parent",
                 "children": [
                     {
-                        "title": "DISPLAY_MODE",
+                        "title": "GENERAL",
                         "items": [
                             {
                                 "icon": [
@@ -130,18 +135,7 @@
                                 "value": false
                             }
                         ]
-                    }
-                ]
-            },
-            {
-                "type": "child",
-                "title": "TITLE",
-                "icon": [
-                    "rectangle.and.paperclip",
-                    "#CCCC00"
-                ],
-                "key": "title-parent",
-                "children": [
+                    },
                     {
                         "title": "TITLE",
                         "items": [

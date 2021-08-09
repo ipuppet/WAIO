@@ -21,6 +21,8 @@ class Calendar {
         this.backgroundImage = this.setting.getBackgroundImage() // 背景图片
         this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
         this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
+        this.textColor = this.setting.getColor(this.setting.get("textColor"))
+        this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
     }
 
     localizedWeek(index) {
@@ -194,8 +196,8 @@ class Calendar {
         }
         // 初始样式
         const props = {
-            text: { color: $color("primaryText") },
-            ext: { color: $color("primaryText") }, // 额外信息样式，如农历等
+            text: { color: $color(this.textColor, this.textColorDark) },
+            ext: { color: $color(this.textColor, this.textColorDark) }, // 额外信息样式，如农历等
             box: {}
         }
         // 周末

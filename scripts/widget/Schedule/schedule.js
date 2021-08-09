@@ -7,6 +7,8 @@ class Schedule {
         this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
         this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
         this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
+        this.textColor = this.setting.getColor(this.setting.get("textColor"))
+        this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
         this.itemLength2x2 = this.setting.get("itemLength2x2")
         this.itemLength2x4 = this.setting.get("itemLength2x4")
         this.itemLength4x4 = this.setting.get("itemLength4x4")
@@ -124,6 +126,7 @@ class Schedule {
                                         lineLimit: 1,
                                         text: item.title,
                                         font: $font(14),
+                                        color: $color(this.textColor, this.textColorDark),
                                         frame: {
                                             maxWidth: Infinity,
                                             alignment: $widget.alignment.leading

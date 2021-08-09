@@ -61,6 +61,16 @@
                             {
                                 "icon": [
                                     "wand.and.rays",
+                                    "#FFCC00"
+                                ],
+                                "title": "TEXT_COLOR",
+                                "type": "color",
+                                "key": "textColor",
+                                "value": "#333333"
+                            },
+                            {
+                                "icon": [
+                                    "wand.and.rays",
                                     "#FF9933"
                                 ],
                                 "title": "BACKGROUND_COLOR",
@@ -73,6 +83,16 @@
                     {
                         "title": "DARK_MODE",
                         "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FFCC00"
+                                ],
+                                "title": "TEXT_COLOR",
+                                "type": "color",
+                                "key": "textColorDark",
+                                "value": "#FFFFFF"
+                            },
                             {
                                 "icon": [
                                     "wand.and.rays",
