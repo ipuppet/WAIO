@@ -29,3 +29,12 @@
 "START_BACKUP" = "开始备份";
 "BACKUP_TO_ICLOUD" = "备份到iCloud";
 "RECOVER_FROM_ICLOUD" = "从iCloud恢复";
+
+"COLOR_SETTING" = "颜色设置";
+"TEXT_COLOR" = "文本颜色";
+"BACKGROUND" = "背景";
+"BACKGROUND_COLOR" = "背景色";
+"BACKGROUND_IMAGE" = "背景图片";
+"USE_COMPRESSED_IMAGE" = "使用压缩后的图片";
+"CHOOSE_IMAGE" = "选择图片";
+"CLEAR_IMAGE" = "清除图片";

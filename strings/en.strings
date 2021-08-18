@@ -29,3 +29,12 @@
 "START_BACKUP" = "Start Backup";
 "BACKUP_TO_ICLOUD" = "Backup to iCloud";
 "RECOVER_FROM_ICLOUD" = "Recover from iCloud";
+
+"COLOR_SETTING" = "Color Setting";
+"TEXT_COLOR" = "Text Color";
+"BACKGROUND" = "Background";
+"BACKGROUND_COLOR" = "Background Color";
+"BACKGROUND_IMAGE" = "Background Image";
+"USE_COMPRESSED_IMAGE" = "Use Compressed Image";
+"CHOOSE_IMAGE" = "Select Image";
+"CLEAR_IMAGE" = "Clear Image";
