@@ -13,8 +13,7 @@ class Calendar {
         }
         this.monthDisplayMode = this.setting.get("monthDisplayMode") // 月份显示模式
         this.firstDayOfWeek = this.setting.get("firstDayOfWeek") // 每周第一天
-        this.titleYear = this.setting.get("title.year") // 标题是否显示年
-        this.titleFullYear = this.setting.get("title.fullYear") // 标题是否显示完整年
+        this.titleYearMode = this.setting.get("title.year.mode") // 年显示模式
         this.titleLunar = this.setting.get("title.lunar") // 标题是否显示农历
         this.titleLunarYear = this.setting.get("title.lunarYear") // 标题是否显示农历年
         this.titleAddSpacer = this.setting.get("title.addSpacer") // 是否在标题和日历间增加spacer
@@ -346,22 +345,47 @@ class Calendar {
 
     titleBarTemplate(family, calendarInfo) {
         // 标题栏文字内容
-        let content
-        let left = "", right = ""
-        if (this.titleYear) {
-            const year = !this.titleFullYear ? String(calendarInfo.year).slice(-2) + $l10n("YEAR") : calendarInfo.year + $l10n("YEAR")
-            left = year + this.localizedMonth(calendarInfo.month)
+        let leftText, views = [],
+            size = family === this.setting.family.small ? 12 : 18
+        if (this.titleYearMode !== 0) {
+            const year = !(this.titleYearMode === 2)
+                ? String(calendarInfo.year).slice(-2) + $l10n("YEAR_DELIMITER")
+                : calendarInfo.year + $l10n("YEAR_DELIMITER")
+            leftText = year + this.localizedMonth(calendarInfo.month)
         } else {
-            left = this.localizedMonth(calendarInfo.month)
+            leftText = this.localizedMonth(calendarInfo.month)
         }
+        views.push({
+            type: "text",
+            props: {
+                text: leftText,
+                lineLimit: 1,
+                color: this.colorTone,
+                font: $font("bold", size),
+                frame: {
+                    alignment: $widget.alignment.leading,
+                    maxWidth: Infinity,
+                    height: Infinity
+                }
+            }
+        })
         if (this.titleLunar) {
-            right = this.lunar.lunarMonth + "月" + this.lunar.lunarDay
-            if (this.titleLunarYear) right = this.lunar.lunarYear + "年" + right
-        }
-        content = {
-            left: left,
-            right: right,
-            size: family === this.setting.family.small ? 12 : 18
+            let rightText = this.lunar.lunarMonth + "月" + this.lunar.lunarDay
+            if (this.titleLunarYear) rightText = this.lunar.lunarYear + "年" + rightText
+            views.push({
+                type: "text",
+                props: {
+                    text: rightText,
+                    lineLimit: 1,
+                    color: this.colorTone,
+                    font: $font("bold", size),
+                    frame: {
+                        alignment: $widget.alignment.trailing,
+                        maxWidth: Infinity,
+                        height: Infinity
+                    }
+                }
+            })
         }
         return {
             type: "hstack",
@@ -381,36 +405,7 @@ class Calendar {
                     }
                 })()
             },
-            views: [
-                {
-                    type: "text",
-                    props: {
-                        text: content.left,
-                        lineLimit: 1,
-                        color: this.colorTone,
-                        font: $font("bold", content.size),
-                        frame: {
-                            alignment: $widget.alignment.leading,
-                            maxWidth: Infinity,
-                            height: Infinity
-                        }
-                    }
-                },
-                {
-                    type: "text",
-                    props: {
-                        text: content.right,
-                        lineLimit: 1,
-                        color: this.colorTone,
-                        font: $font("bold", content.size),
-                        frame: {
-                            alignment: $widget.alignment.trailing,
-                            maxWidth: Infinity,
-                            height: Infinity
-                        }
-                    }
-                }
-            ]
+            views: views
         }
     }
 

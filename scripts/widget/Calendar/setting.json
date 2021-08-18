@@ -140,20 +140,19 @@
                         "title": "TITLE",
                         "items": [
                             {
-                                "title": "SHOW_YEAR",
-                                "type": "switch",
-                                "key": "title.year",
-                                "value": true
-                            },
-                            {
                                 "icon": [
-                                    "pencil.and.ellipsis.rectangle",
-                                    "#99CCCC"
+                                    "wand.and.rays",
+                                    "#0099CC"
                                 ],
-                                "title": "SHOW_FULL_YEAR",
-                                "type": "switch",
-                                "key": "title.fullYear",
-                                "value": true
+                                "title": "YEAR_DISPLAY_MODE",
+                                "type": "tab",
+                                "key": "title.year.mode",
+                                "items": [
+                                    "NONE",
+                                    "YEAR_DISPLAY_MODE_HALF",
+                                    "YEAR_DISPLAY_MODE_FULLY"
+                                ],
+                                "value": 1
                             },
                             {
                                 "icon": [
