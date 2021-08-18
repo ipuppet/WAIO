@@ -1,0 +1,15 @@
+"ALBUM" = "Album";
+"ALBUM_COLUMN" = "Album column number";
+"URL_SCHEME" = "URL scheme";
+"USE_COMPRESSED_IMAGE" = "Use Compressed Image";
+"SWITCH_METHOD" = "Switch Method";
+"RANDOM" = "Random";
+"SEQUENCE" = "Sequence";
+"SWITCH_INTERVAL" = "Switch Interval(Min)";
+"SYSTEM_ALBUM" = "Photo";
+"SAVE_TO_SYSTEM_ALBUM" = "Save to Photo";
+"NO_IMAGE" = "Image not Found";
+"CLEAR_CACHE" = "Clear Cache";
+"NO_IMAGES" = "No Images";
+"SELECT" = "Select";
+"NO_SELECTED_IMAGE" = "No Selected Image";

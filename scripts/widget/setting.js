@@ -5,6 +5,7 @@ class Setting {
         // settingUrlScheme
         this.settingUrlScheme = `jsbox://run?name=${this.kernel.name}&widget=${this.widget}`
         // 初始化
+        this.loadL10n()
         this.init()
         this.family = {
             small: 0,
@@ -38,6 +39,15 @@ class Setting {
             this.setting.setFooter({ type: "view" })
             this.defaultSettingMethods()
             this.initSettingMethods()
+        }
+    }
+
+    loadL10n() {
+        const stringsPath = `${this.kernel.widgetRootPath}/${this.widget}/strings`
+        if ($file.exists(stringsPath)) {
+            $file.list(stringsPath).forEach(file => {
+                this.kernel.l10n(file.slice(0, file.indexOf(".")), $file.read(`${stringsPath}/${file}`).string)
+            })
         }
     }
 
