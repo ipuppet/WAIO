@@ -31,6 +31,8 @@
 "RECOVER_FROM_ICLOUD" = "Recover from iCloud";
 
 "COLOR_SETTING" = "Color Setting";
+"DARK_MODE" = "Dark Mode";
+"LIGHT_MODE" = "Light Mode";
 "TEXT_COLOR" = "Text Color";
 "BACKGROUND" = "Background";
 "BACKGROUND_COLOR" = "Background Color";

@@ -31,6 +31,8 @@
 "RECOVER_FROM_ICLOUD" = "从iCloud恢复";
 
 "COLOR_SETTING" = "颜色设置";
+"DARK_MODE" = "深色模式";
+"LIGHT_MODE" = "浅色模式";
 "TEXT_COLOR" = "文本颜色";
 "BACKGROUND" = "背景";
 "BACKGROUND_COLOR" = "背景色";
