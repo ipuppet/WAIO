@@ -301,7 +301,7 @@ module.exports = {
                     }
                 })
             }
-        } else if ($app.env === $env.app) {
+        } else if ($app.env === $env.app || $app.env === $env.today) {
             const kernel = new AppKernel()
             // 设置样式
             kernel.UIKit.disableLargeTitle()
