@@ -14,7 +14,6 @@
 "FRIDAY" = "F";
 "SATURDAY" = "S";
 
-"MONTH" = "-";
 "BLANK_MONTH" = " ";
 "JANUARY_C" = "January";
 "FEBRUARY_C" = "February";
@@ -29,15 +28,15 @@
 "NOVEMBER_C" = "November";
 "DECEMBER_C" = "December";
 
-"JANUARY_N" = " 1";
-"FEBRUARY_N" = " 2";
-"MARCH_N" = " 3";
-"APRIL_N" = " 4";
-"MAY_N" = " 5";
-"JUNE_N" = " 6";
-"JULY_N" = " 7";
-"AUGUST_N" = " 8";
-"SEPTEMBER_N" = " 9";
+"JANUARY_N" = "1";
+"FEBRUARY_N" = "2";
+"MARCH_N" = "3";
+"APRIL_N" = "4";
+"MAY_N" = "5";
+"JUNE_N" = "6";
+"JULY_N" = "7";
+"AUGUST_N" = "8";
+"SEPTEMBER_N" = "9";
 "OCTOBER_N" = "10";
 "NOVEMBER_N" = "11";
 "DECEMBER_N" = "12";
@@ -46,7 +45,7 @@
 
 "COLOR_TONE" = "Color Tone";
 "FIRST_DAY_OF_WEEK" = "1st Day of Week";
-"ONLY_CURRENT_MONTH" = "This month only";
+"ONLY_CURRENT_MONTH" = "This Month Only";
 
 "HOLIDAT_COLOR" = "Color of Holiday";
 "HOLIDAT_REST_NO_COLOR" = "Color of OT";
@@ -64,7 +63,7 @@
 "YEAR_DISPLAY_MODE_FULLY" = "Fully";
 "SHOW_LUNAR" = "Show Lunar";
 "SHOW_LUNAR_YEAR" = "Show Lunar (Year)";
-"ADD_SPACER" = "Increase spacing";
+"ADD_SPACER" = "Increase Spacing";
 "MONTH_DISPLAY_MODE" = "Display Mode (Month)";
 "CHINESE_CHARACTERS" = "Chars";
 "NUMBER" = "Number";

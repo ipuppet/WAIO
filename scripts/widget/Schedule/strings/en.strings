@@ -1,17 +1,19 @@
+"MONTH" = "-";
+
 "TIME_SPAN" = "Time Span (Day)";
 "DATE" = " ";
 "NO_DATE" = "No Date";
 "TODAY" = "Today";
 "TOMORROW" = "Tomorrow";
 "YESTERDAY" = "Yesterday";
-"ALL_DAY" = "All day";
+"ALL_DAY" = "All Day";
 "DATE_COLOR" = "Date Color";
 "CALENDAR_COLOR" = "Calendar Color";
 "REMINDER_COLOR" = "Reminder Color";
 "NO_CALENDAR" = "No Schedule";
 "NO_REMINDER" = "No Reminder";
 "NO_CALENDAR&REMINDER" = "No Schedule";
-"ITEM_LENGTH" = "Items to display";
+"ITEM_LENGTH" = "Items to Display";
 "CLICK_EVENT" = "Click Event";
 "REMINDER" = "Reminder";
 "MIXED_MODE" = "Mixed Mode";
