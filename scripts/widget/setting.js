@@ -58,14 +58,17 @@ class Setting {
             views: this.setting.getView(),
             title: this.config.title,
             navButtons: [
-                this.kernel.UIKit.navButton("preview", "rectangle.3.offgrid.fill", () => {
-                    const widget = this.kernel.widgetInstance(this.widget)
-                    if (widget) {
-                        widget.render()
-                    } else {
-                        $ui.error($l10n("ERROR"))
+                {
+                    symbol: "rectangle.3.offgrid.fill",
+                    handler: () => {
+                        const widget = this.kernel.widgetInstance(this.widget)
+                        if (widget) {
+                            widget.render()
+                        } else {
+                            $ui.error($l10n("ERROR"))
+                        }
                     }
-                })
+                }
             ]
         })
     }

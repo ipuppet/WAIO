@@ -308,12 +308,15 @@ module.exports = {
             kernel.setting.setChildPage(true)
             // 设置 navButtons
             kernel.UIKit.setNavButtons([
-                kernel.UIKit.navButton("setting", "gear", () => {
-                    kernel.UIKit.push({
-                        title: $l10n("SETTING"),
-                        views: kernel.setting.getView()
-                    })
-                })
+                {
+                    symbol: "gear",
+                    handler: () => {
+                        kernel.UIKit.push({
+                            title: $l10n("SETTING"),
+                            views: kernel.setting.getView()
+                        })
+                    }
+                }
             ])
             const HomeUI = require("./ui/home")
             const interfaceUi = new HomeUI(kernel)
