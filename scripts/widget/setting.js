@@ -10,7 +10,8 @@ class Setting {
         this.family = {
             small: 0,
             medium: 1,
-            large: 2
+            large: 2,
+            xLarge: 3
         }
         this.joinMode = {
             small: 0,
