@@ -16,4 +16,7 @@
 "ITEM_LENGTH" = "显示条目数量";
 "CLICK_EVENT" = "点击事件";
 "REMINDER" = "提醒事项";
+"CALENDAR" = "日程";
+"DATA_DISPLAY_MODE" = "数据显示模式";
+"LEFT_AND_RIGHT" = "左右";
 "MIXED_MODE" = "混合模式";

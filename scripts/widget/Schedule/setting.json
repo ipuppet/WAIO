@@ -137,6 +137,20 @@
                     "CALENDAR"
                 ],
                 "value": 0
+            },
+            {
+                "icon": [
+                    "rectangle.3.offgrid"
+                ],
+                "title": "DATA_DISPLAY_MODE",
+                "type": "menu",
+                "key": "dataMode2x2",
+                "items": [
+                    "CALENDAR",
+                    "REMINDER",
+                    "MIXED_MODE"
+                ],
+                "value": 2
             }
         ]
     },
@@ -159,10 +173,14 @@
                 "icon": [
                     "rectangle.3.offgrid"
                 ],
-                "title": "MIXED_MODE",
-                "type": "switch",
-                "key": "mixedMode",
-                "value": false
+                "title": "DATA_DISPLAY_MODE",
+                "type": "menu",
+                "key": "dataMode2x4",
+                "items": [
+                    "LEFT_AND_RIGHT",
+                    "MIXED_MODE"
+                ],
+                "value": 0
             }
         ]
     },
@@ -180,6 +198,19 @@
                 "min": 2,
                 "max": 10,
                 "value": 6
+            },
+            {
+                "icon": [
+                    "rectangle.3.offgrid"
+                ],
+                "title": "DATA_DISPLAY_MODE",
+                "type": "menu",
+                "key": "dataMode4x4",
+                "items": [
+                    "LEFT_AND_RIGHT",
+                    "MIXED_MODE"
+                ],
+                "value": 0
             }
         ]
     },

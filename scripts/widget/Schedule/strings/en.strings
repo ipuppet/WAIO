@@ -16,4 +16,7 @@
 "ITEM_LENGTH" = "Items to Display";
 "CLICK_EVENT" = "Click Event";
 "REMINDER" = "Reminder";
+"CALENDAR" = "Calendar";
+"DATA_DISPLAY_MODE" = "Data Display Mode";
+"LEFT_AND_RIGHT" = "Left and Right";
 "MIXED_MODE" = "Mixed Mode";
