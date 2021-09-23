@@ -110,11 +110,9 @@ class AppKernel extends Kernel {
         }
 
         this.setting.updateHomeScreenWidgetOptions = animate => {
-            animate.touchHighlightStart()
             animate.actionStart()
             this.updateHomeScreenWidgetOptions()
             animate.actionDone()
-            animate.touchHighlightEnd()
         }
 
         this.setting.backupToICloud = animate => {
