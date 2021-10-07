@@ -28,6 +28,15 @@ class Schedule {
                 this.urlScheme = this.calendarUrlScheme
                 break
         }
+        this.week = [
+            $l10n("SUNDAY"),
+            $l10n("MONDAY"),
+            $l10n("TUESDAY"),
+            $l10n("WEDNESDAY"),
+            $l10n("THURSDAY"),
+            $l10n("FRIDAY"),
+            $l10n("SATURDAY")
+        ]
     }
 
     /**
@@ -71,7 +80,6 @@ class Schedule {
         } else if (mode === 1) {
             return `${formatInt(date.getHours())}:${formatInt(date.getMinutes())}`
         }
-
     }
 
     getListView(list, maxItemLength = null) {
@@ -229,19 +237,61 @@ class Schedule {
      * 获取视图
      */
     scheduleView(family) {
-        const nothingView = (text, alignment = $widget.alignment.top) => {
+        const nothingView = (text) => {
             return {
                 type: "vstack",
                 props: {
                     background: $color(this.backgroundColor, this.backgroundColorDark),
                     frame: {
                         maxHeight: Infinity,
-                        alignment: $widget.verticalAlignment.firstTextBaseline
+                        maxWidth: Infinity
                     },
                     padding: 15,
                     spacing: 8
                 },
                 views: [
+                    {
+                        type: "vstack",
+                        props: {
+                            background: $color(this.backgroundColor, this.backgroundColorDark),
+                            frame: {
+                                maxHeight: Infinity,
+                                maxWidth: Infinity,
+                                alignment: $widget.alignment.leading
+                            },
+                            spacing: 0
+                        },
+                        views: [
+                            {
+                                type: "text",
+                                props: {
+                                    background: $color(this.backgroundColor, this.backgroundColorDark),
+                                    frame: {
+                                        maxHeight: Infinity,
+                                        maxWidth: Infinity,
+                                        alignment: $widget.alignment.leading
+                                    },
+                                    text: this.week[new Date().getDay()],
+                                    font: $font(11),
+                                    widgetURL: this.urlScheme
+                                }
+                            },
+                            {
+                                type: "text",
+                                props: {
+                                    background: $color(this.backgroundColor, this.backgroundColorDark),
+                                    frame: {
+                                        maxHeight: Infinity,
+                                        maxWidth: Infinity,
+                                        alignment: $widget.alignment.leading
+                                    },
+                                    text: String(new Date().getDate()),
+                                    font: $font(33),
+                                    widgetURL: this.urlScheme
+                                }
+                            }
+                        ]
+                    },
                     {
                         type: "text",
                         props: {
@@ -249,9 +299,10 @@ class Schedule {
                             frame: {
                                 maxHeight: Infinity,
                                 maxWidth: Infinity,
-                                alignment: alignment
+                                alignment: $widget.alignment.leading
                             },
                             text: text,
+                            color: $color("secondaryText"),
                             widgetURL: this.urlScheme
                         }
                     }
@@ -297,7 +348,7 @@ class Schedule {
             this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
             // 获取视图
             const view = this.getListView(schedule)
-            if (null === view) return nothingView(emptyText, $widget.alignment.center)
+            if (null === view) return nothingView(emptyText)
             return listView(view, { widgetURL: this.urlScheme })
         } else if (family === this.setting.family.medium || family === this.setting.family.large) {
             let dataMode, eachCont, leftView, rightView, leftScheme, rightScheme
@@ -322,7 +373,7 @@ class Schedule {
                 const schedule = [].concat(this.calendar).concat(this.reminder)
                 // 空列表则直接返回
                 if (schedule.length === 0)
-                    return nothingView($l10n("NO_CALENDAR&REMINDER"), $widget.alignment.center)
+                    return nothingView($l10n("NO_CALENDAR&REMINDER"))
                 // 按结束日期排序
                 this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
                 // 获取视图
@@ -348,7 +399,7 @@ class Schedule {
             }
         } else {
             // TODO 超大 widget
-            return nothingView("Not currently supported", $widget.alignment.center)
+            return nothingView("Not currently supported")
         }
     }
 }
