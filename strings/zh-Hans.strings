@@ -18,7 +18,7 @@
 "SAVE" = "保存";
 "SAVE_SUCCESS" = "保存成功";
 "SAVE_ERROR" = "保存失败";
-"DELETE" = "删除";
+"DELETE" = "删除 ";
 "CONFIRM_DELETE_MSG" = "确认要删除吗？";
 "DELETE_SUCCESS" = "删除成功";
 "DELETE_ERROR" = "删除失败";
