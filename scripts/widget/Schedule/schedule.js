@@ -231,17 +231,31 @@ class Schedule {
     scheduleView(family) {
         const nothingView = (text, alignment = $widget.alignment.top) => {
             return {
-                type: "text",
+                type: "vstack",
                 props: {
                     background: $color(this.backgroundColor, this.backgroundColorDark),
                     frame: {
                         maxHeight: Infinity,
-                        maxWidth: Infinity,
-                        alignment: alignment
+                        alignment: $widget.verticalAlignment.firstTextBaseline
                     },
-                    text: text,
-                    widgetURL: this.urlScheme
-                }
+                    padding: 15,
+                    spacing: 8
+                },
+                views: [
+                    {
+                        type: "text",
+                        props: {
+                            background: $color(this.backgroundColor, this.backgroundColorDark),
+                            frame: {
+                                maxHeight: Infinity,
+                                maxWidth: Infinity,
+                                alignment: alignment
+                            },
+                            text: text,
+                            widgetURL: this.urlScheme
+                        }
+                    }
+                ]
             }
         }
         const listView = (views, props = {}) => {
