@@ -1,6 +1,7 @@
 "ALERT_INFO" = "提示";
 "NONE" = "无";
 "COPY" = "复制";
+"NAME_ALREADY_EXISTS" = "名称已存在";
 "NEW_WIDGET_NAME" = "新Widget名";
 "CANNOT_COPY_THIS_WIDGET" = "无法复制该widget";
 "COPY_SUCCESS" = "复制成功";

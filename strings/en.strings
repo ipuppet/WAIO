@@ -1,6 +1,7 @@
 "ALERT_INFO" = "Alert";
 "NONE" = "None";
 "COPY" = "Copy";
+"NAME_ALREADY_EXISTS" = "Name already exists";
 "NEW_WIDGET_NAME" = "New Widget name";
 "CANNOT_COPY_THIS_WIDGET" = "Unable to copy this Widget";
 "COPY_SUCCESS" = "Copy success";

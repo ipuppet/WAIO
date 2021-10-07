@@ -36,16 +36,19 @@ class HomeUI {
     copyWidget(from, callback) {
         $input.text({
             placeholder: $l10n("NEW_WIDGET_NAME"),
-            text: "",
-            handler: text => {
-                text = text.trim()
+            text: from,
+            handler: newName => {
+                newName = newName.trim()
+                const newPath = `${this.kernel.widgetRootPath}/${newName}`
+                if ($file.exists(newPath)) {
+                    $ui.error($l10n("NAME_ALREADY_EXISTS"))
+                    return
+                }
                 const fromPath = `${this.kernel.widgetRootPath}/${from}`
                 if (!$file.exists(`${fromPath}/setting.js`) || !$file.exists(`${fromPath}/config.json`)) {
                     $ui.error($l10n("CANNOT_COPY_THIS_WIDGET"))
                     return
                 }
-                const newName = this.kernel.uuid()
-                const newPath = `${this.kernel.widgetRootPath}/${newName}`
                 $file.copy({
                     src: fromPath,
                     dst: newPath
@@ -61,7 +64,7 @@ class HomeUI {
                 })
                 // 更新config.json
                 const config = JSON.parse($file.read(`${newPath}/config.json`).string)
-                config.title = text === "" ? newName : text
+                config.title = newName
                 if (config.from === undefined) config.from = from
                 config.name = newName
                 $file.write({
