@@ -22,7 +22,7 @@ class HomeUI {
                     image: $image(data.icon[0], data.icon[1])
                 },
                 title: {
-                    text: data.title
+                    text: data.name
                 },
                 describe: {
                     text: data.describe
@@ -64,7 +64,6 @@ class HomeUI {
                 })
                 // 更新config.json
                 const config = JSON.parse($file.read(`${newPath}/config.json`).string)
-                config.title = newName
                 if (config.from === undefined) config.from = from
                 config.name = newName
                 $file.write({

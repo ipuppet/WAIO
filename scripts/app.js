@@ -75,7 +75,7 @@ class AppKernel extends Kernel {
         const config = []
         this.getWidgetList().forEach(widget => {
             config.push({
-                name: widget.title,
+                name: widget.name,
                 value: widget.name
             })
         })
@@ -252,7 +252,6 @@ class AppKernel extends Kernel {
                 }
                 config.icon = config.icon.map(icon => icon[0] === "@" ? icon.replace("@", widgetPath) : icon)
                 data.push({
-                    title: config.title,
                     describe: config.describe,
                     name: widget,
                     icon: config.icon

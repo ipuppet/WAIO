@@ -57,7 +57,7 @@ class Setting {
             bgcolor: "insetGroupedBackground",
             topOffset: false,
             views: this.setting.getView(),
-            title: this.config.title,
+            title: this.config.name,
             navButtons: [
                 {
                     symbol: "rectangle.3.offgrid.fill",

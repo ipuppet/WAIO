@@ -12,12 +12,12 @@ class JoinSetting extends Setting {
             const data = this.kernel.getWidgetList()
             const result = []
             data.forEach(item => {
-                if (item.title !== NAME)
-                    result.push(item.title)
+                if (item.name !== NAME)
+                    result.push(item.name)
             })
             return result
         })()
-        
+
         // 设置项内需要的函数
         this.setting.getMenu = () => {
             return this.menu
