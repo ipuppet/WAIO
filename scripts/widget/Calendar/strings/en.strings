@@ -6,13 +6,13 @@
 "_SUNDAY" = "Sunday";
 "_MONDAY" = "Monday";
 
-"SUNDAY" = "S";
-"MONDAY" = "M";
-"TUESDAY" = "T";
-"WEDNESDAY" = "W";
-"THURSDAY" = "T";
-"FRIDAY" = "F";
-"SATURDAY" = "S";
+"SHORT_SUNDAY" = "S";
+"SHORT_MONDAY" = "M";
+"SHORT_TUESDAY" = "T";
+"SHORT_WEDNESDAY" = "W";
+"SHORT_THURSDAY" = "T";
+"SHORT_FRIDAY" = "F";
+"SHORT_SATURDAY" = "S";
 
 "BLANK_MONTH" = " ";
 "JANUARY_C" = "January";

@@ -238,6 +238,7 @@ class Schedule {
      */
     scheduleView(family) {
         const nothingView = (text) => {
+            const date = new Date()
             return {
                 type: "vstack",
                 props: {
@@ -271,8 +272,9 @@ class Schedule {
                                         maxWidth: Infinity,
                                         alignment: $widget.alignment.leading
                                     },
-                                    text: this.week[new Date().getDay()],
+                                    text: this.week[date.getDay()],
                                     font: $font(11),
+                                    color: this.colorDate,
                                     widgetURL: this.urlScheme
                                 }
                             },
@@ -285,7 +287,7 @@ class Schedule {
                                         maxWidth: Infinity,
                                         alignment: $widget.alignment.leading
                                     },
-                                    text: String(new Date().getDate()),
+                                    text: String(date.getDate()),
                                     font: $font(33),
                                     widgetURL: this.urlScheme
                                 }

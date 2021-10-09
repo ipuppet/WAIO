@@ -26,13 +26,13 @@ class Calendar {
 
     localizedWeek(index) {
         const week = [
-            $l10n("SUNDAY"),
-            $l10n("MONDAY"),
-            $l10n("TUESDAY"),
-            $l10n("WEDNESDAY"),
-            $l10n("THURSDAY"),
-            $l10n("FRIDAY"),
-            $l10n("SATURDAY")
+            $l10n("SHORT_SUNDAY"),
+            $l10n("SHORT_MONDAY"),
+            $l10n("SHORT_TUESDAY"),
+            $l10n("SHORT_WEDNESDAY"),
+            $l10n("SHORT_THURSDAY"),
+            $l10n("SHORT_FRIDAY"),
+            $l10n("SHORT_SATURDAY")
         ]
         if (this.firstDayOfWeek === 1) {
             index += 1

@@ -6,13 +6,13 @@
 "_SUNDAY" = "周日";
 "_MONDAY" = "周一";
 
-"SUNDAY" = "日";
-"MONDAY" = "一";
-"TUESDAY" = "二";
-"WEDNESDAY" = "三";
-"THURSDAY" = "四";
-"FRIDAY" = "五";
-"SATURDAY" = "六";
+"SHORT_SUNDAY" = "日";
+"SHORT_MONDAY" = "一";
+"SHORT_TUESDAY" = "二";
+"SHORT_WEDNESDAY" = "三";
+"SHORT_THURSDAY" = "四";
+"SHORT_FRIDAY" = "五";
+"SHORT_SATURDAY" = "六";
 
 "BLANK_MONTH" = "月";
 "JANUARY_C" = "一";
