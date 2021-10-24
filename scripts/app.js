@@ -301,8 +301,7 @@ module.exports = {
         } else if ($app.env === $env.app || $app.env === $env.today) {
             const kernel = new AppKernel()
             // 设置样式
-            kernel.UIKit.disableLargeTitle()
-            kernel.setting.setChildPage(true)
+            kernel.UIKit.useJsboxNav()
             // 设置 navButtons
             kernel.UIKit.setNavButtons([
                 {
