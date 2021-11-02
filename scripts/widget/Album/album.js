@@ -12,6 +12,9 @@ class Album {
         if (!$file.exists(`${this.albumPath}/archive`)) {
             $file.mkdir(`${this.albumPath}/archive`)
         }
+        if (!$file.exists(`${this.albumPath}/preview`)) {
+            $file.mkdir(`${this.albumPath}/preview`)
+        }
         this.selectedImageCounter = "selectedImageCounter"
         this.selectedImageCount = "selectedImageCount"
     }
@@ -20,8 +23,9 @@ class Album {
      * 获取除去archive目录的所有图片
      * @param {Boolean} isCompress 是否是archive(用于存放压缩后的图片)目录下的图片
      */
-    getImages(isCompress) {
+    getImages(isCompress, isPreview) {
         if (isCompress) return $file.list(`${this.albumPath}/archive`)
+        if (isPreview) return $file.list(`${this.albumPath}/preview`)
         const list = $file.list(this.albumPath)
         for (let i = 0; i < list.length; i++) {
             if ($file.isDirectory(`${this.albumPath}/${list[i]}`)) {
@@ -68,24 +72,16 @@ class Album {
         } else { action() }
     }
 
-    normalMode(indexPath, data) {
-        $ui.menu({
-            items: [$l10n("SAVE_TO_SYSTEM_ALBUM"), $l10n("DELETE")],
-            handler: (title, idx) => {
-                if (idx === 0) {
-                    $photo.save({
-                        data: $file.read(data.image.src),
-                        handler: success => {
-                            if (success)
-                                $ui.success($l10n("SUCCESS"))
-                            else
-                                $ui.error($l10n("ERROR"))
-                        }
-                    })
-                } else if (idx === 1) {
-                    this.deleteImage(data.image.src, indexPath)
-                }
-            }
+    normalMode(data) {
+        // 图片缩放问题
+        const image = $file.read(data.image.src.replace("archive/", ""))
+        this.kernel.UIKit.pushPageSheet({
+            showNavBar: false,
+            views: [{
+                type: "image",
+                props: { data: image },
+                layout: $layout.fill
+            }]
         })
     }
 
@@ -138,29 +134,38 @@ class Album {
                         items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
                         handler: (title, idx) => {
                             const saveImageAction = data => {
-                                const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
-                                $file.write({
-                                    data: data,
-                                    path: `${this.albumPath}/${fileName}`
-                                })
-                                // 同时保留一份压缩后的图片
-                                // TODO 控制压缩图片大小
-                                const image = data.image.jpg(this.imageMaxSize * 1024 / data.info.size)
-                                $file.write({
-                                    data: image,
-                                    path: `${this.albumPath}/archive/${fileName}`
-                                })
-                                // UI隐藏无图片提示字符
-                                if (!$("no-image-text").hidden)
-                                    $("no-image-text").hidden = true
-                                // UI插入图片
-                                const matrix = $("picture-edit-matrix")
-                                matrix.hidden = false
-                                matrix.insert({
-                                    indexPath: $indexPath(0, matrix.data.length),
-                                    value: {
-                                        image: { src: `${this.albumPath}/${fileName}` }
+                                $delay(0, () => {
+                                    const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
+                                    $file.write({
+                                        data: data,
+                                        path: `${this.albumPath}/${fileName}`
+                                    })
+                                    if (this.setting.get("useCompressedImage")) {
+                                        // TODO 控制压缩图片大小
+                                        let compress = this.imageMaxSize * 1024 / data.info.size
+                                        compress = compress > 1 ? 1 : compress
+                                        $file.write({
+                                            data: $imagekit.scaleBy(data.image, compress).jpg(compress),
+                                            path: `${this.albumPath}/archive/${fileName}`
+                                        })
                                     }
+                                    // preview
+                                    $file.write({
+                                        data: $imagekit.scaleBy(data.image, 0.1).jpg(0.1),
+                                        path: `${this.albumPath}/preview/${fileName}`
+                                    })
+                                    // UI隐藏无图片提示字符
+                                    if (!$("no-image-text").hidden)
+                                        $("no-image-text").hidden = true
+                                    // UI插入图片
+                                    const matrix = $("picture-edit-matrix")
+                                    matrix.hidden = false
+                                    matrix.insert({
+                                        indexPath: $indexPath(0, matrix.data.length),
+                                        value: {
+                                            image: { src: `${this.albumPath}/${fileName}` }
+                                        }
+                                    })
                                 })
                             }
                             if (idx === 0) { // 从系统相册选取图片
@@ -178,7 +183,7 @@ class Album {
                                         resp.results.forEach(image => {
                                             saveImageAction(image.data)
                                         })
-                                        $ui.toast($l10n("SUCCESS"))
+                                        $ui.toast($l10n("LOADING"))
                                     }
                                 })
                             } else if (idx === 1) { // 从iCloud选取图片
@@ -237,12 +242,13 @@ class Album {
     }
 
     getAlbumView() {
-        const pictures = this.getImages()
+        const pictures = this.getImages(true, true)
         const data = []
         if (pictures.length > 0) {
+            const dir = $file.list(`${this.albumPath}/preview`).length > 0 ? "preview" : "archive"
             pictures.forEach(picture => {
                 data.push({
-                    image: { src: `${this.albumPath}/${picture}` }
+                    image: { src: `${this.albumPath}/${dir}/${picture}` }
                 })
             })
         }
@@ -270,7 +276,24 @@ class Album {
                         title: $l10n("MENU"),
                         items: [
                             {
+                                title: $l10n("SAVE_TO_SYSTEM_ALBUM"),
+                                symbol: "square.and.arrow.down",
+                                handler: (sender, indexPath) => {
+                                    const data = sender.object(indexPath)
+                                    $photo.save({
+                                        data: $file.read(data.image.src),
+                                        handler: success => {
+                                            if (success)
+                                                $ui.success($l10n("SUCCESS"))
+                                            else
+                                                $ui.error($l10n("ERROR"))
+                                        }
+                                    })
+                                }
+                            },
+                            {
                                 title: $l10n("SELECT"),
+                                symbol: "square.grid.2x2",
                                 handler: (sender, indexPath) => {
                                     this.changemode()
                                     setTimeout(() => {
@@ -282,6 +305,7 @@ class Album {
                             {
                                 title: $l10n("DELETE"),
                                 destructive: true,
+                                symbol: "trash",
                                 handler: (sender, indexPath) => {
                                     const data = sender.object(indexPath)
                                     this.deleteImage(data.image.src, indexPath)
@@ -308,7 +332,7 @@ class Album {
                     didSelect: (sender, indexPath, data) => {
                         switch (this.mode) {
                             case 0:
-                                this.normalMode(indexPath, data)
+                                this.normalMode(data)
                                 break
                             case 1:
                                 this.multipleSelectionMode(sender, indexPath, data)
