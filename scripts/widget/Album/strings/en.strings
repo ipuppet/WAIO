@@ -5,8 +5,8 @@
 "RANDOM" = "Random";
 "SEQUENCE" = "Sequence";
 "SWITCH_INTERVAL" = "Switch Interval(Min)";
-"SYSTEM_ALBUM" = "Photo";
-"SAVE_TO_SYSTEM_ALBUM" = "Save to Photo";
+"SYSTEM_ALBUM" = "Photos";
+"SAVE_TO_SYSTEM_ALBUM" = "Save to Photos";
 "NO_IMAGE" = "Image not Found";
 "CLEAR_CACHE" = "Clear Cache";
 "NO_IMAGES" = "No Images";
