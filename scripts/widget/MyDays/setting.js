@@ -8,7 +8,6 @@ class MyDaysSetting extends Setting {
         if (!$file.exists(this.path)) {
             $file.mkdir(this.path)
         }
-        this.imageMaxSize = 50 // kb
     }
 
     getBackgroundImage() {
@@ -55,9 +54,9 @@ class MyDaysSetting extends Setting {
                                     this.clearBackgroundImage()
                                     const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     // 控制压缩图片大小
-                                    const image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
+                                    const image = this.kernel.compressImage(resp.data.image)
                                     $file.write({
-                                        data: image,
+                                        data: image.jpg(0.8),
                                         path: `${this.path}/compress.${fileName}`
                                     })
                                     $file.write({

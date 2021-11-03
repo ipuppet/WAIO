@@ -4,12 +4,12 @@ const PictureSetting = require("./setting")
 class PictureWidget extends Widget {
     constructor(kernel) {
         super(kernel, new PictureSetting(kernel))
-        this.albumPath = this.setting.album.albumPath
+        this.album = this.setting.album
+        this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
         this.switchInterval = 1000 * 60 * Number(this.setting.get("switchInterval"))
-        this.useCompressedImage = this.setting.get("useCompressedImage")
         this.urlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
-        this.pictures = this.setting.album.getImages()
+        this.pictures = this.album.getImages(this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original)
         // 缓存
         this.data = $cache.get("switch.data")
         if (!this.data) { // 首次写入缓存
@@ -48,12 +48,7 @@ class PictureWidget extends Widget {
         } else { // 维持不变
             index = this.data.index
         }
-        let imagePath // 获取图片
-        if (this.useCompressedImage) { // 检查是否使用压缩后的图片
-            imagePath = `${this.albumPath}/archive/${this.pictures[index]}`
-        } else {
-            imagePath = `${this.albumPath}/${this.pictures[index]}`
-        }
+        let imagePath = this.pictures[index] // 获取图片
         let view
         if (!$file.exists(imagePath)) {
             view = {

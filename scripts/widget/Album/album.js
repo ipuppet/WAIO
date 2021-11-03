@@ -3,45 +3,63 @@ class Album {
         this.kernel = kernel
         this.setting = setting
         this.albumPath = `${this.kernel.widgetDataPath}/${this.setting.widget}/pictures`
-        this.imageMaxSize = 50 // kb
         this.mode = 0 // 0: 正常模式  1: 多选模式
         this.selected = {}
-        if (!$file.exists(this.albumPath)) {
-            $file.mkdir(this.albumPath)
-        }
-        if (!$file.exists(`${this.albumPath}/archive`)) {
-            $file.mkdir(`${this.albumPath}/archive`)
-        }
-        if (!$file.exists(`${this.albumPath}/preview`)) {
-            $file.mkdir(`${this.albumPath}/preview`)
-        }
         this.selectedImageCounter = "selectedImageCounter"
         this.selectedImageCount = "selectedImageCount"
+        this.imageType = {
+            original: "original",
+            compressed: "compressed",
+            preview: "preview"
+        }
+        this.initStorageStructure()
+    }
+
+    initStorageStructure() {
+        if (!$file.isDirectory(`${this.albumPath}/${this.imageType.original}`)) {
+            $file.mkdir(`${this.albumPath}/${this.imageType.original}`)
+        }
+        if (!$file.isDirectory(`${this.albumPath}/${this.imageType.compressed}`)) {
+            $file.mkdir(`${this.albumPath}/${this.imageType.compressed}`)
+        }
+        if (!$file.isDirectory(`${this.albumPath}/${this.imageType.preview}`)) {
+            $file.mkdir(`${this.albumPath}/${this.imageType.preview}`)
+        }
+        // TODO 将在未来删除 向下兼容，重构结构
+        if ($file.isDirectory(`${this.albumPath}/archive`)) {
+            $file.move({
+                src: `${this.albumPath}/archive`,
+                dst: `${this.albumPath}/${this.imageType.compressed}`
+            })
+        }
+        $file.list(this.albumPath).forEach(item => {
+            if (!$file.isDirectory(`${this.albumPath}/${item}`)) {
+                $file.move({
+                    src: `${this.albumPath}/${item}`,
+                    dst: `${this.albumPath}/${this.imageType.original}/${item}`
+                })
+            }
+        })
     }
 
     /**
-     * 获取除去archive目录的所有图片
-     * @param {Boolean} isCompress 是否是archive(用于存放压缩后的图片)目录下的图片
+     * 获取所有图片
+     * @param {String} imageType this.imageType
      */
-    getImages(isCompress, isPreview) {
-        if (isCompress) return $file.list(`${this.albumPath}/archive`)
-        if (isPreview) return $file.list(`${this.albumPath}/preview`)
-        const list = $file.list(this.albumPath)
-        for (let i = 0; i < list.length; i++) {
-            if ($file.isDirectory(`${this.albumPath}/${list[i]}`)) {
-                list.splice(i, 1)
-                return list
-            }
-        }
-        return list
+    getImages(imageType) {
+        const images = $file.list(`${this.albumPath}/${imageType}`)
+        return images.length > 0 ? images.map(image => {
+            return `${this.albumPath}/${imageType}/${image}`
+        }) : []
     }
 
     deleteImage(src, indexPath, alert = true) {
         const action = () => {
-            $file.delete(src)
-            // 同时删除压缩过的文件
             const name = src.slice(src.lastIndexOf("/"))
-            $file.delete(`${this.albumPath}/archive/${name}`)
+            $file.delete(`${this.albumPath}/${this.imageType.original}/${name}`)
+            $file.delete(`${this.albumPath}/${this.imageType.compressed}/${name}`)
+            $file.delete(`${this.albumPath}/${this.imageType.preview}/${name}`)
+            // 调整 UI
             if (indexPath) {
                 const sender = $("picture-edit-matrix")
                 sender.delete(indexPath)
@@ -73,8 +91,8 @@ class Album {
     }
 
     normalMode(data) {
-        // 图片缩放问题
-        const image = $file.read(data.image.src.replace("archive/", ""))
+        // TODO 图片缩放问题
+        const image = $file.read(data.image.src.replace(this.imageType.preview, this.imageType.original))
         this.kernel.UIKit.pushPageSheet({
             showNavBar: false,
             views: [{
@@ -133,39 +151,41 @@ class Album {
                     $ui.menu({
                         items: [$l10n("SYSTEM_ALBUM"), "iCloud"],
                         handler: (title, idx) => {
-                            const saveImageAction = data => {
-                                $delay(0, () => {
-                                    const fileName = Date.now() + data.fileName.slice(data.fileName.lastIndexOf("."))
+                            const saveImageAction = (data, index) => {
+                                const extension = data.fileName.slice(data.fileName.lastIndexOf("."))
+                                const fileName = Date.now() + index + extension
+                                // original
+                                $file.write({
+                                    data: data,
+                                    path: `${this.albumPath}/${this.imageType.original}/${fileName}`
+                                })
+                                this.kernel.print(`original saved:`)
+                                this.kernel.print(fileName)
+                                const image = this.kernel.compressImage(data.image)
+                                // preview
+                                $file.write({
+                                    data: image.jpg(0.1),
+                                    path: `${this.albumPath}/${this.imageType.preview}/${fileName}`
+                                })
+                                // compressed
+                                if (this.setting.get("useCompressedImage")) {
                                     $file.write({
-                                        data: data,
-                                        path: `${this.albumPath}/${fileName}`
+                                        data: image.jpg(0.8),
+                                        path: `${this.albumPath}/${this.imageType.compressed}/${fileName}`
                                     })
-                                    if (this.setting.get("useCompressedImage")) {
-                                        // TODO 控制压缩图片大小
-                                        let compress = this.imageMaxSize * 1024 / data.info.size
-                                        compress = compress > 1 ? 1 : compress
-                                        $file.write({
-                                            data: $imagekit.scaleBy(data.image, compress).jpg(compress),
-                                            path: `${this.albumPath}/archive/${fileName}`
-                                        })
+                                }
+                                this.kernel.print(`compressed & preview saved:`)
+                                this.kernel.print(fileName)
+                                // UI 隐藏无图片提示字符
+                                if (!$("no-image-text").hidden) $("no-image-text").hidden = true
+                                // UI 插入图片
+                                const matrix = $("picture-edit-matrix")
+                                matrix.hidden = false
+                                matrix.insert({
+                                    indexPath: $indexPath(0, matrix.data.length),
+                                    value: {
+                                        image: { src: `${this.albumPath}/${this.imageType.preview}/${fileName}` }
                                     }
-                                    // preview
-                                    $file.write({
-                                        data: $imagekit.scaleBy(data.image, 0.1).jpg(0.1),
-                                        path: `${this.albumPath}/preview/${fileName}`
-                                    })
-                                    // UI隐藏无图片提示字符
-                                    if (!$("no-image-text").hidden)
-                                        $("no-image-text").hidden = true
-                                    // UI插入图片
-                                    const matrix = $("picture-edit-matrix")
-                                    matrix.hidden = false
-                                    matrix.insert({
-                                        indexPath: $indexPath(0, matrix.data.length),
-                                        value: {
-                                            image: { src: `${this.albumPath}/${fileName}` }
-                                        }
-                                    })
                                 })
                             }
                             if (idx === 0) { // 从系统相册选取图片
@@ -180,10 +200,16 @@ class Album {
                                         if (!resp.results) {
                                             return
                                         }
-                                        resp.results.forEach(image => {
-                                            saveImageAction(image.data)
-                                        })
                                         $ui.toast($l10n("LOADING"))
+                                        resp.results.forEach((image, index) => {
+                                            // TODO 文件操作会阻塞整个程序
+                                            $thread.background({
+                                                delay: 0,
+                                                handler: () => {
+                                                    saveImageAction(image.data, index)
+                                                }
+                                            })
+                                        })
                                     }
                                 })
                             } else if (idx === 1) { // 从iCloud选取图片
@@ -192,7 +218,7 @@ class Album {
                                         if (!file) {
                                             return
                                         }
-                                        saveImageAction(file)
+                                        saveImageAction(file, 0)
                                         $ui.toast($l10n("SUCCESS"))
                                     }
                                 })
@@ -242,16 +268,9 @@ class Album {
     }
 
     getAlbumView() {
-        const pictures = this.getImages(true, true)
-        const data = []
-        if (pictures.length > 0) {
-            const dir = $file.list(`${this.albumPath}/preview`).length > 0 ? "preview" : "archive"
-            pictures.forEach(picture => {
-                data.push({
-                    image: { src: `${this.albumPath}/${dir}/${picture}` }
-                })
-            })
-        }
+        const pictures = this.getImages(this.imageType.preview).map(item => ({
+            image: { src: item }
+        }))
         return [
             { // 无图片提示字符
                 type: "label",
@@ -271,7 +290,7 @@ class Album {
                     hidden: pictures.length > 0 ? false : true,
                     columns: this.setting.get("columns"),
                     square: true,
-                    data: data,
+                    data: pictures,
                     menu: {
                         title: $l10n("MENU"),
                         items: [
