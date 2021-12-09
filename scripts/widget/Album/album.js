@@ -1,3 +1,5 @@
+const { Sheet } = require("../../easy-jsbox")
+
 class Album {
     constructor(kernel, setting) {
         this.kernel = kernel
@@ -90,17 +92,18 @@ class Album {
         } else { action() }
     }
 
-    normalMode(data) {
+    previewImage(data) {
         // TODO 图片缩放问题
         const image = $file.read(data.image.src.replace(this.imageType.preview, this.imageType.original))
-        this.kernel.UIKit.pushPageSheet({
-            showNavBar: false,
-            views: [{
+        const sheet = new Sheet()
+        sheet
+            .setView({
                 type: "image",
                 props: { data: image },
                 layout: $layout.fill
-            }]
-        })
+            })
+            .init()
+            .present()
     }
 
     multipleSelectionMode(sender, indexPath, data) {
@@ -117,7 +120,7 @@ class Album {
         $(this.selectedImageCount).text = Object.keys(this.selected).length
     }
 
-    changemode() {
+    changeMode() {
         const matrix = $("picture-edit-matrix")
         switch (this.mode) {
             case 0: // 切换到多选模式
@@ -251,7 +254,7 @@ class Album {
                                                 }
                                             })
                                         }
-                                        this.changemode() // 切换回普通模式
+                                        this.changeMode() // 切换回普通模式
                                     }
                                 }, style),
                                 {
@@ -314,7 +317,7 @@ class Album {
                                 title: $l10n("SELECT"),
                                 symbol: "square.grid.2x2",
                                 handler: (sender, indexPath) => {
-                                    this.changemode()
+                                    this.changeMode()
                                     setTimeout(() => {
                                         const data = sender.object(indexPath)
                                         this.multipleSelectionMode(sender, indexPath, data)
@@ -351,7 +354,7 @@ class Album {
                     didSelect: (sender, indexPath, data) => {
                         switch (this.mode) {
                             case 0:
-                                this.normalMode(data)
+                                this.previewImage(data)
                                 break
                             case 1:
                                 this.multipleSelectionMode(sender, indexPath, data)
@@ -408,7 +411,7 @@ class Album {
                         events: {
                             tapped: () => {
                                 if (this.mode === 0) return
-                                this.changemode()
+                                this.changeMode()
                             }
                         },
                         layout: (make, view) => {

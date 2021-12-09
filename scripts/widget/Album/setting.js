@@ -1,6 +1,7 @@
 const NAME = "Album"
 const BaseSetting = require("../setting")
 const Album = require("./album")
+const { UIKit } = require("../../easy-jsbox")
 
 class PictureSetting extends BaseSetting {
     constructor(kernel) {
@@ -13,15 +14,13 @@ class PictureSetting extends BaseSetting {
             animate.touchHighlightStart()
             const views = this.album.getAlbumView(),
                 buttons = this.album.getAlbumButtons()
-            this.kernel.UIKit.push({
+            UIKit.push({
                 views: views,
                 title: $l10n("ALBUM"),
-                parent: this.widget,
                 navButtons: buttons,
-                hasTopOffset: true,
                 disappeared: () => {
                     animate.touchHighlightEnd()
-                },
+                }
             })
         }
 
