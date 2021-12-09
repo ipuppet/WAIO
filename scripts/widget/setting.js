@@ -1,4 +1,10 @@
-class Setting {
+const {
+    UIKit,
+    Sheet,
+    Setting
+} = require("../easy-jsbox")
+
+class BaseSetting {
     constructor(kernel, widget) {
         this.kernel = kernel
         this.widget = widget
@@ -28,16 +34,18 @@ class Setting {
         if (!$file.exists(dataPath)) { $file.mkdir(dataPath) }
         const structurePath = `${rootPath}/setting.json`,
             savePath = `${dataPath}/setting.json`
-        this.settingComponent = this.kernel.registerComponent("setting", {
+        this.setting = new Setting({
             name: `${this.widget}Setting`,
             savePath: savePath,
             structurePath: structurePath
         })
-        this.setting = this.settingComponent.controller
-        this.setting.setChildPage(true)
+        this.setting.loadConfig()
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
             this.setting.setFooter({ type: "view" })
+            this.setting.setEvent("onChildPush", listView => {
+                this.push(listView)
+            })
             this.defaultSettingMethods()
             this.initSettingMethods()
         }
@@ -52,11 +60,11 @@ class Setting {
         }
     }
 
-    push() {
-        this.kernel.UIKit.push({
+    push(listView = this.setting.getListView()) {
+        UIKit.push({
             bgcolor: "insetGroupedBackground",
             topOffset: false,
-            views: this.setting.getView(),
+            views: [listView],
             title: this.config.name,
             navButtons: [
                 {
@@ -90,23 +98,24 @@ class Setting {
     }
 
     defaultSettingMethods() {
-        this.setting.readme = animate => {
+        this.setting.method.readme = animate => {
             animate.touchHighlight()
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
-            this.kernel.UIKit.pushPageSheet({
-                views: [{
+            const sheet = new Sheet()
+            sheet
+                .setView({
                     type: "markdown",
                     props: { content: content },
                     layout: (make, view) => {
                         make.size.equalTo(view.super)
                     }
-                }],
-                title: $l10n("README")
-            })
+                })
+                .init()
+                .present()
         }
     }
 
     initSettingMethods() { }
 }
 
-module.exports = Setting
+module.exports = BaseSetting

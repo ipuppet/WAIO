@@ -22,7 +22,7 @@
                                 "title": "BACKGROUND_IMAGE",
                                 "type": "script",
                                 "key": "backgroundImage",
-                                "value": "this.controller.backgroundImage"
+                                "value": "this.method.backgroundImage"
                             },
                             {
                                 "icon": [
@@ -245,7 +245,7 @@
                                 "title": "GET_HOLIDAY",
                                 "type": "script",
                                 "key": "get_holiday",
-                                "value": "this.controller.getHoliday"
+                                "value": "this.method.getHoliday"
                             },
                             {
                                 "icon": [
@@ -255,7 +255,7 @@
                                 "title": "CLEAR_HOLIDAY_DATA",
                                 "type": "script",
                                 "key": "clear_holiday",
-                                "value": "this.controller.clearHoliday"
+                                "value": "this.method.clearHoliday"
                             }
                         ]
                     }
@@ -274,7 +274,7 @@
                 "title": "README",
                 "type": "script",
                 "key": "calendar",
-                "value": "this.controller.readme"
+                "value": "this.method.readme"
             }
         ]
     }

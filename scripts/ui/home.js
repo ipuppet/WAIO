@@ -77,126 +77,116 @@ class HomeUI {
     }
 
     deleteWidget(name, callback) {
-        let style = {}
-        if ($alertActionType) {
-            style = { style: $alertActionType.destructive }
-        }
         $ui.alert({
             title: $l10n("CONFIRM_DELETE_MSG"),
             actions: [
-                Object.assign({
+                {
                     title: $l10n("DELETE"),
+                    style: $alertActionType.destructive,
                     handler: () => {
                         $file.delete(`${this.kernel.widgetRootPath}/${name}`)
                         // 删除数据文件
                         $file.delete(`${this.kernel.widgetDataPath}/${name}`)
                         if (typeof callback === "function") callback()
                     }
-                }, style),
+                },
                 { title: $l10n("CANCEL") }
             ]
         })
     }
 
     getView() {
-        return [
-            {
-                type: "list",
-                props: {
-                    id: "waio-home-list",
-                    rowHeight: 100,
-                    indicatorInsets: $insets(30, 0, 50, 0),
-                    data: this.getWidgetListView(),
-                    footer: { // 防止list被菜单遮挡
-                        type: "view",
-                        props: { height: 50 }
+        return {
+            type: "list",
+            props: {
+                id: "waio-home-list",
+                rowHeight: 100,
+                data: this.getWidgetListView(),
+                template: {
+                    props: {
+                        bgcolor: $color("clear")
                     },
-                    template: {
-                        props: {
-                            bgcolor: $color("clear")
-                        },
-                        layout: $layout.fill,
-                        views: [
-                            {
-                                type: "image",
-                                props: {
-                                    id: "icon",
-                                    bgcolor: $color("clear"),
-                                    clipsToBounds: true,
-                                    cornerRadius: 10,
-                                    smoothCorners: true
-                                },
-                                layout: make => {
-                                    make.size.equalTo(80)
-                                    make.left.inset(20)
-                                    make.top.inset(10)
-                                }
-                            },
-                            {
-                                type: "label",
-                                props: {
-                                    id: "title",
-                                    font: $font(20)
-                                },
-                                layout: (make, view) => {
-                                    make.top.equalTo(view.prev).offset(10)
-                                    make.left.equalTo(view.prev.right).offset(20)
-                                }
-                            },
-                            {
-                                type: "label",
-                                props: {
-                                    id: "describe",
-                                    font: $font(12),
-                                    color: $color("systemGray2")
-                                },
-                                layout: (make, view) => {
-                                    make.left.equalTo(view.prev)
-                                    make.top.equalTo(view.prev.bottom).offset(10)
-                                }
-                            }
-                        ]
-                    },
-                    actions: [
+                    layout: $layout.fill,
+                    views: [
                         {
-                            title: $l10n("COPY"),
-                            color: $color("orange"),
-                            handler: (sender, indexPath) => {
-                                this.copyWidget(sender.object(indexPath).name, () => {
-                                    // 更新列表
-                                    setTimeout(() => { sender.data = this.getWidgetListView() }, 200)
-                                })
+                            type: "image",
+                            props: {
+                                id: "icon",
+                                bgcolor: $color("clear"),
+                                clipsToBounds: true,
+                                cornerRadius: 10,
+                                smoothCorners: true
+                            },
+                            layout: make => {
+                                make.size.equalTo(80)
+                                make.left.inset(20)
+                                make.top.inset(10)
                             }
                         },
                         {
-                            title: $l10n("DELETE"),
-                            color: $color("red"),
-                            handler: (sender, indexPath) => {
-                                this.deleteWidget(sender.object(indexPath).name, () => {
-                                    sender.delete(indexPath)
-                                })
+                            type: "label",
+                            props: {
+                                id: "title",
+                                font: $font(20)
+                            },
+                            layout: (make, view) => {
+                                make.top.equalTo(view.prev).offset(10)
+                                make.left.equalTo(view.prev.right).offset(20)
+                            }
+                        },
+                        {
+                            type: "label",
+                            props: {
+                                id: "describe",
+                                font: $font(12),
+                                color: $color("systemGray2")
+                            },
+                            layout: (make, view) => {
+                                make.left.equalTo(view.prev)
+                                make.top.equalTo(view.prev.bottom).offset(10)
                             }
                         }
                     ]
                 },
-                events: {
-                    didSelect: (sender, indexPath, data) => {
-                        const widgetName = data.name
-                        const widget = this.kernel.widgetInstance(widgetName)
-                        if (widget) {
-                            widget.custom()
-                        } else {
-                            $ui.error($l10n("ERROR"))
+                actions: [
+                    {
+                        title: $l10n("COPY"),
+                        color: $color("orange"),
+                        handler: (sender, indexPath) => {
+                            this.copyWidget(sender.object(indexPath).name, () => {
+                                // 更新列表
+                                setTimeout(() => { sender.data = this.getWidgetListView() }, 200)
+                            })
                         }
                     },
-                    pulled: sender => {
-                        $("waio-home-list").data = this.getWidgetListView()
-                        setTimeout(() => { sender.endRefreshing() }, 500)
+                    {
+                        title: $l10n("DELETE"),
+                        color: $color("red"),
+                        handler: (sender, indexPath) => {
+                            this.deleteWidget(sender.object(indexPath).name, () => {
+                                sender.delete(indexPath)
+                            })
+                        }
+                    }
+                ]
+            },
+            events: {
+                didSelect: (sender, indexPath, data) => {
+                    const widgetName = data.name
+                    const widget = this.kernel.widgetInstance(widgetName)
+                    if (widget) {
+                        widget.custom()
+                    } else {
+                        $ui.error($l10n("ERROR"))
                     }
                 },
-                layout: $layout.fill
-            }
-        ]
+                pulled: sender => {
+                    $("waio-home-list").data = this.getWidgetListView()
+                    setTimeout(() => { sender.endRefreshing() }, 500)
+                }
+            },
+            layout: $layout.fill
+        }
     }
 }
 

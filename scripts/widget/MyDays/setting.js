@@ -1,7 +1,7 @@
 const NAME = "MyDays"
-const Setting = require("../setting")
+const BaseSetting = require("../setting")
 
-class MyDaysSetting extends Setting {
+class MyDaysSetting extends BaseSetting {
     constructor(kernel) {
         super(kernel, NAME)
         this.path = `${this.kernel.widgetDataPath}/${NAME}`
@@ -34,7 +34,7 @@ class MyDaysSetting extends Setting {
     }
 
     initSettingMethods() {
-        this.setting.backgroundImage = animate => {
+        this.setting.method.backgroundImage = animate => {
             animate.touchHighlightStart()
             $ui.menu({
                 items: [$l10n("CHOOSE_IMAGE"), $l10n("CLEAR_IMAGE")],

@@ -1,9 +1,14 @@
-const { Kernel } = require("../EasyJsBox/src/kernel")
+const {
+    UIKit,
+    Sheet,
+    Kernel,
+    Setting
+} = require("./easy-jsbox")
 
 // path
-const widgetRootPath = "/scripts/widget"
-const widgetDataPath = "/storage/widget"
-const backupPath = "/storage/backup"
+const widgetRootPath = "scripts/widget"
+const widgetDataPath = "storage/widget"
+const backupPath = "storage/backup"
 
 /**
  * 实例化一个小组件
@@ -55,9 +60,8 @@ class AppKernel extends Kernel {
     constructor() {
         super()
         this.query = $context.query
-        // 注册组件
-        this.settingComponent = this.registerComponent("setting")
-        this.setting = this.settingComponent.controller
+        this.setting = new Setting()
+        this.setting.loadConfig()
         this.initSettingMethods()
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
@@ -104,33 +108,34 @@ class AppKernel extends Kernel {
      * 注入设置中的脚本类型方法
      */
     initSettingMethods() {
-        this.setting.readme = animate => {
+        this.setting.method.readme = animate => {
             animate.touchHighlight()
             const content = $file.read("/README.md").string
-            this.UIKit.pushPageSheet({
-                views: [{
+            const sheet = new Sheet()
+            sheet
+                .setView({
                     type: "markdown",
                     props: { content: content },
                     layout: (make, view) => {
                         make.size.equalTo(view.super)
                     }
-                }],
-                title: $l10n("README")
-            })
+                })
+                .init()
+                .present()
         }
 
-        this.setting.tips = animate => {
+        this.setting.method.tips = animate => {
             animate.touchHighlight()
             $ui.alert("每个小组件中都有README文件，点击可以得到一些信息。")
         }
 
-        this.setting.updateHomeScreenWidgetOptions = animate => {
+        this.setting.method.updateHomeScreenWidgetOptions = animate => {
             animate.actionStart()
             this.updateHomeScreenWidgetOptions()
             animate.actionDone()
         }
 
-        this.setting.backupToICloud = animate => {
+        this.setting.method.backupToICloud = animate => {
             animate.actionStart()
             const backupAction = async () => {
                 // 保证目录存在
@@ -186,7 +191,7 @@ class AppKernel extends Kernel {
             })
         }
 
-        this.setting.recoverFromICloud = animate => {
+        this.setting.method.recoverFromICloud = animate => {
             animate.actionStart()
             $drive.open({
                 handler: data => {
@@ -316,22 +321,24 @@ module.exports = {
         } else if ($app.env === $env.app || $app.env === $env.today) {
             const kernel = new AppKernel()
             // 设置样式
-            kernel.UIKit.useJsboxNav()
+            kernel.useJsboxNav()
             // 设置 navButtons
-            kernel.UIKit.setNavButtons([
+            kernel.setNavButtons([
                 {
                     symbol: "gear",
                     handler: () => {
-                        kernel.UIKit.push({
+                        UIKit.push({
                             title: $l10n("SETTING"),
-                            views: kernel.setting.getView()
+                            views: [kernel.setting.getListView()]
                         })
                     }
                 }
             ])
             const HomeUI = require("./ui/home")
             const interfaceUi = new HomeUI(kernel)
-            kernel.UIRender(interfaceUi.getView())
+            kernel.UIRender({
+                views: [interfaceUi.getView()]
+            })
             // 监听运行状态
             $app.listen({
                 pause: () => {

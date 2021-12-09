@@ -19,7 +19,7 @@
                 "title": "UPDATE_HOME_SCREEN_WIDGET_OPTIONS",
                 "type": "script",
                 "key": "updateHomeScreenWidgetOptions",
-                "value": "this.controller.updateHomeScreenWidgetOptions"
+                "value": "this.method.updateHomeScreenWidgetOptions"
             }
         ]
     },
@@ -33,7 +33,7 @@
                 "title": "BACKUP_TO_ICLOUD",
                 "type": "script",
                 "key": "backup",
-                "value": "this.controller.backupToICloud"
+                "value": "this.method.backupToICloud"
             },
             {
                 "icon": [
@@ -43,7 +43,7 @@
                 "title": "RECOVER_FROM_ICLOUD",
                 "type": "script",
                 "key": "recover",
-                "value": "this.controller.recoverFromICloud"
+                "value": "this.method.recoverFromICloud"
             }
         ]
     },
@@ -84,7 +84,7 @@
                 "title": "README",
                 "type": "script",
                 "key": "readme",
-                "value": "this.controller.readme"
+                "value": "this.method.readme"
             }
         ]
     }
