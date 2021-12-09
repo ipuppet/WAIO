@@ -1,8 +1,11 @@
+const { SloarToLunar } = require('./sloarToLunar')
+
+const s2l = new SloarToLunar()
+
 class Calendar {
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
-        this.sloarToLunar = this.kernel.registerPlugin("sloarToLunar")
         this.onlyCurrentMonth = this.setting.get("onlyCurrentMonth")
         this.colorTone = this.setting.getColor(this.setting.get("colorTone"))
         this.hasHoliday = this.setting.get("holiday")
@@ -146,11 +149,11 @@ class Calendar {
                 // 农历
                 if (date === dateNow) {
                     // 保存农历信息
-                    this.lunar = this.sloarToLunar(year, month + 1, date)
+                    this.lunar = s2l.sloarToLunar(year, month + 1, date)
                 }
                 if (lunar && formatDate !== 0) {
                     // month是0-11，故+1
-                    formatDate["lunar"] = date === dateNow ? this.lunar : this.sloarToLunar(
+                    formatDate["lunar"] = date === dateNow ? this.lunar : s2l.sloarToLunar(
                         year, formatDate.month + 1, formatDate.date
                     )
                 }

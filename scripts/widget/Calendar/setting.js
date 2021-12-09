@@ -1,7 +1,7 @@
 const NAME = "Calendar"
-const Setting = require("../setting")
+const BaseSetting = require("../setting")
 
-class CalendarSetting extends Setting {
+class CalendarSetting extends BaseSetting {
     constructor(kernel) {
         super(kernel, NAME)
         this.path = `${this.kernel.widgetDataPath}/${NAME}`
@@ -80,7 +80,7 @@ class CalendarSetting extends Setting {
     }
 
     initSettingMethods() {
-        this.setting.clearHoliday = animate => {
+        this.setting.method.clearHoliday = animate => {
             animate.actionStart()
             let style = {}
             if ($alertActionType) {
@@ -107,7 +107,7 @@ class CalendarSetting extends Setting {
         /**
          * 用于设置页面手动获取节假日信息
          */
-        this.setting.getHoliday = async animate => {
+        this.setting.method.getHoliday = async animate => {
             animate.actionStart()
             const saveHolidayAction = () => {
                 const year = new Date().getFullYear()
@@ -155,7 +155,7 @@ class CalendarSetting extends Setting {
             return
         }
 
-        this.setting.backgroundImage = animate => {
+        this.setting.method.backgroundImage = animate => {
             animate.touchHighlightStart()
             $ui.menu({
                 items: [$l10n("CHOOSE_IMAGE"), $l10n("CLEAR_IMAGE")],

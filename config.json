@@ -1,13 +1,13 @@
 {
     "info": {
         "name": "WAIO",
-        "version": "1.4.11",
+        "version": "1.5.0",
         "author": "ipuppet",
         "module": false
     },
     "settings": {
         "theme": "auto",
-        "minSDKVer": "2.13.0",
+        "minSDKVer": "2.19.0",
         "minOSVer": "14.0.0",
         "idleTimerDisabled": false,
         "keyboardToolbarEnabled": true,

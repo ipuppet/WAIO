@@ -9,7 +9,7 @@
                 "title": "BACKGROUND_IMAGE",
                 "type": "script",
                 "key": "backgroundImage",
-                "value": "this.controller.backgroundImage"
+                "value": "this.method.backgroundImage"
             },
             {
                 "icon": [
@@ -186,7 +186,7 @@
                 "title": "README",
                 "type": "script",
                 "key": "calendar",
-                "value": "this.controller.readme"
+                "value": "this.method.readme"
             }
         ]
     }

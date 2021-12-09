@@ -1,7 +1,7 @@
 const NAME = "Join"
-const Setting = require("../setting")
+const BaseSetting = require("../setting")
 
-class JoinSetting extends Setting {
+class JoinSetting extends BaseSetting {
     constructor(kernel) {
         super(kernel, NAME)
     }
@@ -19,7 +19,7 @@ class JoinSetting extends Setting {
         })()
 
         // 设置项内需要的函数
-        this.setting.getMenu = () => {
+        this.setting.method.getMenu = () => {
             return this.menu
         }
     }

@@ -225,7 +225,7 @@
                 "title": "README",
                 "type": "script",
                 "key": "calendar",
-                "value": "this.controller.readme"
+                "value": "this.method.readme"
             }
         ]
     }

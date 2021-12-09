@@ -37,7 +37,7 @@
                 "title": "SELECT_WIDGET",
                 "type": "menu",
                 "key": "left",
-                "items": "this.controller.getMenu",
+                "items": "this.method.getMenu",
                 "withTitle": true,
                 "value": [
                     0,
@@ -67,7 +67,7 @@
                 "title": "SELECT_WIDGET",
                 "type": "menu",
                 "key": "right",
-                "items": "this.controller.getMenu",
+                "items": "this.method.getMenu",
                 "withTitle": true,
                 "value": [
                     0,
@@ -87,7 +87,7 @@
                 "title": "README",
                 "type": "script",
                 "key": "album",
-                "value": "this.controller.readme"
+                "value": "this.method.readme"
             }
         ]
     }
