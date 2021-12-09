@@ -1,4 +1,4 @@
-const { Sheet } = require("../../easy-jsbox")
+const { UIKit } = require("../../easy-jsbox")
 
 class Album {
     constructor(kernel, setting) {
@@ -92,18 +92,51 @@ class Album {
         } else { action() }
     }
 
-    previewImage(data) {
-        // TODO 图片缩放问题
-        const image = $file.read(data.image.src.replace(this.imageType.preview, this.imageType.original))
-        const sheet = new Sheet()
-        sheet
-            .setView({
-                type: "image",
-                props: { data: image },
-                layout: $layout.fill
+    previewImage(index, data) {
+        $quicklook.open({
+            data: $data({ path: data.replace(this.imageType.preview, this.imageType.original) })
+        })
+        return
+        // TODO 画廊无法设置 page，且切换过程 page 混乱
+        const getData = originalImageIndex => {
+            return this.getImages(this.imageType.preview).map((image, index) => {
+                if (originalImageIndex - 1 <= index && index <= originalImageIndex + 1) {
+                    image = image.replace(this.imageType.preview, this.imageType.original)
+                }
+                return {
+                    type: "image",
+                    props: {
+                        src: image
+                    }
+                }
             })
-            .init()
-            .present()
+        }
+        UIKit.push({
+            views: [{
+                type: "gallery",
+                props: {
+                    items: getData(index),
+                    hidden: true,
+                    page: index,
+                    interval: 0
+                },
+                events: {
+                    ready: sender => {
+                        setTimeout(() => {
+                            //sender.scrollToPage(index)
+                            setTimeout(() => {
+                                sender.hidden = false
+                            }, 500)
+                        }, 100)
+                    },
+                    changed: sender => {
+                        console.log(sender.page)
+                        sender.items = getData(sender.page)
+                    }
+                },
+                layout: $layout.fill
+            }]
+        })
     }
 
     multipleSelectionMode(sender, indexPath, data) {
@@ -354,7 +387,7 @@ class Album {
                     didSelect: (sender, indexPath, data) => {
                         switch (this.mode) {
                             case 0:
-                                this.previewImage(data)
+                                this.previewImage(indexPath.item, data.image.src)
                                 break
                             case 1:
                                 this.multipleSelectionMode(sender, indexPath, data)
