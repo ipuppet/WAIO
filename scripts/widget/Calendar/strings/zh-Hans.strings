@@ -62,7 +62,7 @@
 "YEAR_DISPLAY_MODE_HALF" = "简写";
 "YEAR_DISPLAY_MODE_FULLY" = "完整";
 "SHOW_LUNAR" = "显示农历";
-"SHOW_LUNAR_YEAR" = "显示农历年";
+"SHOW_LUNAR_YEAR" = "包含农历年";
 "ADD_SPACER" = "增加间距";
 "MONTH_DISPLAY_MODE" = "月份显示模式";
 "CHINESE_CHARACTERS" = "汉字";

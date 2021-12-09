@@ -58,13 +58,13 @@
 "HOLIDAY_ALREADY_EXISTS" = "Overwrite Existing Holiday Data?";
 
 "TITLE" = "Title";
-"YEAR_DISPLAY_MODE" = "Year Mode";
+"YEAR_DISPLAY_MODE" = "Year Display Mode";
 "YEAR_DISPLAY_MODE_HALF" = "Half";
 "YEAR_DISPLAY_MODE_FULLY" = "Fully";
 "SHOW_LUNAR" = "Show Lunar";
 "SHOW_LUNAR_YEAR" = "Show Lunar (Year)";
 "ADD_SPACER" = "Increase Spacing";
-"MONTH_DISPLAY_MODE" = "Display Mode (Month)";
+"MONTH_DISPLAY_MODE" = "Month Display Mode";
 "CHINESE_CHARACTERS" = "Chars";
 "NUMBER" = "Number";
 
