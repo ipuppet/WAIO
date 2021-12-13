@@ -63,6 +63,21 @@ class Calendar {
         return month[index] + $l10n("BLANK_MONTH")
     }
 
+    getBackground() {
+        if ($file.exists(this.backgroundImage)) {
+            return {
+                type: "image",
+                props: {
+                    image: $image(this.backgroundImage),
+                    resizable: true,
+                    scaledToFill: true
+                }
+            }
+        } else {
+            return $color(this.backgroundColor, this.backgroundColorDark)
+        }
+    }
+
     isHoliday(year, month, date) {
         /**
          * 数字补0
@@ -84,7 +99,7 @@ class Calendar {
         return false
     }
 
-    getCalendar(lunar, isFullMonth = true) {
+    getCalendar(lunar, weekOnly = false) {
         const dateInstance = new Date()
         const year = dateInstance.getFullYear()
         const month = dateInstance.getMonth()
@@ -168,7 +183,7 @@ class Calendar {
                 week.push(formatDate)
                 if (firstDay === 0) date++
             }
-            if (!isFullMonth) { // 是否获取整个月
+            if (weekOnly) { // 是否只获取一周
                 if (date > dateNow) { // 当循环日期大于当前日期时，说明本周已经循环完毕
                     calendar = week
                     break
@@ -186,109 +201,112 @@ class Calendar {
     }
 
     /**
-     * 不同日期显示不同样式
+     * 复杂内容样式修饰器
+     * @param {*} dayInfo 
+     * @param {*} calendarInfo 
+     * @returns 
      */
-    formatDay(date, calendarInfo, hasExtra) {
-        if (date === 0) { // 空白直接跳过
+    multipleContentDayStyleModifier(dayInfo, calendarInfo) {
+        if (dayInfo === 0) { // 空白直接跳过
             return {
                 date: "",
                 props: {},
                 extra: null
             }
         }
+        const extra = dayInfo.holiday ? dayInfo.holiday.name : dayInfo.lunar.lunarDay
         // 初始样式
         const props = {
-            text: { color: $color(this.textColor, this.textColorDark) },
-            ext: { color: $color(this.textColor, this.textColorDark) }, // 额外信息样式，如农历等
+            text: {
+                text: String(dayInfo.date),
+                color: $color(this.textColor, this.textColorDark)
+            },
+            ext: {
+                text: extra,
+                lineLimit: extra.length > 3 ? 2 : 1,
+                color: $color(this.textColor, this.textColorDark)
+            }, // 额外信息样式，如农历等
             box: {}
         }
         // 周末
-        if (date.day === 0 || date.day === 6) {
+        if (dayInfo.day === 0 || dayInfo.day === 6) {
             props.ext.color = props.text.color = $color("systemGray2")
         }
         // 节假日
-        if (date.holiday) {
-            if (date.holiday.holiday) {
+        if (dayInfo.holiday) {
+            if (dayInfo.holiday.holiday) {
                 props.ext.color = props.text.color = this.holidayColor
             } else {
                 props.ext.color = props.text.color = this.holidayNoRestColor
             }
         }
         // 当天
-        if (date.date === calendarInfo.date) {
+        if (dayInfo.date === calendarInfo.date) {
             props.text.color = $color("white")
             props.ext.color = $color("white")
-            if (!date.holiday) {
+            if (!dayInfo.holiday) {
                 props.box.background = this.colorTone
             } else {
-                if (date.holiday.holiday)
+                if (dayInfo.holiday.holiday)
                     props.box.background = this.holidayColor
                 else
                     props.box.background = this.holidayNoRestColor
             }
         }
         // 本月前后补位日期
-        if (date.month !== calendarInfo.month) {
+        if (dayInfo.month !== calendarInfo.month) {
             props.ext.color = props.text.color = $color("systemGray2")
             props.box = {}
         }
-        // 4x4 widget 可显示额外信息
-        let extra = null
-        if (hasExtra) {
-            extra = date.holiday ? date.holiday.name : date.lunar.lunarDay
-        }
-        return {
-            date: String(date.date),
-            props: props,
-            extra: extra
-        }
+        return props
     }
 
     /**
-     * 每天的模板
-     * @param {String} text 
-     * @param {Object} props 
-     * @param {*} extra 
+     * 复杂内容视图模板
+     * @param {*} props 
+     * @param {*} family 
+     * @returns 
      */
-    dayTemplate(text, props = {}, extra, family) {
-        const views = [{
-            type: "text",
-            props: Object.assign({
-                text: text,
-                font: $font(12),
-                lineLimit: 1,
-                minimumScaleFactor: 0.5,
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                }
-            }, props.text)
-        }]
-        if (extra) { // 判断是否有额外信息
-            views.push({
+    multipleContentDayTemplate(props = {}, family) {
+        $widget.family = family
+        let lineHeight = Infinity
+        if (family === this.setting.family.small) {
+            lineHeight = ($widget.displaySize.height - 20) / 7
+        } else if (family === this.setting.family.large) {
+            lineHeight = ($widget.displaySize.height - 20) / 13
+        }
+        const views = [
+            {
                 type: "text",
                 props: Object.assign({
-                    text: extra,
                     font: $font(12),
-                    lineLimit: extra.length > 3 ? 2 : 1,
+                    lineLimit: 1,
                     minimumScaleFactor: 0.5,
-                    frame: Object.assign({
-                        maxWidth: Infinity
-                    }, family ? {
-                        height: (() => {
-                            $widget.family = family
-                            return ($widget.displaySize.height - 20) / 13
-                        })()
-                    } : { maxHeight: Infinity })
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: lineHeight
+                    }
+                }, props.text)
+            },
+            {
+                type: "text",
+                props: Object.assign({
+                    font: $font(12),
+                    minimumScaleFactor: 0.5,
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: lineHeight
+                    }
                 }, props.ext)
-            })
-        }
+            }
+        ]
         return {
             type: "vstack",
             modifiers: [
                 Object.assign({
                     background: $color("clear"),
                     color: $color("primaryText"),
+                    spacing: 0,
                     padding: 2
                 }, props.box),
                 {
@@ -304,57 +322,127 @@ class Calendar {
     }
 
     /**
+     * 简单内容样式修饰器
+     * @param {*} dayInfo 
+     * @param {*} calendarInfo 
+     * @returns 
+     */
+    singleContentDayStyleModifier(dayInfo, calendarInfo) {
+        if (dayInfo === 0) { // 空白直接跳过
+            return {
+                date: "",
+                props: {},
+                extra: null
+            }
+        }
+        // 初始样式
+        const props = {
+            text: {
+                text: String(dayInfo.date),
+                color: $color(this.textColor, this.textColorDark)
+            },
+            box: {}
+        }
+        // 周末
+        if (dayInfo.day === 0 || dayInfo.day === 6) {
+            props.text.color = $color("systemGray2")
+        }
+        // 节假日
+        if (dayInfo.holiday) {
+            if (dayInfo.holiday.holiday) {
+                props.text.color = this.holidayColor
+            } else {
+                props.text.color = this.holidayNoRestColor
+            }
+        }
+        // 当天
+        if (dayInfo.date === calendarInfo.date) {
+            props.text.color = $color("white")
+            if (!dayInfo.holiday) {
+                props.box.background = this.colorTone
+            } else {
+                if (dayInfo.holiday.holiday)
+                    props.box.background = this.holidayColor
+                else
+                    props.box.background = this.holidayNoRestColor
+            }
+        }
+        // 本月前后补位日期
+        if (dayInfo.month !== calendarInfo.month) {
+            props.text.color = $color("systemGray2")
+            props.box = {}
+        }
+        return props
+    }
+
+    /**
+     * 简单内容视图模板
+     * @param {*} props 
+     * @returns 
+     */
+    singleContentDayTemplate(props = {}) {
+        return {
+            type: "vstack",
+            modifiers: [
+                Object.assign({
+                    background: $color("clear"),
+                    color: $color("primaryText"),
+                    spacing: 0,
+                    padding: 2
+                }, props.box),
+                {
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: Infinity
+                    },
+                    cornerRadius: 5
+                }
+            ],
+            views: [{
+                type: "text",
+                props: Object.assign({
+                    font: $font(12),
+                    lineLimit: 1,
+                    minimumScaleFactor: 0.5,
+                    frame: {
+                        maxWidth: Infinity,
+                        maxHeight: Infinity
+                    }
+                }, props.text)
+            }]
+        }
+    }
+
+    /**
      * 周指示器模板
      */
     weekIndexTemplate() {
         const title = []
         for (let i = 0; i < 7; i++) {
-            title.push(this.dayTemplate(this.localizedWeek(i), {
-                text: { color: this.colorTone }
+            title.push(this.singleContentDayTemplate({
+                text: {
+                    text: this.localizedWeek(i),
+                    color: this.colorTone
+                }
             }))
         }
         return title
     }
 
-    formatCalendar(family, calendarInfo, hasExtra) {
-        const calendar = calendarInfo.calendar
-        const days = []
-        for (let line of calendar) { // 设置不同日期显示不同样式
-            for (let date of line) {
-                date = this.formatDay(date, calendarInfo, hasExtra)
-                days.push(this.dayTemplate(date.date, date.props, date.extra, family))
-            }
-        }
-        const weekTitle = this.weekIndexTemplate()
-        return { // 返回完整视图
-            type: "vgrid",
-            props: {
-                columns: Array(7).fill({
-                    flexible: {
-                        minimum: 0,
-                        maximum: Infinity
-                    },
-                    spacing: 0
-                }),
-                spacing: 0,
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                }
-            },
-            views: weekTitle.concat(days)
-        }
-    }
-
+    /**
+     * 标题模板
+     * @param {*} family 
+     * @param {*} calendarInfo 
+     * @returns 
+     */
     titleBarTemplate(family, calendarInfo) {
         // 标题栏文字内容
         let leftText, views = [],
             size = family === this.setting.family.small ? 12 : 18
         if (this.titleYearMode !== 0) {
-            const year = !(this.titleYearMode === 2)
-                ? String(calendarInfo.year).slice(-2) + $l10n("YEAR_DELIMITER")
-                : calendarInfo.year + $l10n("YEAR_DELIMITER")
+            const year = this.titleYearMode === 1 ? String(calendarInfo.year).slice(-2) : calendarInfo.year
             leftText = year + this.localizedMonth(calendarInfo.month)
+            leftText = year + $l10n("YEAR_DELIMITER") + this.localizedMonth(calendarInfo.month)
         } else {
             leftText = this.localizedMonth(calendarInfo.month)
         }
@@ -412,25 +500,34 @@ class Calendar {
         }
     }
 
-    getBackground() {
-        if ($file.exists(this.backgroundImage)) {
-            return {
-                type: "image",
-                props: {
-                    image: $image(this.backgroundImage),
-                    resizable: true,
-                    scaledToFill: true
-                }
+    smallCalendarView() {
+        const calendarInfo = this.getCalendar(false)
+        const days = []
+        for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
+            for (let dayInfo of line) {
+                const props = this.singleContentDayStyleModifier(dayInfo, calendarInfo)
+                days.push(this.singleContentDayTemplate(props))
             }
-        } else {
-            return $color(this.backgroundColor, this.backgroundColorDark)
         }
-    }
-
-    calendarView(family) {
-        const calendarInfo = this.getCalendar(family === this.setting.family.large)
-        const calendar = this.formatCalendar(family, calendarInfo, family !== this.setting.family.small)
-        const titleBar = this.titleBarTemplate(family, calendarInfo)
+        const calendar = {
+            type: "vgrid",
+            props: {
+                columns: Array(7).fill({
+                    flexible: {
+                        minimum: 0,
+                        maximum: Infinity
+                    },
+                    spacing: 0
+                }),
+                spacing: 0,
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                }
+            },
+            views: this.weekIndexTemplate().concat(days)
+        }
+        const titleBar = this.titleBarTemplate(this.setting.family.small, calendarInfo)
         return {
             type: "vstack",
             props: {
@@ -441,7 +538,6 @@ class Calendar {
                 },
                 spacing: 0,
                 padding: 10,
-                link: this.setting.settingUrlScheme,
                 widgetURL: this.setting.settingUrlScheme
             },
             views: this.titleAddSpacer ? [
@@ -452,14 +548,13 @@ class Calendar {
         }
     }
 
-    weekView(family) {
-        const weekView = this.getCalendar(true, false)
+    weekView() {
+        const calendarInfo = this.getCalendar(true, true)
         const days = []
-        for (let date of weekView.calendar) {
-            date = this.formatDay(date, weekView, true)
-            days.push(this.dayTemplate(date.date, date.props, date.extra))
+        for (let dayInfo of calendarInfo.calendar) {
+            const props = this.multipleContentDayStyleModifier(dayInfo, calendarInfo)
+            days.push(this.multipleContentDayTemplate(props, this.setting.family.meduim))
         }
-        const weekTitle = this.weekIndexTemplate()
         const calendar = {
             type: "vgrid",
             props: {
@@ -477,25 +572,70 @@ class Calendar {
                 },
                 padding: $insets(0, 3, 0, 3)
             },
-            views: weekTitle.concat(days)
+            views: this.weekIndexTemplate().concat(days)
         }
-        const titleBar = this.titleBarTemplate(family, weekView)
+        const titleBar = this.titleBarTemplate(this.setting.family.meduim, calendarInfo)
         return {
             type: "vstack",
-            props: Object.assign({
+            props: {
                 background: this.getBackground(),
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
                 },
                 spacing: 0,
-                padding: 10
-            }, family === this.setting.family.medium ? {
-                link: this.setting.settingUrlScheme
-            } : {
+                padding: 10,
                 widgetURL: this.setting.settingUrlScheme
-            }),
+            },
             views: [{ type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }]
+        }
+    }
+
+    largeCalendarView() {
+        const calendarInfo = this.getCalendar(true)
+        const days = []
+        for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
+            for (let dayInfo of line) {
+                const props = this.multipleContentDayStyleModifier(dayInfo, calendarInfo)
+                days.push(this.multipleContentDayTemplate(props))
+            }
+        }
+        const calendar = {
+            type: "vgrid",
+            props: {
+                columns: Array(7).fill({
+                    flexible: {
+                        minimum: 0,
+                        maximum: Infinity
+                    },
+                    spacing: 0
+                }),
+                spacing: 0,
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                }
+            },
+            views: this.weekIndexTemplate().concat(days)
+        }
+        const titleBar = this.titleBarTemplate(this.setting.family.large, calendarInfo)
+        return {
+            type: "vstack",
+            props: {
+                background: this.getBackground(),
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                },
+                spacing: 0,
+                padding: 10,
+                widgetURL: this.setting.settingUrlScheme
+            },
+            views: this.titleAddSpacer ? [
+                { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
+            ] : [
+                { type: "spacer" }, titleBar, calendar, { type: "spacer" }
+            ]
         }
     }
 }

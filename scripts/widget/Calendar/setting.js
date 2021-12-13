@@ -174,10 +174,9 @@ class CalendarSetting extends BaseSetting {
                                     // 清除旧图片
                                     this.clearBackgroundImage()
                                     const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
-                                    // TODO 控制压缩图片大小
-                                    const image = resp.data.image.jpg(this.imageMaxSize * 1000 / resp.data.info.size)
+                                    const image = this.kernel.compressImage(resp.data.image)
                                     $file.write({
-                                        data: image,
+                                        data: image.png,
                                         path: `${this.path}/${fileName}`
                                     })
                                     animate.actionDone()

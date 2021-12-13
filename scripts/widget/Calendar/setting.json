@@ -112,20 +112,6 @@
                             },
                             {
                                 "icon": [
-                                    "wand.and.rays",
-                                    "#0099CC"
-                                ],
-                                "title": "MONTH_DISPLAY_MODE",
-                                "type": "tab",
-                                "key": "monthDisplayMode",
-                                "items": [
-                                    "CHINESE_CHARACTERS",
-                                    "NUMBER"
-                                ],
-                                "value": 1
-                            },
-                            {
-                                "icon": [
                                     "calendar",
                                     "#FFCC00"
                                 ],
@@ -133,6 +119,15 @@
                                 "type": "switch",
                                 "key": "onlyCurrentMonth",
                                 "value": false
+                            },
+                            {
+                                "icon": [
+                                    "crop"
+                                ],
+                                "title": "ADD_SPACER",
+                                "type": "switch",
+                                "key": "title.addSpacer",
+                                "value": true
                             }
                         ]
                     },
@@ -156,6 +151,20 @@
                             },
                             {
                                 "icon": [
+                                    "wand.and.rays",
+                                    "#0099CC"
+                                ],
+                                "title": "MONTH_DISPLAY_MODE",
+                                "type": "tab",
+                                "key": "monthDisplayMode",
+                                "items": [
+                                    "CHINESE_CHARACTERS",
+                                    "NUMBER"
+                                ],
+                                "value": 1
+                            },
+                            {
+                                "icon": [
                                     "rectangle.and.paperclip",
                                     "#CCCC00"
                                 ],
@@ -172,15 +181,6 @@
                                 "title": "SHOW_LUNAR_YEAR",
                                 "type": "switch",
                                 "key": "title.lunarYear",
-                                "value": true
-                            },
-                            {
-                                "icon": [
-                                    "crop"
-                                ],
-                                "title": "ADD_SPACER",
-                                "type": "switch",
-                                "key": "title.addSpacer",
                                 "value": true
                             }
                         ]

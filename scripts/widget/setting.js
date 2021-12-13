@@ -43,8 +43,8 @@ class BaseSetting {
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
             this.setting.setFooter({ type: "view" })
-            this.setting.setEvent("onChildPush", listView => {
-                this.push(listView)
+            this.setting.setEvent("onChildPush", (listView, title) => {
+                this.push(listView, title)
             })
             this.defaultSettingMethods()
             this.initSettingMethods()
@@ -60,12 +60,12 @@ class BaseSetting {
         }
     }
 
-    push(listView = this.setting.getListView()) {
+    push(listView = this.setting.getListView(), title = this.widget) {
         UIKit.push({
             bgcolor: "insetGroupedBackground",
             topOffset: false,
             views: [listView],
-            title: this.config.name,
+            title: title,
             navButtons: [
                 {
                     symbol: "rectangle.3.offgrid.fill",

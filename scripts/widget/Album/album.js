@@ -1,3 +1,5 @@
+const { UIKit } = require("../../easy-jsbox")
+
 class Album {
     constructor(kernel, setting) {
         this.kernel = kernel
@@ -90,14 +92,48 @@ class Album {
         } else { action() }
     }
 
-    normalMode(data) {
-        // TODO 图片缩放问题
-        const image = $file.read(data.image.src.replace(this.imageType.preview, this.imageType.original))
-        this.kernel.UIKit.pushPageSheet({
-            showNavBar: false,
+    previewImage(index, data) {
+        $quicklook.open({
+            data: $data({ path: data.replace(this.imageType.preview, this.imageType.original) })
+        })
+        return
+        // TODO 画廊无法设置 page，且切换过程 page 混乱
+        const getData = originalImageIndex => {
+            return this.getImages(this.imageType.preview).map((image, index) => {
+                if (originalImageIndex - 1 <= index && index <= originalImageIndex + 1) {
+                    image = image.replace(this.imageType.preview, this.imageType.original)
+                }
+                return {
+                    type: "image",
+                    props: {
+                        src: image
+                    }
+                }
+            })
+        }
+        UIKit.push({
             views: [{
-                type: "image",
-                props: { data: image },
+                type: "gallery",
+                props: {
+                    items: getData(index),
+                    hidden: true,
+                    page: index,
+                    interval: 0
+                },
+                events: {
+                    ready: sender => {
+                        setTimeout(() => {
+                            //sender.scrollToPage(index)
+                            setTimeout(() => {
+                                sender.hidden = false
+                            }, 500)
+                        }, 100)
+                    },
+                    changed: sender => {
+                        console.log(sender.page)
+                        sender.items = getData(sender.page)
+                    }
+                },
                 layout: $layout.fill
             }]
         })
@@ -117,7 +153,7 @@ class Album {
         $(this.selectedImageCount).text = Object.keys(this.selected).length
     }
 
-    changemode() {
+    changeMode() {
         const matrix = $("picture-edit-matrix")
         switch (this.mode) {
             case 0: // 切换到多选模式
@@ -251,7 +287,7 @@ class Album {
                                                 }
                                             })
                                         }
-                                        this.changemode() // 切换回普通模式
+                                        this.changeMode() // 切换回普通模式
                                     }
                                 }, style),
                                 {
@@ -314,7 +350,7 @@ class Album {
                                 title: $l10n("SELECT"),
                                 symbol: "square.grid.2x2",
                                 handler: (sender, indexPath) => {
-                                    this.changemode()
+                                    this.changeMode()
                                     setTimeout(() => {
                                         const data = sender.object(indexPath)
                                         this.multipleSelectionMode(sender, indexPath, data)
@@ -351,7 +387,7 @@ class Album {
                     didSelect: (sender, indexPath, data) => {
                         switch (this.mode) {
                             case 0:
-                                this.normalMode(data)
+                                this.previewImage(indexPath.item, data.image.src)
                                 break
                             case 1:
                                 this.multipleSelectionMode(sender, indexPath, data)
@@ -408,7 +444,7 @@ class Album {
                         events: {
                             tapped: () => {
                                 if (this.mode === 0) return
-                                this.changemode()
+                                this.changeMode()
                             }
                         },
                         layout: (make, view) => {
