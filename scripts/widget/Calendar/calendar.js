@@ -538,7 +538,8 @@ class Calendar {
                 },
                 spacing: 0,
                 padding: 10,
-                widgetURL: this.setting.settingUrlScheme
+                widgetURL: this.setting.settingUrlScheme,
+                link: this.setting.settingUrlScheme
             },
             views: this.titleAddSpacer ? [
                 { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
@@ -585,7 +586,8 @@ class Calendar {
                 },
                 spacing: 0,
                 padding: 10,
-                widgetURL: this.setting.settingUrlScheme
+                widgetURL: this.setting.settingUrlScheme,
+                link: this.setting.settingUrlScheme
             },
             views: [{ type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }]
         }

@@ -248,7 +248,9 @@ class Schedule {
                         maxWidth: Infinity
                     },
                     padding: 15,
-                    spacing: 8
+                    spacing: 8,
+                    widgetURL: this.urlScheme,
+                    link: this.urlScheme
                 },
                 views: [
                     {
@@ -274,8 +276,7 @@ class Schedule {
                                     },
                                     text: this.week[date.getDay()],
                                     font: $font(11),
-                                    color: this.colorDate,
-                                    widgetURL: this.urlScheme
+                                    color: this.colorDate
                                 }
                             },
                             {
@@ -288,8 +289,7 @@ class Schedule {
                                         alignment: $widget.alignment.leading
                                     },
                                     text: String(date.getDate()),
-                                    font: $font(33),
-                                    widgetURL: this.urlScheme
+                                    font: $font(33)
                                 }
                             }
                         ]
@@ -304,8 +304,7 @@ class Schedule {
                                 alignment: $widget.alignment.leading
                             },
                             text: text,
-                            color: $color("secondaryText"),
-                            widgetURL: this.urlScheme
+                            color: $color("secondaryText")
                         }
                     }
                 ]
@@ -350,8 +349,13 @@ class Schedule {
             this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
             // 获取视图
             const view = this.getListView(schedule)
-            if (null === view) return nothingView(emptyText)
-            return listView(view, { widgetURL: this.urlScheme })
+            if (null === view) {
+                return nothingView(emptyText)
+            }
+            return listView(view, {
+                widgetURL: this.urlScheme,
+                link: this.urlScheme
+            })
         } else if (family === this.setting.family.medium || family === this.setting.family.large) {
             let dataMode, eachCont, leftView, rightView, leftScheme, rightScheme
             if (family === this.setting.family.medium) {
@@ -374,8 +378,9 @@ class Schedule {
                 // 混合日程和提醒事项
                 const schedule = [].concat(this.calendar).concat(this.reminder)
                 // 空列表则直接返回
-                if (schedule.length === 0)
+                if (schedule.length === 0) {
                     return nothingView($l10n("NO_CALENDAR&REMINDER"))
+                }
                 // 按结束日期排序
                 this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
                 // 获取视图

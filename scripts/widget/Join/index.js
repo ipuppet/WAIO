@@ -17,11 +17,6 @@ class JoinWidget extends Widget {
         else this.right = this.setting.menu[this.right]
     }
 
-    /**
-     * 不使用缓存
-     */
-    refreshCache() { }
-
     async view2x4() {
         const leftWidget = this.kernel.widgetInstance(this.left)
         const rightWidget = this.kernel.widgetInstance(this.right)
@@ -34,9 +29,11 @@ class JoinWidget extends Widget {
         if (!leftView.props.frame) leftView.props.frame = {}
         leftView.props.frame["maxWidth"] = width
         leftView.props["clipped"] = true
+        leftView.widgetURL = undefined
         if (!rightView.props.frame) rightView.props.frame = {}
         rightView.props.frame["maxWidth"] = width
         rightView.props["clipped"] = true
+        rightView.widgetURL = undefined
         return {
             type: "hstack",
             props: {
