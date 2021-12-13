@@ -40,10 +40,6 @@ class ScheduleWidget extends Widget {
         return res
     }
 
-    view(family) {
-        return this.schedule.scheduleView(family)
-    }
-
     async joinView(mode) {
         // 获取数据
         const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2)) // 以今天为中心的前后时间跨度。单位：天
@@ -51,7 +47,7 @@ class ScheduleWidget extends Widget {
         const calendar = await this.getCalendar(startDate, endDate)
         const reminder = await this.getReminder(startDate, endDate)
         this.schedule.setData(calendar, reminder)
-        return this.view(mode)
+        return this.schedule.scheduleView(mode)
     }
 
     async render() {
@@ -75,7 +71,7 @@ class ScheduleWidget extends Widget {
             },
             render: ctx => {
                 // 获取视图
-                const view = this.view(ctx.family)
+                const view = this.schedule.scheduleView(ctx.family)
                 this.printTimeConsuming()
                 return view
             }
