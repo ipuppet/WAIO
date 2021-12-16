@@ -1,5 +1,7 @@
 "MYDAYS" = "倒数日";
 "SHOW_MINUS" = "显示负号";
+"DISPLAY_MODE_DAY" = "天数";
+"DISPLAY_MODE_WEEK" = "周数";
 "OVERDUE_COLOR" = "过期日期颜色";
 "DATE_FONT_SIZE" = "日期字体大小";
 "DATE_COLOR" = "日期颜色";

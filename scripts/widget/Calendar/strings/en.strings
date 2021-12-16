@@ -1,7 +1,6 @@
 "CALENDAR" = "Calendar";
 
 "BACKGROUND_AND_COLOR" = "Background & Color";
-"DISPLAY_MODE" = "Display Mode";
 
 "_SUNDAY" = "Sunday";
 "_MONDAY" = "Monday";
@@ -69,4 +68,3 @@
 "NUMBER" = "Number";
 
 "FAMILY_SMALL" = "Small Widget";
-"SHOW_MODE" = "Shwo Mode";

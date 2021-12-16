@@ -1,7 +1,6 @@
 "CALENDAR" = "日历";
 
 "BACKGROUND_AND_COLOR" = "背景和颜色";
-"DISPLAY_MODE" = "显示模式";
 
 "_SUNDAY" = "周日";
 "_MONDAY" = "周一";
@@ -69,4 +68,3 @@
 "NUMBER" = "数字";
 
 "FAMILY_SMALL" = "小尺寸Widget";
-"SHOW_MODE" = "显示模式";

@@ -31,6 +31,7 @@
 "BACKUP_TO_ICLOUD" = "Backup to iCloud";
 "RECOVER_FROM_ICLOUD" = "Recover from iCloud";
 
+"DISPLAY_MODE" = "Display Mode";
 "COLOR_SETTING" = "Color Setting";
 "DARK_MODE" = "Dark Mode";
 "LIGHT_MODE" = "Light Mode";

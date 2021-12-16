@@ -31,6 +31,7 @@
 "BACKUP_TO_ICLOUD" = "备份到iCloud";
 "RECOVER_FROM_ICLOUD" = "从iCloud恢复";
 
+"DISPLAY_MODE" = "显示模式";
 "COLOR_SETTING" = "颜色设置";
 "DARK_MODE" = "深色模式";
 "LIGHT_MODE" = "浅色模式";

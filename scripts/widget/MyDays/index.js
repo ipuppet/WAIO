@@ -17,9 +17,11 @@ class MyDaysWidget extends Widget {
         this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
         this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
         this.overdueColor = this.setting.getColor(this.setting.get("overdueColor"))
+        this.overdueColorDark = this.setting.getColor(this.setting.get("overdueColorDark"))
         this.backgroundImage = this.setting.getBackgroundImage()
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
+        this.displayMode = this.setting.get("displayMode") // 0: 显示天数, 1: 显示周数
     }
 
     dateSpan(date) {
@@ -43,6 +45,10 @@ class MyDaysWidget extends Widget {
         }
     }
 
+    weekToString(week) {
+        return String(this.showMinus ? week : Math.abs(week))
+    }
+
     view2x2() {
         const myday = this.myday
         if (!myday) return {
@@ -50,6 +56,8 @@ class MyDaysWidget extends Widget {
             props: { text: $l10n("NONE") }
         }
         const remainingDays = this.dateSpan(myday.date)
+        const remainingWeek = parseInt(remainingDays / 7)
+        const content = this.displayMode ? this.weekToString(remainingWeek) : this.dateSpanToString(remainingDays)
         let view = {
             type: "vstack",
             props: {
@@ -68,9 +76,9 @@ class MyDaysWidget extends Widget {
                 {
                     type: "text",
                     props: {
-                        text: this.dateSpanToString(remainingDays),
+                        text: content,
                         font: $font(this.dateFontSize),
-                        color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : this.overdueColor,
+                        color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : $color(this.overdueColor, this.overdueColorDark),
                         frame: {
                             alignment: $widget.alignment.topLeading,
                             maxWidth: Infinity,
