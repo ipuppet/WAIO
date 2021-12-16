@@ -94,7 +94,7 @@ class MyDaysWidget extends Widget {
                         getContent(weekInfo.week, {
                             frame: {
                                 alignment: $widget.alignment.topTrailing,
-                                maxWidth: this.dateFontSize,
+                                maxWidth: this.dateFontSize / 1.5, // 字体大小和布局宽度之间存在某种比例
                                 maxHeight: Infinity
                             }
                         }),
@@ -110,7 +110,7 @@ class MyDaysWidget extends Widget {
         } else { //天数
             mainView.push(getContent(this.dateSpanToString(remainingDays)))
         }
-        let view = {
+        const view = {
             type: "vstack",
             props: {
                 alignment: $widget.verticalAlignment.center,
