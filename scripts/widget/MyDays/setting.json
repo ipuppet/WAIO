@@ -22,24 +22,49 @@
                 "value": true
             },
             {
-                "icon": [
-                    "slider.horizontal.3",
-                    "#FF9933"
-                ],
-                "title": "DATE_FONT_SIZE",
-                "type": "number",
-                "key": "dateFontSize",
-                "value": 40
-            },
-            {
-                "icon": [
-                    "minus.square.fill",
-                    "#0099CC"
-                ],
-                "title": "SHOW_MINUS",
-                "type": "switch",
-                "key": "showMinus",
-                "value": false
+                "type": "child",
+                "title": "DISPLAY_MODE",
+                "key": "DISPLAY_MODE-parent",
+                "children": [
+                    {
+                        "items": [
+                            {
+                                "icon": [
+                                    "slider.horizontal.3",
+                                    "#FF9933"
+                                ],
+                                "title": "DATE_FONT_SIZE",
+                                "type": "number",
+                                "key": "dateFontSize",
+                                "value": 40
+                            },
+                            {
+                                "icon": [
+                                    "minus.square.fill",
+                                    "#0099CC"
+                                ],
+                                "title": "SHOW_MINUS",
+                                "type": "switch",
+                                "key": "showMinus",
+                                "value": false
+                            },
+                            {
+                                "icon": [
+                                    "flag.fill",
+                                    "#FFCC00"
+                                ],
+                                "title": "DISPLAY_MODE",
+                                "type": "tab",
+                                "key": "displayMode",
+                                "items": [
+                                    "DISPLAY_MODE_DAY",
+                                    "DISPLAY_MODE_WEEK"
+                                ],
+                                "value": 0
+                            }
+                        ]
+                    }
+                ]
             },
             {
                 "type": "child",
@@ -51,7 +76,7 @@
                 "key": "COLOR_SETTING-parent",
                 "children": [
                     {
-                        "title": "GENERAL",
+                        "title": "LIGHT_MODE",
                         "items": [
                             {
                                 "icon": [
@@ -62,12 +87,7 @@
                                 "type": "color",
                                 "key": "overdueColor",
                                 "value": "#FF0033"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "LIGHT_MODE",
-                        "items": [
+                            },
                             {
                                 "icon": [
                                     "wand.and.rays",
@@ -103,6 +123,16 @@
                     {
                         "title": "DARK_MODE",
                         "items": [
+                            {
+                                "icon": [
+                                    "wand.and.rays",
+                                    "#FF0033"
+                                ],
+                                "title": "OVERDUE_COLOR",
+                                "type": "color",
+                                "key": "overdueColorDark",
+                                "value": "#FF0033"
+                            },
                             {
                                 "icon": [
                                     "wand.and.rays",
