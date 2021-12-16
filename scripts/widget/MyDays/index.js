@@ -22,6 +22,7 @@ class MyDaysWidget extends Widget {
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
         this.displayMode = this.setting.get("displayMode") // 0: 显示天数, 1: 显示周数
+        this.weekXWXD = this.setting.get("week.xWxD") // 0: 显示天数, 1: 显示周数
     }
 
     dateSpan(date) {
@@ -45,8 +46,12 @@ class MyDaysWidget extends Widget {
         }
     }
 
-    weekToString(week) {
-        return String(this.showMinus ? week : Math.abs(week))
+    getWeekInfo(days) {
+        days = this.showMinus ? days : Math.abs(days)
+        return {
+            week: String(Number(days / 7).toFixed(0)),
+            day: String(Number(days % 7).toFixed(0))
+        }
     }
 
     view2x2() {
@@ -56,9 +61,56 @@ class MyDaysWidget extends Widget {
             props: { text: $l10n("NONE") }
         }
         const remainingDays = this.dateSpan(myday.date)
-        const remainingWeek = parseInt(remainingDays / 7)
-        const content = this.displayMode ? this.weekToString(remainingWeek) : this.dateSpanToString(remainingDays)
-        let view = {
+        const getContent = (content, props = {}) => ({
+            type: "text",
+            props: Object.assign({
+                text: content,
+                font: $font(this.dateFontSize),
+                color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : $color(this.overdueColor, this.overdueColorDark),
+                padding: 0,
+                frame: {
+                    alignment: $widget.alignment.topLeading,
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                }
+            }, props)
+        })
+        const mainView = []
+        if (this.displayMode) { // 周数
+            const weekInfo = this.getWeekInfo(remainingDays)
+            if (this.weekXWXD) {
+                mainView.push({
+                    type: "hstack",
+                    props: {
+                        padding: 0,
+                        spacing: 0,
+                        frame: {
+                            alignment: $widget.alignment.topLeading,
+                            maxWidth: Infinity,
+                            maxHeight: Infinity
+                        }
+                    },
+                    views: [
+                        getContent(weekInfo.week, {
+                            frame: {
+                                alignment: $widget.alignment.topTrailing,
+                                maxWidth: this.dateFontSize / 1.5, // 字体大小和布局宽度之间存在某种比例
+                                maxHeight: Infinity
+                            }
+                        }),
+                        getContent(weekInfo.day, {
+                            font: $font(this.dateFontSize / 2),
+                            offset: $point(5, this.dateFontSize - this.dateFontSize / 2)
+                        })
+                    ]
+                })
+            } else {
+                mainView.push(getContent(weekInfo.week))
+            }
+        } else { //天数
+            mainView.push(getContent(this.dateSpanToString(remainingDays)))
+        }
+        const view = {
             type: "vstack",
             props: {
                 alignment: $widget.verticalAlignment.center,
@@ -72,20 +124,7 @@ class MyDaysWidget extends Widget {
                 link: this.setting.settingUrlScheme,
                 widgetURL: this.setting.settingUrlScheme
             },
-            views: [
-                {
-                    type: "text",
-                    props: {
-                        text: content,
-                        font: $font(this.dateFontSize),
-                        color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : $color(this.overdueColor, this.overdueColorDark),
-                        frame: {
-                            alignment: $widget.alignment.topLeading,
-                            maxWidth: Infinity,
-                            maxHeight: Infinity
-                        }
-                    }
-                },
+            views: mainView.concat([
                 {
                     type: "text",
                     props: {
@@ -122,7 +161,7 @@ class MyDaysWidget extends Widget {
                         }
                     }
                 }
-            ]
+            ])
         }
         if (this.isImageBackground) {
             return {

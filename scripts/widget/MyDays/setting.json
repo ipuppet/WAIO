@@ -49,10 +49,6 @@
                                 "value": false
                             },
                             {
-                                "icon": [
-                                    "flag.fill",
-                                    "#FFCC00"
-                                ],
                                 "title": "DISPLAY_MODE",
                                 "type": "tab",
                                 "key": "displayMode",
@@ -61,6 +57,17 @@
                                     "DISPLAY_MODE_WEEK"
                                 ],
                                 "value": 0
+                            }
+                        ]
+                    },
+                    {
+                        "title": "DISPLAY_MODE_WEEK",
+                        "items": [
+                            {
+                                "title": "X_WEEK_X_DAY",
+                                "type": "switch",
+                                "key": "week.xWxD",
+                                "value": false
                             }
                         ]
                     }

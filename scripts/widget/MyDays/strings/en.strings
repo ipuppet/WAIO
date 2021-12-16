@@ -2,6 +2,7 @@
 "SHOW_MINUS" = "Show Minus";
 "DISPLAY_MODE_DAY" = "Day";
 "DISPLAY_MODE_WEEK" = "Week";
+"X_WEEK_X_DAY" = "xW + xD";
 "OVERDUE_COLOR" = "Overdue Color";
 "DATE_FONT_SIZE" = "Date Font Size";
 "DATE_COLOR" = "Date Color";
