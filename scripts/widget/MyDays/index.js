@@ -9,6 +9,8 @@ class MyDaysWidget extends Widget {
             describe: this.setting.get("describe"),
             date: this.setting.get("date") === 0 ? Date.now() : this.setting.get("date")
         }
+        this.remainingDays = this.dateSpan(this.myday.date)
+        // style
         this.dateFontSize = this.setting.get("dateFontSize")
         this.dateColor = this.setting.getColor(this.setting.get("dateColor"))
         this.dateColorDark = this.setting.getColor(this.setting.get("dateColorDark"))
@@ -22,7 +24,7 @@ class MyDaysWidget extends Widget {
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
         this.displayMode = this.setting.get("displayMode") // 0: 显示天数, 1: 显示周数
-        this.weekXWXD = this.setting.get("week.xWxD") // 0: 显示天数, 1: 显示周数
+        this.weekDisplayStyle = this.setting.get("week.displayStyle") // 周样式 0: index, 1: title
     }
 
     dateSpan(date) {
@@ -54,19 +56,15 @@ class MyDaysWidget extends Widget {
         }
     }
 
-    view2x2() {
-        const myday = this.myday
-        if (!myday) return {
-            type: "text",
-            props: { text: $l10n("NONE") }
-        }
-        const remainingDays = this.dateSpan(myday.date)
-        const getContent = (content, props = {}) => ({
+    mainContentTemplate(content, props = {}) {
+        return {
             type: "text",
             props: Object.assign({
                 text: content,
                 font: $font(this.dateFontSize),
-                color: remainingDays >= 0 ? $color(this.dateColor, this.dateColorDark) : $color(this.overdueColor, this.overdueColorDark),
+                color: this.remainingDays >= 0
+                    ? $color(this.dateColor, this.dateColorDark)
+                    : $color(this.overdueColor, this.overdueColorDark),
                 padding: 0,
                 frame: {
                     alignment: $widget.alignment.topLeading,
@@ -74,12 +72,14 @@ class MyDaysWidget extends Widget {
                     maxHeight: Infinity
                 }
             }, props)
-        })
-        const mainView = []
-        if (this.displayMode) { // 周数
-            const weekInfo = this.getWeekInfo(remainingDays)
-            if (this.weekXWXD) {
-                mainView.push({
+        }
+    }
+
+    weekTemplate(weekInfo, family) {
+        let view = {}
+        switch (this.weekDisplayStyle[0]) {
+            case 0: // xW + xD
+                view = {
                     type: "hstack",
                     props: {
                         padding: 0,
@@ -91,24 +91,57 @@ class MyDaysWidget extends Widget {
                         }
                     },
                     views: [
-                        getContent(weekInfo.week, {
+                        this.mainContentTemplate(weekInfo.week, {
                             frame: {
                                 alignment: $widget.alignment.topTrailing,
                                 maxWidth: this.dateFontSize / 1.5, // 字体大小和布局宽度之间存在某种比例
                                 maxHeight: Infinity
                             }
                         }),
-                        getContent(weekInfo.day, {
+                        this.mainContentTemplate(weekInfo.day, {
                             font: $font(this.dateFontSize / 2),
                             offset: $point(5, this.dateFontSize - this.dateFontSize / 2)
                         })
                     ]
-                })
-            } else {
-                mainView.push(getContent(weekInfo.week))
-            }
+                }
+                break;
+            case 1: // 只显示周
+                view = view = this.mainContentTemplate(weekInfo.week)
+                break;
+            case 2: // 显示小数
+                view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day}`)
+                break;
+            case 3: // 显示小数 + 单位
+                const unit = family === this.setting.family.small ? $l10n("UNIT_WEEK_2X2") : $l10n("UNIT_WEEK")
+                view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day} ${unit}`)
+                break;
+        }
+        return view
+    }
+
+    view2x2() {
+        return this.view(this.setting.family.small)
+    }
+
+    view2x4() {
+        return this.view(this.setting.family.medium)
+    }
+
+    view4x4() {
+        return this.view(this.setting.family.large)
+    }
+
+    view(family) {
+        if (!this.myday) return {
+            type: "text",
+            props: { text: $l10n("NONE") }
+        }
+        let mainView = []
+        if (this.displayMode) { // 周数
+            const weekInfo = this.getWeekInfo(this.remainingDays)
+            mainView.push(this.weekTemplate(weekInfo, family))
         } else { //天数
-            mainView.push(getContent(this.dateSpanToString(remainingDays)))
+            mainView.push(this.mainContentTemplate(this.dateSpanToString(this.remainingDays)))
         }
         const view = {
             type: "vstack",
@@ -128,7 +161,7 @@ class MyDaysWidget extends Widget {
                 {
                     type: "text",
                     props: {
-                        text: myday.title,
+                        text: this.myday.title,
                         font: $font(16),
                         color: $color(this.infoColor, this.infoColorDark),
                         frame: {
@@ -140,7 +173,7 @@ class MyDaysWidget extends Widget {
                 {
                     type: "text",
                     props: {
-                        text: myday.describe,
+                        text: this.myday.describe,
                         font: $font(12),
                         color: $color(this.infoColor, this.infoColorDark),
                         frame: {
@@ -152,7 +185,7 @@ class MyDaysWidget extends Widget {
                 {
                     type: "text",
                     props: {
-                        text: new Date(myday.date).toLocaleDateString(),
+                        text: new Date(this.myday.date).toLocaleDateString(),
                         font: $font(12),
                         color: $color(this.infoColor, this.infoColorDark),
                         frame: {
@@ -203,8 +236,8 @@ class MyDaysWidget extends Widget {
             policy: {
                 afterDate: expireDate
             },
-            render: () => {
-                const view = this.view2x2()
+            render: ctx => {
+                const view = this.view(ctx.family)
                 this.printTimeConsuming()
                 return view
             }

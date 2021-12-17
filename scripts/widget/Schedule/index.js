@@ -26,6 +26,77 @@ class ScheduleWidget extends Widget {
     }
 
     async getReminder(startDate, endDate) {
+        // TODO 用于暂时解决提醒事项的一个多线程 bug
+        // https://github.com/cyanzhong/jsbox-issues/issues/117#issuecomment-996780241
+        $reminder.fetch = async (args) => {
+            const auth = store => {
+                return new Promise(resolve => {
+                    if ($objc("EKEventStore").$authorizationStatusForEntityType(1) === 3) {
+                        resolve(true);
+                    } else {
+                        store.$requestAccessToEntityType_completion(1, $block("void, BOOL, NSError *", (granted, _) => {
+                            resolve(granted);
+                        }));
+                    }
+                });
+            }
+
+            const store = $objc("EKEventStore").$new();
+            const handler = args.handler;
+            const worker = async (resolve, reject) => {
+                if (!await auth(store)) {
+                    $thread.main({
+                        handler: () => {
+                            if (reject) {
+                                reject();
+                            }
+                            if (handler) {
+                                handler({ status: false });
+                            }
+                        }
+                    });
+                    return;
+                }
+
+                const hours = args.hours;
+                const startDate = args.startDate;
+                const endDate = !hours ? args.endDate : (() => {
+                    const date = new Date(startDate.getTime());
+                    date.setHours(date.getHours() + hours);
+                    return date;
+                })();
+
+                const calendars = store.$calendarsForEntityType(1);
+                const predicate = store.$predicateForRemindersInCalendars(calendars);
+                store.$fetchRemindersMatchingPredicate_completion(predicate, $block("void, NSArray *", reminders => {
+                    const result = { status: true, events: [] };
+                    for (let index = 0; index < reminders.$count(); ++index) {
+                        const reminder = reminders.$objectAtIndex(index);
+                        if (!reminder.$hasAlarms() || (() => {
+                            const alarm = reminder.$alarms().$firstObject();
+                            const date = alarm.$absoluteDate().jsValue();
+                            return (!startDate || date >= startDate) && (!endDate || date <= endDate);
+                        })()) {
+                            result.events.push(reminder.jsValue());
+                        }
+                    }
+
+                    const callback = resolve || handler;
+                    if (callback) {
+                        $thread.main({
+                            handler: () => callback(result)
+                        });
+                    }
+                }));
+            };
+
+            if (handler) {
+                worker();
+            } else {
+                return new Promise(worker);
+            }
+        }
+
         const res = []
         const reminder = await $reminder.fetch({
             startDate: startDate,
