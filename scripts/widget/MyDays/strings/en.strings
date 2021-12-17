@@ -11,6 +11,8 @@
 "DISPLAY_MODE_DAY" = "Day";
 "DISPLAY_MODE_WEEK" = "Week";
 "X_WEEK_X_DAY" = "xW + xD";
-"DISPLAY_FLOATING_POINT" = "Display Floating Point";
+"WEEK_ONLY" = "Week Only";
+"FLOATING_POINT" = "Floating Point";
+"FLOATING_POINT_WITH_UNIT" = "Floating Point with Unit";
 "UNIT_WEEK_2X2" = "w";
 "UNIT_WEEK" = "weeks";

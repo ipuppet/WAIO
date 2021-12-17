@@ -76,7 +76,7 @@ class MyDaysWidget extends Widget {
     }
 
     weekTemplate(weekInfo, family) {
-        let view
+        let view = {}
         switch (this.weekDisplayStyle[0]) {
             case 0: // xW + xD
                 view = {
@@ -105,12 +105,16 @@ class MyDaysWidget extends Widget {
                     ]
                 }
                 break;
-            case 1: // 显示小数
+            case 1: // 只显示周
+                view = view = this.mainContentTemplate(weekInfo.week)
+                break;
+            case 2: // 显示小数
+                view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day}`)
+                break;
+            case 3: // 显示小数 + 单位
                 const unit = family === this.setting.family.small ? $l10n("UNIT_WEEK_2X2") : $l10n("UNIT_WEEK")
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day} ${unit}`)
                 break;
-            default: // 默认样式
-                view = this.mainContentTemplate(weekInfo.week)
         }
         return view
     }

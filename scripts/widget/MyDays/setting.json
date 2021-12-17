@@ -75,7 +75,9 @@
                                 ],
                                 "items": [
                                     "X_WEEK_X_DAY",
-                                    "DISPLAY_FLOATING_POINT"
+                                    "WEEK_ONLY",
+                                    "FLOATING_POINT",
+                                    "FLOATING_POINT_WITH_UNIT"
                                 ]
                             }
                         ]
