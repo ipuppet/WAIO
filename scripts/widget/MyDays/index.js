@@ -120,7 +120,15 @@ class MyDaysWidget extends Widget {
     }
 
     view2x2() {
+        return this.view(this.setting.family.small)
+    }
 
+    view2x4() {
+        return this.view(this.setting.family.medium)
+    }
+
+    view4x4() {
+        return this.view(this.setting.family.large)
     }
 
     view(family) {
