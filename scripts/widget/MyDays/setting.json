@@ -27,6 +27,7 @@
                 "key": "DISPLAY_MODE-parent",
                 "children": [
                     {
+                        "title": "GENERAL",
                         "items": [
                             {
                                 "icon": [
@@ -64,10 +65,18 @@
                         "title": "DISPLAY_MODE_WEEK",
                         "items": [
                             {
-                                "title": "X_WEEK_X_DAY",
-                                "type": "switch",
-                                "key": "week.xWxD",
-                                "value": false
+                                "title": "Style",
+                                "type": "menu",
+                                "key": "week.displayStyle",
+                                "withTitle": true,
+                                "value": [
+                                    0,
+                                    "X_WEEK_X_DAY"
+                                ],
+                                "items": [
+                                    "X_WEEK_X_DAY",
+                                    "DISPLAY_FLOATING_POINT"
+                                ]
                             }
                         ]
                     }

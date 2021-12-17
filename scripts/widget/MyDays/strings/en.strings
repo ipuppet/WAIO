@@ -1,11 +1,16 @@
 "MYDAYS" = "MyDays";
-"SHOW_MINUS" = "Show Minus";
-"DISPLAY_MODE_DAY" = "Day";
-"DISPLAY_MODE_WEEK" = "Week";
-"X_WEEK_X_DAY" = "xW + xD";
+
 "OVERDUE_COLOR" = "Overdue Color";
 "DATE_FONT_SIZE" = "Date Font Size";
 "DATE_COLOR" = "Date Color";
 "INFO_COLOR" = "Information Color";
 "DESCRIBE" = "Description";
 "CHOOSE_DATE" = "Select Date";
+
+"SHOW_MINUS" = "Show Minus";
+"DISPLAY_MODE_DAY" = "Day";
+"DISPLAY_MODE_WEEK" = "Week";
+"X_WEEK_X_DAY" = "xW + xD";
+"DISPLAY_FLOATING_POINT" = "Display Floating Point";
+"UNIT_WEEK_2X2" = "w";
+"UNIT_WEEK" = "weeks";

@@ -1,11 +1,16 @@
 "MYDAYS" = "倒数日";
-"SHOW_MINUS" = "显示负号";
-"DISPLAY_MODE_DAY" = "天数";
-"DISPLAY_MODE_WEEK" = "周数";
-"X_WEEK_X_DAY" = "x周 + x天";
+
 "OVERDUE_COLOR" = "过期日期颜色";
 "DATE_FONT_SIZE" = "日期字体大小";
 "DATE_COLOR" = "日期颜色";
 "INFO_COLOR" = "信息颜色";
 "DESCRIBE" = "描述";
 "CHOOSE_DATE" = "选择日期";
+
+"SHOW_MINUS" = "显示负号";
+"DISPLAY_MODE_DAY" = "天数";
+"DISPLAY_MODE_WEEK" = "周数";
+"X_WEEK_X_DAY" = "x周 + x天";
+"DISPLAY_FLOATING_POINT" = "显示小数";
+"UNIT_WEEK_2X2" = "周";
+"UNIT_WEEK" = "周";
