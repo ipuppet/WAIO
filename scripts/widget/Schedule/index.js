@@ -5,27 +5,27 @@ const Schedule = require("./schedule")
 class ScheduleWidget extends Widget {
     constructor(kernel) {
         super(kernel, new ScheduleSetting(kernel))
-        this.schedule = new Schedule(this.kernel, this.setting)
         this.timeSpan = this.setting.get("timeSpan")
     }
 
-    async getCalendar(startDate, endDate) {
+    async getCalendar(startDate, hours) {
         const nowDate = Date.now()
         const res = []
         const calendar = await $calendar.fetch({
             startDate: startDate,
-            endDate: endDate
+            hours: hours,
         })
         // 未过期日程
         calendar.events.forEach(item => {
-            if (item.endDate >= nowDate) {
+            const endDate = item.endDate instanceof Date ? item.endDate.getTime() : item.endDate
+            if (endDate >= nowDate) {
                 res.push(item)
             }
         })
         return res
     }
 
-    async getReminder(startDate, endDate) {
+    async getReminder(startDate, hours) {
         // TODO 用于暂时解决提醒事项的一个多线程 bug
         // https://github.com/cyanzhong/jsbox-issues/issues/117#issuecomment-996780241
         $reminder.fetch = async (args) => {
@@ -100,7 +100,7 @@ class ScheduleWidget extends Widget {
         const res = []
         const reminder = await $reminder.fetch({
             startDate: startDate,
-            endDate: endDate
+            hours: hours
         })
         // 未完成提醒事项
         reminder.events.forEach(item => {
@@ -111,25 +111,25 @@ class ScheduleWidget extends Widget {
         return res
     }
 
-    async joinView(mode) {
-        // 获取数据
-        const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2)) // 以今天为中心的前后时间跨度。单位：天
-        const endDate = new Date(Date.now() + this.timeSpan * 1000 * 60 * 60 * 24)
-        const calendar = await this.getCalendar(startDate, endDate)
-        const reminder = await this.getReminder(startDate, endDate)
+    async initSchedule() {
+        this.schedule = new Schedule(this.kernel, this.setting)
+        // 存在长时间跨度的日程，因此不能从今天开始取。以今天为中心的前后时间跨度。
+        const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2))
+        const hours = this.timeSpan * 24 // 此处不用除 2，因为开始日期为今天往前数半个 this.timeSpan
+        const calendar = await this.getCalendar(startDate, hours)
+        const reminder = await this.getReminder(startDate, hours)
         this.schedule.setData(calendar, reminder)
+    }
+
+    async joinView(mode) {
+        await this.initSchedule() // 获取数据
         return this.schedule.scheduleView(mode)
     }
 
     async render() {
         const nowDate = Date.now()
-        const expireDate = new Date(nowDate + 1000 * 60 * 10)// 每十分钟切换
-        // 获取数据
-        const startDate = new Date(nowDate - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2)) // 以今天为中心的前后时间跨度。单位：天
-        const endDate = new Date(Date.now() + this.timeSpan * 1000 * 60 * 60 * 24)
-        const calendar = await this.getCalendar(startDate, endDate)
-        const reminder = await this.getReminder(startDate, endDate)
-        this.schedule.setData(calendar, reminder)
+        const expireDate = new Date(nowDate + 1000 * 60 * 5) // 每五分钟切换
+        await this.initSchedule() // 获取数据
         $widget.setTimeline({
             entries: [
                 {
