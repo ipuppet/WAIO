@@ -84,20 +84,10 @@ class MyDaysWidget extends Widget {
                     props: {
                         padding: 0,
                         spacing: 0,
-                        frame: {
-                            alignment: $widget.alignment.topLeading,
-                            maxWidth: Infinity,
-                            maxHeight: Infinity
-                        }
+                        alignment: $widget.verticalAlignment.top
                     },
                     views: [
-                        this.mainContentTemplate(weekInfo.week, {
-                            frame: {
-                                alignment: $widget.alignment.topTrailing,
-                                maxWidth: this.dateFontSize / 1.5, // 字体大小和布局宽度之间存在某种比例
-                                maxHeight: Infinity
-                            }
-                        }),
+                        this.mainContentTemplate(weekInfo.week, { frame: {} }),
                         this.mainContentTemplate(weekInfo.day, {
                             font: $font(this.dateFontSize / 2),
                             offset: $point(5, this.dateFontSize - this.dateFontSize / 2)
@@ -106,7 +96,7 @@ class MyDaysWidget extends Widget {
                 }
                 break;
             case 1: // 只显示周
-                view = view = this.mainContentTemplate(weekInfo.week)
+                view = this.mainContentTemplate(weekInfo.week)
                 break;
             case 2: // 显示小数
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day}`)
@@ -136,12 +126,12 @@ class MyDaysWidget extends Widget {
             type: "text",
             props: { text: $l10n("NONE") }
         }
-        let mainView = []
+        let mainView = {}
         if (this.displayMode) { // 周数
             const weekInfo = this.getWeekInfo(this.remainingDays)
-            mainView.push(this.weekTemplate(weekInfo, family))
+            mainView = this.weekTemplate(weekInfo, family)
         } else { //天数
-            mainView.push(this.mainContentTemplate(this.dateSpanToString(this.remainingDays)))
+            mainView = this.mainContentTemplate(this.dateSpanToString(this.remainingDays))
         }
         const view = {
             type: "vstack",
@@ -157,7 +147,7 @@ class MyDaysWidget extends Widget {
                 link: this.setting.settingUrlScheme,
                 widgetURL: this.setting.settingUrlScheme
             },
-            views: mainView.concat([
+            views: [mainView].concat([
                 {
                     type: "text",
                     props: {
