@@ -51,8 +51,8 @@ class MyDaysWidget extends Widget {
     getWeekInfo(days) {
         days = this.showMinus ? days : Math.abs(days)
         return {
-            week: String(Number(days / 7).toFixed(0)),
-            day: String(Number(days % 7).toFixed(0))
+            week: String(Math.trunc(days / 7)),
+            day: String(Math.trunc(days % 7))
         }
     }
 
@@ -66,6 +66,8 @@ class MyDaysWidget extends Widget {
                     ? $color(this.dateColor, this.dateColorDark)
                     : $color(this.overdueColor, this.overdueColorDark),
                 padding: 0,
+                lineLimit: 1,
+                minimumScaleFactor: 0.5,
                 frame: {
                     alignment: $widget.alignment.topLeading,
                     maxWidth: Infinity,
