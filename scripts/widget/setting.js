@@ -2,7 +2,7 @@ const {
     UIKit,
     Sheet,
     Setting
-} = require("../easy-jsbox")
+} = require("../lib/easy-jsbox")
 
 class BaseSetting {
     constructor(kernel, widget) {
