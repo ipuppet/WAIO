@@ -8,7 +8,7 @@ class PictureWidget extends Widget {
         this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
         this.switchInterval = 1000 * 60 * Number(this.setting.get("switchInterval"))
-        this.urlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
+        this.urlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
         this.pictures = this.album.getImages(this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original)
         // 缓存
         this.data = $cache.get("switch.data")

@@ -1,4 +1,4 @@
-const VERSION = "1.0.0"
+const VERSION = "1.0.1"
 
 /**
  * 对比版本号
@@ -227,7 +227,7 @@ class UIKit {
                 statusBarStyle: statusBarStyle,
                 navButtons: navButtons,
                 title: title,
-                bgcolor: $color(bgcolor),
+                bgcolor: typeof bgcolor === "string" ? $color(bgcolor) : bgcolor,
             },
             events: {
                 disappeared: () => {
@@ -436,6 +436,7 @@ class NavigationBar extends View {
         this.navigationBarNormalHeight = args?.navigationBarNormalHeight ?? $objc("UINavigationController").invoke("alloc.init").$navigationBar().jsValue().frame.height
         this.navigationBarLargeTitleHeight = $objc("UITabBarController").invoke("alloc.init").$tabBar().jsValue().frame.height + this.navigationBarNormalHeight
         this.largeTitleFontSize = 34
+        this.navigationBarTitleFontSize = 17
         this.isAddStatusBarHeight = true
         this.contentViewHeightOffset = 10
     }
@@ -497,7 +498,7 @@ class NavigationBar extends View {
                 layout: (make, view) => {
                     make.left.equalTo(view.super.safeArea).offset(15)
                     make.height.equalTo(this.largeTitleFontSize + 5)
-                    make.top.equalTo(view.super.safeArea).offset(this.getNavigationBarHeight())
+                    make.top.equalTo(this.getNavigationBarHeight())
                 }
             } : {}
     }
@@ -514,15 +515,15 @@ class NavigationBar extends View {
                 layout: (make, view) => {
                     make.top.equalTo(view.super.safeAreaTop)
                     make.bottom.equalTo(view.super.top).offset(this.getNavigationBarHeight())
-                    if (align === UIKit.align.left) make.left.inset(5)
-                    else make.right.inset(5)
+                    if (align === UIKit.align.left) make.left.equalTo(view.super.safeArea).offset(5)
+                    else make.right.equalTo(view.super.safeArea).offset(-5)
                     make.width.equalTo(buttons.length * BarButtonItem.size.width)
                 }
             } : {}
         }
         const rightButtonView = getButtonView(this.navigationItem.rightButtons, UIKit.align.right)
         const leftButtonView = this.navigationItem.popButtonView ?? getButtonView(this.navigationItem.leftButtons, UIKit.align.left)
-        const isHideBackground = this.prefersLargeTitles && this.navigationItem.largeTitleDisplayMode !== NavigationItem.LargeTitleDisplayModeNever
+        const isHideBackground = this.prefersLargeTitles
         const isHideTitle = !this.prefersLargeTitles || this.navigationItem.largeTitleDisplayMode === NavigationItem.LargeTitleDisplayModeNever
         return { // 顶部bar
             type: "view",
@@ -551,13 +552,22 @@ class NavigationBar extends View {
                     id: this.id + "-underline",
                     alpha: isHideBackground ? 0 : 1
                 }),
+                {
+                    type: "view",
+                    props: {
+                        hidden: true,
+                        bgcolor: $color("clear"),
+                        id: this.id + "-large-title-mask"
+                    },
+                    layout: $layout.fill
+                },
                 { // 标题
                     type: "label",
                     props: {
                         id: this.id + "-small-title",
                         alpha: isHideTitle ? 1 : 0,  // 不显示大标题则显示小标题
                         text: this.navigationItem.title,
-                        font: $font("bold", 17),
+                        font: $font("bold", this.navigationBarTitleFontSize),
                         align: $align.center,
                         bgcolor: $color("clear"),
                         textColor: UIKit.textColor
@@ -601,7 +611,7 @@ class BarButtonItem extends View {
         return $size(44, 44)
     }
 
-    setTitle(title) {
+    setTitle(title = "") {
         this.title = title
         return this
     }
@@ -682,17 +692,19 @@ class BarButtonItem extends View {
             type: "view",
             views: [
                 {
-                    type: "button",
+                    type: "button", // TODO 控制 symbol 大小
                     props: Object.assign({
                         id: this.id,
+                        bgcolor: $color("clear"),
                         tintColor: UIKit.textColor,
                         image: $image(this.symbol),
-                        title: this.title,
                         titleColor: UIKit.textColor,
                         contentEdgeInsets: $insets(0, 0, 0, 0),
-                        imageEdgeInsets: $insets(0, 0, 0, 0),
-                        bgcolor: $color("clear")
-                    }, this.menu ? { menu: this.menu } : {}),
+                        titleEdgeInsets: $insets(0, 0, 0, 0),
+                        imageEdgeInsets: $insets(0, 0, 0, 0)
+                    },
+                        this.menu ? { menu: this.menu } : {},
+                        this.title?.length > 0 ? { title: this.title } : {}),
                     events: {
                         tapped: sender => {
                             this.events.tapped({
@@ -773,7 +785,8 @@ class SearchBar extends BarTitleView {
             layout: (make, view) => {
                 //make.top.equalTo(view.prev.bottom).offset(15)
                 make.top.equalTo(view.prev.bottom).offset(15)
-                make.left.right.inset(15)
+                make.left.equalTo(view.super.safeArea).offset(15)
+                make.right.equalTo(view.super.safeArea).offset(-15)
                 make.height.equalTo(this.height)
             },
             events: {
@@ -926,7 +939,7 @@ class NavigationItem {
                 font: $font("bold", 16)
             },
             layout: (make, view) => {
-                make.left.inset(10)
+                make.left.equalTo(view.super.safeArea).offset(10)
                 make.centerY.equalTo(view.super.safeArea)
             },
             events: { tapped: () => { $ui.pop() } }
@@ -948,7 +961,7 @@ class NavigationController extends Controller {
     constructor() {
         super()
         this.navigationBar = new NavigationBar()
-        this.topScrollTrigger = 40
+        this.largeTitleScrollTrigger = this.navigationBar.largeTitleFontSize - 3
     }
 
     updateSelector() {
@@ -957,6 +970,7 @@ class NavigationController extends Controller {
             largeTitleView: $(this.navigationBar.id + "-large-title"),
             smallTitleView: $(this.navigationBar.id + "-small-title"),
             underlineView: $(this.navigationBar.id + "-underline"),
+            largeTitleMaskView: $(this.navigationBar.id + "-large-title-mask"),
             backgroundView: $(this.navigationBar.id + "-background")
         }
     }
@@ -1002,7 +1016,7 @@ class NavigationController extends Controller {
             make.top.equalTo(view.super).offset(this.navigationBar.getNavigationBarHeight() - contentOffset)
         })
         if (contentOffset > 0) {
-            if (contentOffset > this.topScrollTrigger) {
+            if (contentOffset > this.largeTitleScrollTrigger) {
                 $ui.animate({
                     duration: 0.2,
                     animation: () => {
@@ -1030,8 +1044,12 @@ class NavigationController extends Controller {
 
     _navigationBarScrollAction(contentOffset) {
         if (contentOffset > 0) {
-            this.selector.backgroundView.hidden = false
-            if (contentOffset > this.topScrollTrigger) {
+            let trigger = this.navigationBar.navigationItem.largeTitleDisplayMode === NavigationItem.LargeTitleDisplayModeNever
+                ? 5
+                : this.largeTitleScrollTrigger
+            if (contentOffset > trigger) {
+                // 隐藏遮罩
+                this.selector.largeTitleMaskView.hidden = true
                 $ui.animate({
                     duration: 0.2,
                     animation: () => {
@@ -1041,6 +1059,9 @@ class NavigationController extends Controller {
                     }
                 })
             } else {
+                const contentViewBackgroundColor = this.selector.largeTitleView?.prev.bgcolor
+                this.selector.largeTitleMaskView.bgcolor = contentViewBackgroundColor
+                this.selector.largeTitleMaskView.hidden = false
                 this.selector.underlineView.alpha = 0
             }
         } else {
@@ -1053,17 +1074,22 @@ class NavigationController extends Controller {
 
     scrollAction(contentOffset) {
         if (!this.navigationBar.prefersLargeTitles) return
-        if (this.navigationBar?.navigationItem.largeTitleDisplayMode !== NavigationItem.LargeTitleDisplayModeAutomatic) return
+        const largeTitleDisplayMode = this.navigationBar?.navigationItem.largeTitleDisplayMode
+        if (largeTitleDisplayMode === NavigationItem.LargeTitleDisplayModeAlways) return
         this.updateSelector()
-        this.navigationBar?.navigationItem?.titleView?.controller.scrollAction(contentOffset)
-        // 在 titleView 折叠前锁住主要视图
-        if (contentOffset > 0) {
-            let height = this.navigationBar?.navigationItem?.titleView?.height ?? 0
-            contentOffset -= height
-            if (contentOffset < 0) contentOffset = 0
+        if (largeTitleDisplayMode === NavigationItem.LargeTitleDisplayModeAutomatic) {
+            this.navigationBar?.navigationItem?.titleView?.controller.scrollAction(contentOffset)
+            // 在 titleView 折叠前锁住主要视图
+            if (contentOffset > 0) {
+                let height = this.navigationBar?.navigationItem?.titleView?.height ?? 0
+                contentOffset -= height
+                if (contentOffset < 0) contentOffset = 0
+            }
+            this._largeTitleScrollAction(contentOffset)
+            this._navigationBarScrollAction(contentOffset)
+        } else if (largeTitleDisplayMode === NavigationItem.LargeTitleDisplayModeNever) {
+            this._navigationBarScrollAction(contentOffset)
         }
-        this._largeTitleScrollAction(contentOffset)
-        this._navigationBarScrollAction(contentOffset)
     }
 }
 
@@ -1163,7 +1189,9 @@ class PageController extends Controller {
             if (scrollView.indexOf(this.view.type) === -1) {
                 this.view.layout = (make, view) => {
                     make.bottom.left.right.equalTo(view.super)
-                    make.top.equalTo(height)
+                    const navigationBarHeight = this.navigationController.navigationBar.getNavigationBarHeight()
+                    const largeTitleFontSize = this.navigationController.navigationBar.largeTitleFontSize
+                    make.top.equalTo(navigationBarHeight + largeTitleFontSize)
                 }
             } else {
                 this.view.layout = $layout.fill
@@ -1398,9 +1426,12 @@ class Kernel {
     constructor() {
         this.startTime = Date.now()
         this.version = VERSION
-        this.name = $addin.current.name
         // 隐藏 jsbox 默认 nav 栏
         this.jsboxNavHidden = true
+    }
+
+    static get name() {
+        return $addin.current.name
     }
 
     uuid() {
@@ -1427,7 +1458,6 @@ class Kernel {
             console.log(message)
         }
     }
-
 
     useJsboxNav() {
         this.jsboxNavHidden = false
@@ -1509,6 +1539,10 @@ class Setting extends Controller {
         this.viewController = new ViewController()
         // 用于存放 script 类型用到的方法
         this.method = {}
+    }
+
+    static get bgcolor() {
+        return $color("insetGroupedBackground")
     }
 
     useJsboxNav() {
@@ -2510,6 +2544,7 @@ class Setting extends Controller {
                             if (this.isUseJsboxNav) {
                                 UIKit.push({
                                     title: title,
+                                    bgcolor: Setting.bgcolor,
                                     views: [this.getListView(children)]
                                 })
                             } else {
@@ -2649,7 +2684,7 @@ class Setting extends Controller {
             pageController
                 .initPage()
                 .page
-                .setProp("bgcolor", $color("insetGroupedBackground"))
+                .setProp("bgcolor", Setting.bgcolor)
             this.viewController.setRootPageController(pageController)
         }
         return this.viewController.getRootPageController().getPage()
@@ -2658,6 +2693,7 @@ class Setting extends Controller {
 
 module.exports = {
     VERSION,
+    versionCompare,
     // class
     UIKit,
     ViewController,

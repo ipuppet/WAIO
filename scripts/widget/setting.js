@@ -2,14 +2,14 @@ const {
     UIKit,
     Sheet,
     Setting
-} = require("../easy-jsbox")
+} = require("../lib/easy-jsbox")
 
 class BaseSetting {
     constructor(kernel, widget) {
         this.kernel = kernel
         this.widget = widget
         // settingUrlScheme
-        this.settingUrlScheme = `jsbox://run?name=${this.kernel.name}&widget=${this.widget}`
+        this.settingUrlScheme = `jsbox://run?name=${$addin.current.name}&widget=${this.widget}`
         // 初始化
         this.loadL10n()
         this.init()

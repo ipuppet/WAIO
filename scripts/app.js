@@ -3,7 +3,7 @@ const {
     Sheet,
     Kernel,
     Setting
-} = require("./easy-jsbox")
+} = require("./lib/easy-jsbox")
 
 // path
 const widgetRootPath = "scripts/widget"

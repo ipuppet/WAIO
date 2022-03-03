@@ -1,4 +1,4 @@
-const { SloarToLunar } = require('./sloarToLunar')
+const { SloarToLunar } = require('../../lib/sloarToLunar')
 
 const s2l = new SloarToLunar()
 
