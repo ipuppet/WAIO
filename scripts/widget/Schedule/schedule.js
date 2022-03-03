@@ -15,8 +15,8 @@ class Schedule {
         this.dataMode2x2 = this.setting.get("dataMode2x2")
         this.dataMode2x4 = this.setting.get("dataMode2x4")
         this.dataMode4x4 = this.setting.get("dataMode4x4")
-        this.calendarUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("calshow://")}`
-        this.reminderUrlScheme = `jsbox://run?name=${this.kernel.name}&url-scheme=${$text.URLEncode("x-apple-reminderkit://")}`
+        this.calendarUrlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode("calshow://")}`
+        this.reminderUrlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode("x-apple-reminderkit://")}`
         switch (this.setting.get("clickEvent")) {
             case 0:
                 this.urlScheme = this.setting.settingUrlScheme
