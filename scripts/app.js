@@ -298,69 +298,85 @@ class WidgetKernel extends Kernel {
     }
 }
 
+class AppUI {
+    static renderMainUI() {
+        const kernel = new AppKernel()
+        // 设置样式
+        kernel.useJsboxNav()
+        // 设置 navButtons
+        kernel.setNavButtons([
+            {
+                symbol: "gear",
+                handler: () => {
+                    UIKit.push({
+                        title: $l10n("SETTING"),
+                        views: [kernel.setting.getListView()]
+                    })
+                }
+            }
+        ])
+        const HomeUI = require("./ui/home")
+        const interfaceUi = new HomeUI(kernel)
+        kernel.UIRender({
+            views: [interfaceUi.getView()]
+        })
+        // 监听运行状态
+        $app.listen({
+            pause: () => {
+                $widget.reloadTimeline()
+                kernel.updateHomeScreenWidgetOptions()
+            }
+        })
+    }
+
+    static renderUnsupported() {
+        $intents.finish("不支持在此环境中运行")
+        $ui.render({
+            views: [{
+                type: "label",
+                props: {
+                    text: "不支持在此环境中运行",
+                    align: $align.center
+                },
+                layout: $layout.fill
+            }]
+        })
+    }
+}
+
+class Widget {
+    static renderError() {
+        $widget.setTimeline({
+            render: () => {
+                return {
+                    type: "text",
+                    props: {
+                        text: "加载失败，可能是参数有误？去主程序更新参数再来试试？"
+                    }
+                }
+            }
+        })
+    }
+
+    static render(widgetName = $widget.inputValue) {
+        const kernel = new WidgetKernel()
+        const widget = kernel.widgetInstance(widgetName)
+        if (widget) {
+            widget.render()
+        } else {
+            Widget.renderError()
+        }
+    }
+}
+
 module.exports = {
     run: () => {
         if ($app.env === $env.widget) {
-            const kernel = new WidgetKernel()
-            const widgetName = $widget.inputValue
-            const widget = kernel.widgetInstance(widgetName)
-            if (widget) {
-                widget.render()
-            } else {
-                $widget.setTimeline({
-                    render: () => {
-                        return {
-                            type: "text",
-                            props: {
-                                text: "加载失败，可能是参数有误？去主程序更新参数再来试试？"
-                            }
-                        }
-                    }
-                })
-            }
+            Widget.render()
         } else if ($app.env === $env.app || $app.env === $env.today) {
-            const kernel = new AppKernel()
-            // 设置样式
-            kernel.useJsboxNav()
-            // 设置 navButtons
-            kernel.setNavButtons([
-                {
-                    symbol: "gear",
-                    handler: () => {
-                        UIKit.push({
-                            title: $l10n("SETTING"),
-                            views: [kernel.setting.getListView()]
-                        })
-                    }
-                }
-            ])
-            const HomeUI = require("./ui/home")
-            const interfaceUi = new HomeUI(kernel)
-            kernel.UIRender({
-                views: [interfaceUi.getView()]
-            })
-            // 监听运行状态
-            $app.listen({
-                pause: () => {
-                    $widget.reloadTimeline()
-                    kernel.updateHomeScreenWidgetOptions()
-                }
-            })
+            AppUI.renderMainUI()
         } else {
-            $intents.finish("不支持在此环境中运行")
-            $ui.render({
-                views: [{
-                    type: "label",
-                    props: {
-                        text: "不支持在此环境中运行",
-                        align: $align.center
-                    },
-                    layout: (make, view) => {
-                        make.center.equalTo(view.super)
-                        make.size.equalTo(view.super)
-                    }
-                }]
-            })
+            AppUI.renderUnsupported()
         }
     }
 }

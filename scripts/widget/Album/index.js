@@ -8,7 +8,9 @@ class PictureWidget extends Widget {
         this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
         this.switchInterval = 1000 * 60 * Number(this.setting.get("switchInterval"))
-        this.urlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
+        this.urlScheme = this.setting.get("urlScheme") !== ""
+            ? `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
+            : this.setting.settingUrlScheme
         this.pictures = this.album.getImages(this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original)
         // 缓存
         this.data = $cache.get("switch.data")
@@ -59,7 +61,6 @@ class PictureWidget extends Widget {
                 }
             }
         } else {
-            const urlScheme = this.urlScheme ? this.urlScheme : this.setting.settingUrlScheme
             view = {
                 type: "image",
                 props: {
@@ -70,8 +71,8 @@ class PictureWidget extends Widget {
                         maxWidth: Infinity,
                         maxHeight: Infinity
                     },
-                    link: urlScheme,
-                    widgetURL: urlScheme
+                    link: this.urlScheme,
+                    widgetURL: this.urlScheme
                 }
             }
         }

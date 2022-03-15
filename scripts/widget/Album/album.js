@@ -27,21 +27,6 @@ class Album {
         if (!$file.isDirectory(`${this.albumPath}/${this.imageType.preview}`)) {
             $file.mkdir(`${this.albumPath}/${this.imageType.preview}`)
         }
-        // TODO 将在未来删除 向下兼容，重构结构
-        if ($file.isDirectory(`${this.albumPath}/archive`)) {
-            $file.move({
-                src: `${this.albumPath}/archive`,
-                dst: `${this.albumPath}/${this.imageType.compressed}`
-            })
-        }
-        $file.list(this.albumPath).forEach(item => {
-            if (!$file.isDirectory(`${this.albumPath}/${item}`)) {
-                $file.move({
-                    src: `${this.albumPath}/${item}`,
-                    dst: `${this.albumPath}/${this.imageType.original}/${item}`
-                })
-            }
-        })
     }
 
     /**
