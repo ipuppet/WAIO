@@ -318,7 +318,7 @@ module.exports = {
                     }
                 })
             }
-        } else if ($app.env === $env.app || $app.env === $env.today) {
+        } else if ($app.env === $env.app) {
             const kernel = new AppKernel()
             // 设置样式
             kernel.useJsboxNav()
