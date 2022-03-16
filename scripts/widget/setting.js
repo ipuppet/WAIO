@@ -39,7 +39,7 @@ class BaseSetting {
             savePath: savePath,
             structurePath: structurePath
         })
-        this.setting.loadConfig()
+        this.setting.loadConfig().useJsboxNav()
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
             this.setting.setFooter({ type: "view" })

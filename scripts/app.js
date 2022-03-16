@@ -61,7 +61,7 @@ class AppKernel extends Kernel {
         super()
         this.query = $context.query
         this.setting = new Setting()
-        this.setting.loadConfig()
+        this.setting.loadConfig().useJsboxNav()
         this.initSettingMethods()
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
