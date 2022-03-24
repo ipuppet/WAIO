@@ -53,6 +53,8 @@ class BaseSetting {
             })
             this.defaultSettingMethods()
             this.initSettingMethods()
+        } else {
+            this.setting.setReadonly()
         }
     }
 
