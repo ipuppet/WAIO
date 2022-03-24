@@ -201,12 +201,12 @@ class HomeUI {
     getPageController() {
         const pageController = new PageController()
 
-        // 初始化搜索功能
-        const searchBar = new SearchBar()
-        searchBar.controller.setEvent("onChange", text => this.searchAction(text))
+        // TODO 初始化搜索功能
+        //const searchBar = new SearchBar()
+        //searchBar.controller.setEvent("onChange", text => this.searchAction(text))
         pageController.navigationItem
             .setTitle("WAIO")
-            .setTitleView(searchBar)
+            //.setTitleView(searchBar)
 
         pageController
             .setView(this.getListView())
