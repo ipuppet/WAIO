@@ -42,3 +42,6 @@
 "USE_COMPRESSED_IMAGE" = "使用压缩后的图片";
 "CHOOSE_IMAGE" = "选择图片";
 "CLEAR_IMAGE" = "清除图片";
+
+"CLASSIC" = "经典";
+"MODERN" = "现代";

@@ -1,6 +1,13 @@
+const {
+    ViewController,
+    PageController,
+    SearchBar
+} = require("../lib/easy-jsbox")
+
 class HomeUI {
     constructor(kernel) {
         this.kernel = kernel
+        this.viewController = new ViewController()
         // 检查是否携带widget参数，携带则打开设置页面
         if (this.kernel.query["widget"]) {
             setTimeout(() => {
@@ -95,7 +102,9 @@ class HomeUI {
         })
     }
 
-    getView() {
+    searchAction(text) { }
+
+    getListView() {
         return {
             type: "list",
             props: {
@@ -187,6 +196,24 @@ class HomeUI {
             },
             layout: $layout.fill
         }
+    }
+
+    getPageController() {
+        const pageController = new PageController()
+
+        // TODO 初始化搜索功能
+        //const searchBar = new SearchBar()
+        //searchBar.controller.setEvent("onChange", text => this.searchAction(text))
+        pageController.navigationItem
+            .setTitle("WAIO")
+            //.setTitleView(searchBar)
+
+        pageController
+            .setView(this.getListView())
+            .navigationController
+            .navigationBar
+            .setBackgroundColor($color("primarySurface"))
+        return pageController
     }
 }
 
