@@ -1,6 +1,8 @@
 const {
     UIKit,
     Sheet,
+    NavigationItem,
+    PageController,
     Setting
 } = require("../lib/easy-jsbox")
 
@@ -39,9 +41,12 @@ class BaseSetting {
             savePath: savePath,
             structurePath: structurePath
         })
-        this.setting.loadConfig().useJsboxNav()
+        this.setting.loadConfig()
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
+            if (this.kernel.isUseJsboxNav) {
+                this.setting.useJsboxNav()
+            }
             this.setting.setFooter({ type: "view" })
             this.setting.setEvent("onChildPush", (listView, title) => {
                 this.push(listView, title)
@@ -61,25 +66,41 @@ class BaseSetting {
     }
 
     push(listView = this.setting.getListView(), title = this.widget) {
-        UIKit.push({
-            bgcolor: "insetGroupedBackground",
-            topOffset: false,
-            views: [listView],
-            title: title,
-            navButtons: [
-                {
-                    symbol: "rectangle.3.offgrid.fill",
-                    handler: () => {
-                        const widget = this.kernel.widgetInstance(this.widget)
-                        if (widget) {
-                            widget.render()
-                        } else {
-                            $ui.error($l10n("ERROR"))
-                        }
+        const navButtons = [
+            {
+                symbol: "rectangle.3.offgrid.fill",
+                handler: () => {
+                    const widget = this.kernel.widgetInstance(this.widget)
+                    if (widget) {
+                        widget.render()
+                    } else {
+                        $ui.error($l10n("ERROR"))
                     }
                 }
-            ]
-        })
+            }
+        ]
+        if (this.kernel.isUseJsboxNav) {
+            UIKit.push({
+                bgcolor: "insetGroupedBackground",
+                topOffset: false,
+                views: [listView],
+                title: title,
+                navButtons: navButtons
+            })
+        } else {
+            const pageController = new PageController()
+            pageController
+                .setView(listView)
+                .navigationItem
+                .setTitle(title)
+                .setLargeTitleDisplayMode(NavigationItem.LargeTitleDisplayModeNever)
+                .setRightButtons(navButtons.map(button => {
+                    button.tapped = button.handler
+                    delete button.handler
+                    return button
+                }))
+            this.kernel?.homeUI.viewController.push(pageController)
+        }
     }
 
     set(key, value) {

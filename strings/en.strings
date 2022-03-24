@@ -42,3 +42,6 @@
 "USE_COMPRESSED_IMAGE" = "Use Compressed Image";
 "CHOOSE_IMAGE" = "Select Image";
 "CLEAR_IMAGE" = "Clear Image";
+
+"CLASSIC" = "Classic";
+"MODERN" = "Modern";

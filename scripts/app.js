@@ -2,8 +2,10 @@ const {
     UIKit,
     Sheet,
     Kernel,
+    TabBarController,
     Setting
 } = require("./lib/easy-jsbox")
+const HomeUI = require("./ui/home")
 
 // path
 const widgetRootPath = "scripts/widget"
@@ -61,18 +63,24 @@ class AppKernel extends Kernel {
         super()
         this.query = $context.query
         this.setting = new Setting()
-        this.setting.loadConfig().useJsboxNav()
+        this.setting.loadConfig()
         this.initSettingMethods()
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetDataPath = widgetDataPath
         // backup
         this.backupPath = backupPath
+        this.initComponents()
         // 检查是否携带URL scheme
         if (this.query["url-scheme"]) {
             // 延时500ms后跳转
             setTimeout(() => { $app.openURL(this.query["url-scheme"]) }, 500)
         }
+    }
+
+    initComponents() {
+        // homeUI
+        this.homeUI = new HomeUI(this)
     }
 
     /**
@@ -301,25 +309,54 @@ class WidgetKernel extends Kernel {
 class AppUI {
     static renderMainUI() {
         const kernel = new AppKernel()
-        // 设置样式
-        kernel.useJsboxNav()
-        // 设置 navButtons
-        kernel.setNavButtons([
-            {
-                symbol: "gear",
-                handler: () => {
-                    UIKit.push({
-                        title: $l10n("SETTING"),
-                        views: [kernel.setting.getListView()]
-                    })
-                }
+        const buttons = {
+            home: {
+                icon: ["house", "house.fill"],
+                title: $l10n("HOME")
+            },
+            setting: {
+                icon: "gear",
+                title: $l10n("SETTING")
             }
-        ])
-        const HomeUI = require("./ui/home")
-        const interfaceUi = new HomeUI(kernel)
-        kernel.UIRender({
-            views: [interfaceUi.getView()]
+        }
+        kernel.setting.setEvent("onSet", key => {
+            if (key === "mainUIDisplayMode") {
+                $delay(0.3, () => $addin.restart())
+            }
         })
+        if (kernel.setting.get("mainUIDisplayMode") === 0) {
+            kernel.useJsboxNav()
+            kernel.setting.useJsboxNav()
+            // 设置 navButtons
+            kernel.setNavButtons([
+                {
+                    symbol: buttons.setting.icon,
+                    title: buttons.setting.title,
+                    handler: () => {
+                        UIKit.push({
+                            title: buttons.setting.title,
+                            bgcolor: Setting.bgcolor,
+                            views: [kernel.setting.getListView()]
+                        })
+                    }
+                }
+            ])
+
+            kernel.UIRender({ views: [kernel.homeUI.getListView()] })
+        } else {
+            const tabBarController = new TabBarController()
+            const homePageController = kernel.homeUI.getPageController()
+            kernel.homeUI.viewController.setRootPageController(homePageController)
+            tabBarController.setPages({
+                home: homePageController.getPage(),
+                setting: kernel.setting.getPageView()
+            }).setCells({
+                home: buttons.home,
+                setting: buttons.setting
+            })
+
+            kernel.UIRender(tabBarController.generateView().definition)
+        }
         // 监听运行状态
         $app.listen({
             pause: () => {
