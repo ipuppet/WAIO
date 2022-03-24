@@ -1,0 +1,17 @@
+[
+    {
+        "title": "ABOUT",
+        "items": [
+            {
+                "icon": [
+                    "book.fill",
+                    "#A569BD"
+                ],
+                "title": "README",
+                "type": "script",
+                "key": "calendar",
+                "value": "this.method.readme"
+            }
+        ]
+    }
+]
