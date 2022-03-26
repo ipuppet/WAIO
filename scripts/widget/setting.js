@@ -83,7 +83,7 @@ class BaseSetting {
         ]
         if (this.kernel.isUseJsboxNav) {
             UIKit.push({
-                bgcolor: "insetGroupedBackground",
+                bgcolor: Setting.bgcolor,
                 topOffset: false,
                 views: [listView],
                 title: title,
@@ -95,7 +95,7 @@ class BaseSetting {
                 .setView(listView)
                 .navigationItem
                 .setTitle(title)
-                .setLargeTitleDisplayMode(NavigationItem.LargeTitleDisplayModeNever)
+                .setLargeTitleDisplayMode(NavigationItem.largeTitleDisplayModeNever)
                 .setRightButtons(navButtons.map(button => {
                     button.tapped = button.handler
                     delete button.handler
