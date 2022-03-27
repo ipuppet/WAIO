@@ -1,4 +1,5 @@
 const {
+    UIKit,
     ViewController,
     PageController,
     SearchBar
@@ -110,6 +111,7 @@ class HomeUI {
             props: {
                 id: "waio-home-list",
                 rowHeight: 100,
+                bgcolor: UIKit.primaryViewBackgroundColor,
                 data: this.getWidgetListView(),
                 template: {
                     props: {
@@ -206,7 +208,7 @@ class HomeUI {
         //searchBar.controller.setEvent("onChange", text => this.searchAction(text))
         pageController.navigationItem
             .setTitle("WAIO")
-            //.setTitleView(searchBar)
+        //.setTitleView(searchBar)
 
         pageController
             .setView(this.getListView())
