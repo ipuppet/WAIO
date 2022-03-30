@@ -115,7 +115,7 @@ class Album {
                         }, 100)
                     },
                     changed: sender => {
-                        console.log(sender.page)
+                        this.kernel.print(sender.page)
                         sender.items = getData(sender.page)
                     }
                 },

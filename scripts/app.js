@@ -3,14 +3,16 @@ const {
     Sheet,
     Kernel,
     TabBarController,
+    FileStorage,
     Setting
 } = require("./lib/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
+const fileStorage = new FileStorage()
 const widgetRootPath = "scripts/widget"
-const widgetDataPath = "storage/widget"
-const backupPath = "storage/backup"
+const widgetDataPath = `${fileStorage.basePath}/widget`
+const backupPath = `${fileStorage.basePath}/backup`
 
 /**
  * 实例化一个小组件
@@ -65,6 +67,8 @@ class AppKernel extends Kernel {
         this.setting = new Setting()
         this.setting.loadConfig()
         this.initSettingMethods()
+        // FileStorage
+        this.fileStorage = fileStorage
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetDataPath = widgetDataPath
@@ -178,7 +182,7 @@ class AppKernel extends Kernel {
                     })
                 } catch (error) {
                     animate.actionCancel()
-                    console.log(error)
+                    this.print(error)
                 }
             }
             $ui.alert({
