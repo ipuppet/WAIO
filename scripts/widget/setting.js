@@ -3,6 +3,7 @@ const {
     Sheet,
     NavigationItem,
     PageController,
+    FileStorage,
     Setting
 } = require("../lib/easy-jsbox")
 
@@ -28,18 +29,14 @@ class BaseSetting {
     }
 
     init() {
-        const rootPath = `${this.kernel.widgetRootPath}/${this.widget}`,
-            dataPath = `${this.kernel.widgetDataPath}/${this.widget}`
-        this.config = JSON.parse($file.read(`${rootPath}/config.json`).string)
-        // 检查目录是否存在，不存在则创建
-        if (!$file.exists(rootPath)) { $file.mkdir(rootPath) }
-        if (!$file.exists(dataPath)) { $file.mkdir(dataPath) }
-        const structurePath = `${rootPath}/setting.json`,
-            savePath = `${dataPath}/setting.json`
+        this.rootStorage = new FileStorage({ basePath: this.kernel.widgetRootPath })
+
+        this.config = this.rootStorage.readAsJSON(this.widget, "config.json")
         this.setting = new Setting({
             name: `${this.widget}Setting`,
-            savePath: savePath,
-            structurePath: structurePath
+            fileStorage: new FileStorage({ basePath: `${this.kernel.widgetDataPath}/${this.widget}` }),
+            saveFile: "setting.json",
+            structure: this.rootStorage.readAsJSON(this.widget, "setting.json")
         })
         this.setting.loadConfig()
         // 判断当前环境

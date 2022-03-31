@@ -1,4 +1,16 @@
-const VERSION = "1.2.0"
+const VERSION = "1.2.1"
+
+String.prototype.trim = function (char, type) {
+    if (char) {
+        if (type == 'l') {
+            return this.replace(new RegExp('^\\' + char + '+', 'g'), '');
+        } else if (type == 'r') {
+            return this.replace(new RegExp('\\' + char + '+$', 'g'), '');
+        }
+        return this.replace(new RegExp('^\\' + char + '+|\\' + char + '+$', 'g'), '');
+    }
+    return this.replace(/^\s+|\s+$/g, '');
+}
 
 /**
  * 对比版本号
@@ -7,10 +19,10 @@ const VERSION = "1.2.0"
  * @returns 1: preVersion 大, 0: 相等, -1: lastVersion 大
  */
 function versionCompare(preVersion = '', lastVersion = '') {
-    var sources = preVersion.split('.')
-    var dests = lastVersion.split('.')
-    var maxL = Math.max(sources.length, dests.length)
-    var result = 0
+    let sources = preVersion.split('.')
+    let dests = lastVersion.split('.')
+    let maxL = Math.max(sources.length, dests.length)
+    let result = 0
     for (let i = 0; i < maxL; i++) {
         let preValue = sources.length > i ? sources[i] : 0
         let preNum = isNaN(Number(preValue)) ? preValue.charCodeAt() : Number(preValue)
@@ -57,6 +69,41 @@ function uuid() {
     return s.join("")
 }
 
+function objectEqual(a, b) {
+    let aProps = Object.getOwnPropertyNames(a)
+    let bProps = Object.getOwnPropertyNames(b)
+    if (aProps.length !== bProps.length) {
+        return false
+    }
+    for (let i = 0; i < aProps.length; i++) {
+        let propName = aProps[i]
+
+        let propA = a[propName]
+        let propB = b[propName]
+        if (typeof propA === 'object') {
+            return objectEqual(propA, propB)
+        } else if (propA !== propB) {
+            return false
+        }
+    }
+    return true
+}
+
+/**
+ * 压缩图片
+ * @param {$image} image $image
+ * @param {Number} maxSize 图片最大尺寸 单位：像素
+ * @returns $image
+ */
+function compressImage(image, maxSize = 1280 * 720) {
+    const info = $imagekit.info(image)
+    if (info.height * info.width > maxSize) {
+        const scale = maxSize / (info.height * info.width)
+        image = $imagekit.scaleBy(image, scale)
+    }
+    return image
+}
+
 class ValidationError extends Error {
     constructor(parameter, type) {
         super(`The type of the parameter '${parameter}' must be '${type}'`)
@@ -86,14 +133,39 @@ class Controller {
 
 class View {
     id = uuid()
+    type
+    props
+    views
+    events
+    layout
 
-    constructor(args = {}) {
+    constructor({
+        type = "view",
+        props = {},
+        views = [],
+        events = {},
+        layout = $layout.fill
+    } = {}) {
         // 属性
-        this.props = args.props ?? {}
-        this.props.id = this.id
-        this.views = args.views ?? []
-        this.events = args.events ?? {}
-        this.layout = args.layout ?? $layout.fill
+        this.type = type
+        this.props = props
+        this.views = views
+        this.events = events
+        this.layout = layout
+
+        if (this.props.id) {
+            this.id = this.props.id
+        } else {
+            this.props.id = this.id
+        }
+    }
+
+    static create(args) {
+        return new this(args)
+    }
+
+    static createByViews(views) {
+        return new this({ views })
     }
 
     setProps(props) {
@@ -121,16 +193,49 @@ class View {
         return this
     }
 
+    /**
+     * 事件中间件
+     * 
+     * 调用处理函数 `action`，第一个参数为用户定义的事件处理函数
+     * 其余参数为 JSBox 传递的参数，如 sender 等
+     * 
+     * @param {String} event 事件名称
+     * @param {Function} action 处理事件的函数
+     * @returns 
+     */
+    eventMiddleware(event, action) {
+        const old = this.events[event]
+        this.events[event] = (...args) => {
+            if (typeof old === "function") {
+                // 调用处理函数
+                action(old, ...args)
+            }
+        }
+        return this
+    }
+
+    assignEvent(event, action) {
+        const old = this.events[event]
+        this.events[event] = (...args) => {
+            if (typeof old === "function") {
+                old(...args)
+            }
+            action(...args)
+        }
+        return this
+    }
+
     setLayout(layout) {
         this.layout = layout
         return this
     }
 
-    getView() { }
+    getView() {
+        return this
+    }
 
     get definition() {
-        const view = this.getView()
-        return (view instanceof ContainerView) ? view.getView() : view
+        return this.getView()
     }
 }
 
@@ -165,7 +270,7 @@ class UIKit {
     }
 
     static get statusBarHeight() {
-        return UIKit.#sharedApplication.$statusBarFrame().height
+        return $app.isDebugging ? 0 : UIKit.#sharedApplication.$statusBarFrame().height
     }
 
     static get statusBarOrientation() {
@@ -196,7 +301,7 @@ class UIKit {
             },
             events: {
                 draw: (view, ctx) => {
-                    ctx.strokeColor = $color("separatorColor")
+                    ctx.strokeColor = props.bgcolor ?? $color("separatorColor")
                     ctx.setLineWidth(1)
                     ctx.moveToPoint(0, 0)
                     ctx.addLineToPoint(view.frame.width, 0)
@@ -308,24 +413,215 @@ class ViewController extends Controller {
     }
 }
 
-class ContainerView extends View {
-    static createByViews(views) {
-        return new this({ views })
+class Matrix extends View {
+    titleStyle = {
+        font: $font("bold", 21),
+        height: 30
+    }
+    #hiddenViews
+    #templateHiddenStatus
+
+    templateIdByIndex(i) {
+        if (this.props.template.views[i]?.props?.id === undefined) {
+            if (this.props.template.views[i].props === undefined) {
+                this.props.template.views[i].props = {}
+            }
+            this.props.template.views[i].props.id = uuid()
+        }
+
+        return this.props.template.views[i].props.id
     }
 
-    static createByContainers(containers) {
-        const views = containers.map(container => container.definition)
-        return this.createByViews(views)
+    get templateHiddenStatus() {
+        if (!this.#templateHiddenStatus) {
+            this.#templateHiddenStatus = {}
+            for (let i = 0; i < this.props.template.views.length; i++) {
+                // 未定义 id 以及 hidden 的模板默认 hidden 设置为 false
+                if (
+                    this.props.template.views[i].props.id === undefined
+                    && this.props.template.views[i].props.hidden === undefined
+                ) {
+                    this.#templateHiddenStatus[this.templateIdByIndex(i)] = false
+                }
+                // 模板中声明 hidden 的值，在数据中将会成为默认值
+                if (this.props.template.views[i].props.hidden !== undefined) {
+                    this.#templateHiddenStatus[this.templateIdByIndex(i)] = this.props.template.views[i].props.hidden
+                }
+            }
+        }
+
+        return this.#templateHiddenStatus
+    }
+
+    get hiddenViews() {
+        if (!this.#hiddenViews) {
+            this.#hiddenViews = {}
+            // hide other views
+            for (let i = 0; i < this.props.template.views.length; i++) {
+                this.#hiddenViews[this.templateIdByIndex(i)] = {
+                    hidden: true
+                }
+            }
+        }
+
+        return this.#hiddenViews
+    }
+
+    #titleToData(title) {
+        let hiddenViews = { ...this.hiddenViews }
+
+        // templateProps & title
+        Object.assign(hiddenViews, {
+            __templateProps: {
+                hidden: true
+            },
+            __title: {
+                hidden: false,
+                text: title,
+                info: { title: true }
+            }
+        })
+
+        return hiddenViews
+    }
+
+    rebuildData(data = []) {
+        // rebuild data
+        return data.map(section => {
+            section.items = section.items.map(item => {
+                // 所有元素都重置 hidden 属性
+                Object.keys(item).forEach(key => {
+                    item[key].hidden = this.templateHiddenStatus[key] ?? false
+                })
+
+                // 修正数据
+                Object.keys(this.templateHiddenStatus).forEach(key => {
+                    if (!item[key]) {
+                        item[key] = {}
+                    }
+                    item[key].hidden = this.templateHiddenStatus[key]
+                })
+
+                item.__templateProps = {
+                    hidden: false
+                }
+                item.__title = {
+                    hidden: true
+                }
+
+                return item
+            })
+
+            if (section.title) {
+                section.items.unshift(this.#titleToData(section.title))
+            }
+
+            return section
+        })
+    }
+
+    rebuildTemplate() {
+        let templateProps = {}
+        if (this.props.template.props !== undefined) {
+            templateProps = Object.assign(
+                this.props.template.props,
+                {
+                    id: "__templateProps",
+                    hidden: false
+                }
+            )
+        }
+        this.props.template.props = {}
+
+        // rebuild template
+        const templateViews = [
+            { // templateProps
+                type: "view",
+                props: templateProps,
+                layout: $layout.fill
+            },
+            { // title
+                type: "label",
+                props: {
+                    id: "__title",
+                    hidden: true,
+                    font: this.titleStyle.font
+                },
+                layout: (make, view) => {
+                    make.top.inset(-(this.titleStyle.height / 4) * 3)
+                    make.height.equalTo(this.titleStyle.height)
+                    make.width.equalTo(view.super.safeArea)
+                }
+            }
+        ].concat(this.props.template.views)
+        this.props.template.views = templateViews
+    }
+
+    insert(data, withTitleOffset = true) {
+        data.indexPath = this.indexPath(data.indexPath, withTitleOffset)
+        return $(this.id).insert(data)
+    }
+
+    delete(indexPath, withTitleOffset = true) {
+        indexPath = this.indexPath(indexPath, withTitleOffset)
+        return $(this.id).delete(indexPath)
+    }
+
+    object(indexPath, withTitleOffset = true) {
+        indexPath = this.indexPath(indexPath, withTitleOffset)
+        return $(this.id).object(indexPath)
+    }
+
+    cell(indexPath, withTitleOffset = true) {
+        indexPath = this.indexPath(indexPath, withTitleOffset)
+        return $(this.id).cell(indexPath)
+    }
+
+    /**
+     * 获得修正后的 indexPath
+     * @param {$indexPath||Number} indexPath 
+     * @param {Boolean} withTitleOffset 输入的 indexPath 是否已经包含了标题列。通常自身事件返回的 indexPath 视为已包含，使用默认值即可。
+     * @returns 
+     */
+    indexPath(indexPath, withTitleOffset) {
+        let offset = withTitleOffset ? 0 : 1
+        if (typeof indexPath === "number") {
+            indexPath = $indexPath(0, indexPath)
+        }
+        indexPath = $indexPath(indexPath.section, indexPath.row + offset)
+        return indexPath
+    }
+
+    update(data) {
+        this.props.data = this.rebuildData(data)
+        $(this.id).data = this.props.data
     }
 
     getView() {
-        return {
-            type: "view",
-            props: this.props,
-            views: this.views,
-            events: this.events,
-            layout: this.layout
-        }
+        // rebuild data, must first
+        this.props.data = this.rebuildData(this.props.data)
+
+        // rebuild template
+        this.rebuildTemplate()
+
+        // itemSize event
+        this.setEvent("itemSize", (sender, indexPath) => {
+            const info = sender.object(indexPath)?.__title?.info
+            if (info?.title) {
+                return $size(Math.max(UIKit.windowSize.width, UIKit.windowSize.height), 0)
+            }
+            const columns = this.props.columns ?? 2
+            const spacing = this.props.spacing ?? 15
+            const width = this.props.itemWidth
+                ?? this.props.itemSize?.width
+                ?? (UIKit.windowSize.width - spacing * (columns + 1)) / columns
+            const height = this.props.itemHeight
+                ?? this.props.itemSize?.height
+                ?? 100
+            return $size(width, height)
+        })
+
+        return this
     }
 }
 
@@ -346,7 +642,7 @@ class SheetViewTypeError extends ValidationError {
 class Sheet extends View {
     #present = () => { }
     #dismiss = () => { }
-    pageController = undefined
+    pageController
 
     init() {
         const UIModalPresentationStyle = { pageSheet: 1 } // TODO: sheet style
@@ -378,10 +674,13 @@ class Sheet extends View {
 
     /**
      * 为 view 添加一个 navBar
-     * @param {String} title 标题
-     * @param {Function} callback 按钮回调函数，若未定义则调用 this.dismiss()
-     * @param {String} button 按钮显示的文字，默认为 "Done"
-     * @returns this
+     * @param {Object} param
+     *  {
+     *      {String} title
+     *      {Object} popButton 参数与 BarButtonItem 一致
+     *      {Array} rightButtons
+     *  } 
+     * @returns 
      */
     addNavBar({ title, popButton = { title: "Done" }, rightButtons = [] }) {
         if (this.view === undefined) throw new SheetAddNavBarError()
@@ -1154,7 +1453,7 @@ class NavigationController extends Controller {
     }
 }
 
-class PageView extends ContainerView {
+class PageView extends View {
     constructor(args = {}) {
         super(args)
         this.activeStatus = true
@@ -1204,7 +1503,7 @@ class PageControllerViewTypeError extends ValidationError {
  * - onChange(from, to)
  */
 class PageController extends Controller {
-    page = undefined
+    page
     navigationItem = new NavigationItem()
     navigationController = new NavigationController()
 
@@ -1220,87 +1519,93 @@ class PageController extends Controller {
      * @returns 
      */
     setView(view) {
-        if (view.props === undefined) view.props = {}
-        if (view.events === undefined) view.events = {}
-        this.view = view
+        if (typeof view !== "object") {
+            throw new PageControllerViewTypeError("view", "object")
+        }
+        this.view = View.create(view)
         return this
+    }
+
+    bindScrollEvents() {
+        if (!(this.view instanceof View)) {
+            throw new PageControllerViewTypeError("view", "View")
+        }
+
+        // 计算偏移高度
+        let height = this.navigationController.navigationBar.contentViewHeightOffset
+        if (this.navigationItem.titleView) {
+            height += this.navigationItem.titleView.height
+        }
+        if (this.navigationItem.largeTitleDisplayMode === NavigationItem.largeTitleDisplayModeNever) {
+            height += this.navigationController.navigationBar.navigationBarNormalHeight
+        } else {
+            height += this.navigationController.navigationBar.navigationBarLargeTitleHeight
+        }
+
+        // 修饰视图顶部偏移
+        if (!this.view.props.header) this.view.props.header = {}
+        this.view.props.header.props = Object.assign(this.view.props.header.props ?? {}, {
+            height: height
+        })
+
+        // 重写布局
+        if (UIKit.scrollViewList.indexOf(this.view.type) === -1) {
+            // 非滚动视图
+            this.view.layout = (make, view) => {
+                make.left.right.equalTo(view.super.safeArea)
+                make.bottom.equalTo(view.super)
+                let topOffset = this.navigationController.navigationBar.contentViewHeightOffset
+                if (this.navigationItem.largeTitleDisplayMode !== NavigationItem.largeTitleDisplayModeNever) {
+                    topOffset += this.navigationController.navigationBar.largeTitleFontSize
+                }
+                if ((!UIKit.isHorizontal || UIKit.isLargeScreen) && this.navigationController.navigationBar.addStatusBarHeight) {
+                    topOffset += UIKit.statusBarHeight
+                }
+                make.top.equalTo(this.navigationController.navigationBar.navigationBarNormalHeight + topOffset)
+            }
+        } else {
+            // indicatorInsets
+            if (this.view.props.indicatorInsets) {
+                const old = this.view.props.indicatorInsets
+                this.view.props.indicatorInsets = $insets(
+                    old.top + this.navigationController.navigationBar.navigationBarNormalHeight,
+                    old.left,
+                    old.bottom,
+                    old.right
+                )
+            } else {
+                this.view.props.indicatorInsets = $insets(this.navigationController.navigationBar.navigationBarNormalHeight, 0, 0, 0)
+            }
+
+            // layout
+            this.view.layout = (make, view) => {
+                make.left.right.equalTo(view.super.safeArea)
+                make.top.bottom.equalTo(view.super)
+            }
+
+            // 重写滚动事件
+            this.view
+                .assignEvent("didScroll", sender => {
+                    let contentOffset = sender.contentOffset.y
+                    if ((!UIKit.isHorizontal || UIKit.isLargeScreen) && this.navigationController.navigationBar.addStatusBarHeight) {
+                        contentOffset += UIKit.statusBarHeight
+                    }
+                    this.navigationController.didScroll(contentOffset)
+                })
+                .assignEvent("didEndDragging", (sender, decelerate) => {
+                    let contentOffset = sender.contentOffset.y
+                    if ((!UIKit.isHorizontal || UIKit.isLargeScreen) && this.navigationController.navigationBar.addStatusBarHeight) {
+                        contentOffset += UIKit.statusBarHeight
+                    }
+                    this.navigationController.didEndDragging(contentOffset, decelerate, (...args) => sender.scrollToOffset(...args))
+                })
+                .assignEvent("didEndDecelerating", (...args) => this.view.events?.didEndDragging(...args))
+        }
     }
 
     initPage() {
         if (this.navigationController.navigationBar.prefersLargeTitles) {
-            if (typeof this.view !== "object") throw new PageControllerViewTypeError("view", "object")
-            // 计算偏移高度
-            let height = this.navigationController.navigationBar.contentViewHeightOffset
-            if (this.navigationItem.titleView) {
-                height += this.navigationItem.titleView.height
-            }
-            if (this.navigationItem.largeTitleDisplayMode === NavigationItem.largeTitleDisplayModeNever) {
-                height += this.navigationController.navigationBar.navigationBarNormalHeight
-            } else {
-                height += this.navigationController.navigationBar.navigationBarLargeTitleHeight
-            }
-
-            // 修饰视图顶部偏移
-            if (!this.view.props.header) this.view.props.header = {}
-            this.view.props.header.props = Object.assign(this.view.props.header.props ?? {}, {
-                height: height
-            })
-
-            // 重写布局
-            if (UIKit.scrollViewList.indexOf(this.view.type) === -1) {
-                // 非滚动视图
-                this.view.layout = (make, view) => {
-                    make.left.right.equalTo(view.super.safeArea)
-                    make.bottom.equalTo(view.super)
-                    let largeTitleFontSize = this.navigationController.navigationBar.largeTitleFontSize
-                    if (this.navigationItem.largeTitleDisplayMode === NavigationItem.largeTitleDisplayModeNever) {
-                        largeTitleFontSize = 0
-                    }
-                    make.top.equalTo(this.navigationController.navigationBar.navigationBarNormalHeight + largeTitleFontSize)
-                }
-            } else {
-                // indicatorInsets
-                if (this.view.props.indicatorInsets) {
-                    const old = this.view.props.indicatorInsets
-                    this.view.props.indicatorInsets = $insets(
-                        old.top + this.navigationController.navigationBar.navigationBarNormalHeight,
-                        old.left,
-                        old.bottom,
-                        old.right
-                    )
-                } else {
-                    this.view.props.indicatorInsets = $insets(this.navigationController.navigationBar.navigationBarNormalHeight, 0, 0, 0)
-                }
-                // layout
-                this.view.layout = (make, view) => {
-                    make.left.right.equalTo(view.super.safeArea)
-                    make.top.bottom.equalTo(view.super)
-                }
-            }
-
-            // 重写滚动事件
-            if (!this.view.events) this.view.events = {}
-            const oldEvents = {
-                didScroll: this.view.events.didScroll,
-                didEndDragging: this.view.events.didEndDragging
-            }
-            this.view.events.didScroll = sender => {
-                let contentOffset = sender.contentOffset.y
-                if ((!UIKit.isHorizontal || UIKit.isLargeScreen) && this.navigationController.navigationBar.addStatusBarHeight) {
-                    contentOffset += UIKit.statusBarHeight
-                }
-                this.navigationController.didScroll(contentOffset)
-                if (typeof oldEvents.didScroll === "function") oldEvents.didScroll(sender)
-            }
-            this.view.events.didEndDragging = (sender, decelerate) => {
-                let contentOffset = sender.contentOffset.y
-                if ((!UIKit.isHorizontal || UIKit.isLargeScreen) && this.navigationController.navigationBar.addStatusBarHeight) {
-                    contentOffset += UIKit.statusBarHeight
-                }
-                this.navigationController.didEndDragging(contentOffset, decelerate, (...args) => sender.scrollToOffset(...args))
-                if (typeof oldEvents.didEndDragging === "function") oldEvents.didEndDragging(sender, decelerate)
-            }
-            this.view.events.didEndDecelerating = this.view.events.didEndDragging
+            this.bindScrollEvents()
 
             // 初始化 PageView
             this.page = PageView.createByViews([
@@ -1329,7 +1634,7 @@ class PageController extends Controller {
     }
 }
 
-class TabBarCellView extends ContainerView {
+class TabBarCellView extends View {
     constructor(args = {}) {
         super(args)
         this.props.id = this.id
@@ -1409,7 +1714,7 @@ class TabBarController extends Controller {
 
     #pages = {}
     #cells = {}
-    #selected = undefined
+    #selected
 
     get selected() {
         return this.#selected
@@ -1559,7 +1864,7 @@ class TabBarController extends Controller {
                 UIKit.separatorLine({}, UIKit.align.top)
             ]
         }
-        return ContainerView.createByViews(this.#pageViews().concat(tabBarView))
+        return View.createByViews(this.#pageViews().concat(tabBarView))
     }
 }
 
@@ -1568,6 +1873,12 @@ class Kernel {
     version = VERSION
     // 隐藏 jsbox 默认 nav 栏
     isUseJsboxNav = false
+
+    constructor() {
+        if ($app.isDebugging) {
+            this.debug()
+        }
+    }
 
     uuid() {
         return uuid()
@@ -1648,6 +1959,151 @@ class Kernel {
     }
 }
 
+class FileStorageParameterError extends Error {
+    constructor(parameter) {
+        super(`Parameter [${parameter}] is required.`)
+        this.name = "FileStorageParameterError"
+    }
+}
+
+class FileStorageFileNotFoundError extends Error {
+    constructor(filePath) {
+        super(`File not found: ${filePath}`)
+        this.name = "FileStorageFileNotFoundError"
+    }
+}
+
+class FileStorage {
+    basePath
+
+    constructor({ basePath = "storage" } = {}) {
+        this.basePath = basePath
+        this.#createDirectory(this.basePath)
+    }
+
+    #createDirectory(path) {
+        if (!$file.isDirectory(path)) {
+            $file.mkdir(path)
+        }
+    }
+
+    #filePath(path = "", fileName) {
+        path = `${this.basePath}/${path.trim("/")}`.trim("/")
+
+        this.#createDirectory(path)
+
+        path = `${path}/${fileName}`
+        return path
+    }
+
+    write(path = "", fileName, data) {
+        if (!fileName) {
+            throw new FileStorageParameterError("fileName")
+        }
+        if (!data) {
+            throw new FileStorageParameterError("data")
+        }
+        return $file.write({
+            data: data,
+            path: this.#filePath(path, fileName)
+        })
+    }
+
+    writeSync(path = "", fileName, data) {
+        return new Promise((resolve, reject) => {
+            try {
+                const success = this.write(path, fileName, data)
+                if (success) {
+                    resolve(success)
+                } else {
+                    reject(success)
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    read(path = "", fileName) {
+        if (!fileName) {
+            throw new FileStorageParameterError("fileName")
+        }
+        path = this.#filePath(path, fileName)
+        if (!$file.exists(path)) {
+            throw new FileStorageFileNotFoundError(path)
+        }
+        if ($file.isDirectory(path)) {
+            return $file.list(path)
+        }
+        return $file.read(path)
+    }
+
+    readSync(path = "", fileName) {
+        return new Promise((resolve, reject) => {
+            try {
+                const file = this.read(path, fileName)
+                if (file) {
+                    resolve(file)
+                } else {
+                    reject()
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    readAsJSON(path = "", fileName, _default = null) {
+        try {
+            const fileString = this.read(path, fileName)?.string
+            return JSON.parse(fileString)
+        } catch (error) {
+            return _default
+        }
+    }
+
+    static readFromRoot(path) {
+        if (!path) {
+            throw new FileStorageParameterError("path")
+        }
+        if (!$file.exists(path)) {
+            throw new FileStorageFileNotFoundError(path)
+        }
+        if ($file.isDirectory(path)) {
+            return $file.list(path)
+        }
+        return $file.read(path)
+    }
+
+    static readFromRootSync(path = "") {
+        return new Promise((resolve, reject) => {
+            try {
+                const file = FileStorage.readFromRoot(path)
+                if (file) {
+                    resolve(file)
+                } else {
+                    reject()
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
+    static readFromRootAsJSON(path = "", _default = null) {
+        try {
+            const fileString = FileStorage.readFromRoot(path)?.string
+            return JSON.parse(fileString)
+        } catch (error) {
+            return _default
+        }
+    }
+
+    delete(path = "", fileName) {
+        return $file.delete(this.#filePath(path, fileName))
+    }
+}
+
 class SettingLoadConfigError extends Error {
     constructor() {
         super("Call loadConfig() first.")
@@ -1667,12 +2123,19 @@ class SettingReadonlyError extends Error {
  * - onSet(key, value)
  */
 class Setting extends Controller {
+    name
     // 存储数据
     setting = {}
+    // fileStorage
+    fileStorage = new FileStorage()
+    imagePath
     // 用来控制 child 类型
     viewController = new ViewController()
     // 用于存放 script 类型用到的方法
     method = {}
+    // style
+    rowHeight = 50
+    rightOffset = 15
     // withTouchEvents 延时自动关闭高亮，防止 touchesMoved 事件未正常调用
     #withTouchEventsT = {}
     // read only
@@ -1684,17 +2147,13 @@ class Setting extends Controller {
     constructor(args = {}) {
         super()
 
+        this.fileStorage = args.fileStorage ?? this.fileStorage
         // set 和 get 同时设置才会生效
         if (typeof args.set === "function" && typeof args.get === "function") {
             this.set = args.set
             this.get = args.get
         } else {
-            this.savePath = args.savePath ?? (() => {
-                if (!$file.isDirectory("storage")) {
-                    $file.mkdir("storage")
-                }
-                return "storage/setting.json"
-            })()
+            this.dataFile = args.dataFile ?? "setting.json"
         }
         if (args.structure) {
             this.setStructure(args.structure) // structure 优先级高于 structurePath
@@ -1702,6 +2161,8 @@ class Setting extends Controller {
             this.setStructurePath(args.structurePath ?? "setting.json")
         }
         this.isUseJsboxNav = args.isUseJsboxNav ?? false
+        // 不能使用 uuid
+        this.imagePath = (args.name ?? "default") + ".image"
         this.setName(args.name ?? uuid())
         // l10n
         this.loadL10n()
@@ -1729,9 +2190,7 @@ class Setting extends Controller {
             "script", // script 类型永远使用setting结构文件内的值
             "info"
         ]
-        if ($file.exists(this.savePath)) {
-            userData = JSON.parse($file.read(this.savePath).string)
-        }
+        userData = this.fileStorage.readAsJSON("", this.dataFile, {})
         function setValue(structure) {
             const setting = {}
             for (let section of structure) {
@@ -1766,6 +2225,7 @@ class Setting extends Controller {
         "BACK" = "返回";
         "ERROR" = "发生错误";
         "SUCCESS" = "成功";
+        "LOADING" = "加载中";
         "INVALID_VALUE" = "非法参数";
         
         "SETTING" = "设置";
@@ -1778,7 +2238,12 @@ class Setting extends Controller {
         
         "JSBOX_ICON" = "JSBox 内置图标";
         "SF_SYMBOLS" = "SF Symbols";
-        "IMAGE_BASE64" = "图片/ base64";
+        "IMAGE_BASE64" = "图片 / base64";
+
+        "PREVIEW" = "预览";
+        "SELECT_IMAGE" = "选择图片";
+        "CLEAR_IMAGE" = "清除图片";
+        "NO_IMAGE" = "无图片";
         
         "ABOUT" = "关于";
         "VERSION" = "Version";
@@ -1792,6 +2257,7 @@ class Setting extends Controller {
         "BACK" = "Back";
         "ERROR" = "Error";
         "SUCCESS" = "Success";
+        "LOADING" = "Loading";
         "INVALID_VALUE" = "Invalid value";
 
         "SETTING" = "Setting";
@@ -1804,18 +2270,18 @@ class Setting extends Controller {
 
         "JSBOX_ICON" = "JSBox in app icon";
         "SF_SYMBOLS" = "SF Symbols";
-        "IMAGE_BASE64" = "Image/base64";
+        "IMAGE_BASE64" = "Image / base64";
+
+        "PREVIEW" = "Preview";
+        "SELECT_IMAGE" = "Select Image";
+        "CLEAR_IMAGE" = "Clear Image";
+        "NO_IMAGE" = "No Image";
 
         "ABOUT" = "About";
         "VERSION" = "Version";
         "AUTHOR" = "Author";
         "AT_BOTTOM" = "It's the end~";
         `)
-    }
-
-    setSavePath(savePath) {
-        this.savePath = savePath
-        return this
     }
 
     setStructure(structure) {
@@ -1831,7 +2297,7 @@ class Setting extends Controller {
      */
     setStructurePath(structurePath) {
         if (!this.structure) {
-            this.setStructure(JSON.parse($file.read(structurePath)?.string))
+            this.setStructure(FileStorage.readFromRootAsJSON(structurePath))
         }
         return this
     }
@@ -1856,8 +2322,8 @@ class Setting extends Controller {
 
     get footer() {
         if (this.#footer === undefined) {
-            const info = JSON.parse($file.read("/config.json")?.string)["info"]
-            this.#footer = {
+            const info = FileStorage.readFromRootAsJSON("/config.json", {})["info"]
+            this.#footer = info ? {
                 type: "view",
                 props: { height: 130 },
                 views: [
@@ -1878,7 +2344,7 @@ class Setting extends Controller {
                         }
                     }
                 ]
-            }
+            } : {}
         }
         return this.#footer
     }
@@ -1894,10 +2360,7 @@ class Setting extends Controller {
         }
         this.#checkLoadConfigError()
         this.setting[key] = value
-        $file.write({
-            data: $data({ string: JSON.stringify(this.setting) }),
-            path: this.savePath
-        })
+        this.fileStorage.write("", this.dataFile, $data({ string: JSON.stringify(this.setting) }))
         this.callEvent("onSet", key, value)
         return true
     }
@@ -1914,6 +2377,26 @@ class Setting extends Controller {
         return typeof color === "string"
             ? $color(color)
             : $rgba(color.red, color.green, color.blue, color.alpha)
+    }
+
+    getImageName(key, compress = false) {
+        let name = $text.MD5(key) + ".jpg"
+        if (compress) {
+            name = "compress." + name
+        }
+        return name
+    }
+
+    getImage(key, compress = false) {
+        try {
+            const name = this.getImageName(key, compress)
+            return this.fileStorage.read(this.imagePath, name).image
+        } catch (error) {
+            if (error instanceof FileStorageFileNotFoundError) {
+                return null
+            }
+            throw error
+        }
     }
 
     getId(type, key) {
@@ -2036,7 +2519,7 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.centerY.equalTo(view.prev)
-                        make.right.inset(15)
+                        make.right.inset(this.rightOffset)
                         make.width.equalTo(180)
                     }
                 },
@@ -2090,7 +2573,7 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.centerY.equalTo(view.prev)
-                        make.right.inset(15)
+                        make.right.inset(this.rightOffset)
                     }
                 }
             ],
@@ -2204,8 +2687,8 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.centerY.equalTo(view.prev)
-                        make.right.inset(15)
-                        make.height.equalTo(50)
+                        make.right.inset(this.rightOffset)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(100)
                     }
                 }
@@ -2250,7 +2733,7 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.centerY.equalTo(view.prev)
-                        make.right.inset(15)
+                        make.right.inset(this.rightOffset)
                     }
                 }
             ],
@@ -2379,8 +2862,8 @@ class Setting extends Controller {
                         }
                     ],
                     layout: (make, view) => {
-                        make.right.inset(15)
-                        make.height.equalTo(50)
+                        make.right.inset(this.rightOffset)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2402,7 +2885,7 @@ class Setting extends Controller {
                         dynamicWidth: true
                     },
                     layout: (make, view) => {
-                        make.right.inset(15)
+                        make.right.inset(this.rightOffset)
                         make.centerY.equalTo(view.prev)
                     },
                     events: {
@@ -2436,7 +2919,7 @@ class Setting extends Controller {
                             },
                             layout: (make, view) => {
                                 make.centerY.equalTo(view.super)
-                                make.right.inset(15)
+                                make.right.inset(this.rightOffset)
                                 make.size.equalTo(20)
                             }
                         },
@@ -2461,7 +2944,7 @@ class Setting extends Controller {
                         }
                     ],
                     layout: (make, view) => {
-                        make.height.equalTo(50)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2500,8 +2983,8 @@ class Setting extends Controller {
                         }
                     ],
                     layout: (make, view) => {
-                        make.right.inset(15)
-                        make.height.equalTo(50)
+                        make.right.inset(this.rightOffset)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2577,8 +3060,8 @@ class Setting extends Controller {
                         }
                     },
                     layout: (make, view) => {
-                        make.right.inset(15)
-                        make.height.equalTo(50)
+                        make.right.inset(this.rightOffset)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2626,8 +3109,8 @@ class Setting extends Controller {
                         }
                     },
                     layout: (make, view) => {
-                        make.right.inset(15)
-                        make.height.equalTo(50)
+                        make.right.inset(this.rightOffset)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2662,7 +3145,7 @@ class Setting extends Controller {
                                 smoothCorners: true
                             },
                             layout: (make, view) => {
-                                make.right.inset(15)
+                                make.right.inset(this.rightOffset)
                                 make.centerY.equalTo(view.super)
                                 make.size.equalTo($size(30, 30))
                             }
@@ -2712,7 +3195,7 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.right.inset(0)
-                        make.height.equalTo(50)
+                        make.height.equalTo(this.rowHeight)
                         make.width.equalTo(view.super)
                     }
                 }
@@ -2738,7 +3221,7 @@ class Setting extends Controller {
                     },
                     layout: (make, view) => {
                         make.centerY.equalTo(view.super)
-                        make.right.inset(15)
+                        make.right.inset(this.rightOffset)
                         make.size.equalTo(15)
                     }
                 }
@@ -2763,13 +3246,96 @@ class Setting extends Controller {
                                     .setTitle(title)
                                     .addPopButton()
                                     .setLargeTitleDisplayMode(NavigationItem.largeTitleDisplayModeNever)
-                                pageController.navigationController.navigationBar.setContentViewHeightOffset(30)
+                                if (this.hasSectionTitle(children)) {
+                                    pageController.navigationController.navigationBar.setContentViewHeightOffset(-5)
+                                } else {
+                                    pageController.navigationController.navigationBar.setContentViewHeightOffset(30)
+                                }
                                 this.viewController.push(pageController)
                             }
                         }
                     })
                 }
             }, true, 0.3)
+        }
+    }
+
+    createImage(key, icon, title) {
+        const id = this.getId("image", key)
+        const lineId = `${id}-line`
+        return {
+            type: "view",
+            props: { id: lineId },
+            views: [
+                this.createLineLabel(title, icon),
+                {
+                    type: "view",
+                    views: [
+                        {
+                            type: "image",
+                            props: {
+                                id: id,
+                                image: this.getImage(key, true) ?? $image("questionmark.square.dashed"),
+                            },
+                            layout: (make, view) => {
+                                make.right.inset(this.rightOffset)
+                                make.centerY.equalTo(view.super)
+                                make.size.equalTo($size(30, 30))
+                            }
+                        }
+                    ],
+                    events: {
+                        tapped: () => {
+                            this.#touchHighlightStart(lineId)
+                            $ui.menu({
+                                items: [$l10n("PREVIEW"), $l10n("SELECT_IMAGE"), $l10n("CLEAR_IMAGE")],
+                                handler: (title, idx) => {
+                                    if (idx === 0) {
+                                        const image = this.getImage(key)
+                                        if (image) {
+                                            $quicklook.open({
+                                                image: image
+                                            })
+                                        } else {
+                                            $ui.toast($l10n("NO_IMAGE"))
+                                        }
+                                    } else if (idx === 1) {
+                                        $photo.pick({ format: "data" }).then(resp => {
+                                            $ui.toast($l10n("LOADING"))
+                                            if (!resp.status || !resp.data) {
+                                                if (resp?.error?.description !== "canceled") {
+                                                    $ui.toast($l10n("ERROR"))
+                                                }
+                                                return
+                                            }
+                                            // 控制压缩图片大小
+                                            const image = compressImage(resp.data.image)
+                                            this.fileStorage.write(this.imagePath, this.getImageName(key, true), image.jpg(0.8))
+                                            this.fileStorage.write(this.imagePath, this.getImageName(key), resp.data)
+                                            $(id).image = image
+                                            $ui.success($l10n("SUCCESS"))
+                                        })
+                                    } else if (idx === 2) {
+                                        this.fileStorage.delete(this.imagePath, this.getImageName(key, true))
+                                        this.fileStorage.delete(this.imagePath, this.getImageName(key))
+                                        $(id).image = $image("questionmark.square.dashed")
+                                        $ui.success($l10n("SUCCESS"))
+                                    }
+                                },
+                                finished: () => {
+                                    this.#touchHighlightEnd(lineId)
+                                }
+                            })
+                        }
+                    },
+                    layout: (make, view) => {
+                        make.right.inset(0)
+                        make.height.equalTo(this.rowHeight)
+                        make.width.equalTo(view.super)
+                    }
+                }
+            ],
+            layout: $layout.fill
         }
     }
 
@@ -2822,10 +3388,13 @@ class Setting extends Controller {
                         row = this.createInput(item.key, item.icon, item.title)
                         break
                     case "icon":
-                        row = this.createIcon(item.key, item.icon, item.title)
+                        row = this.createIcon(item.key, item.icon, item.title, item.bgcolor)
                         break
                     case "child":
                         row = this.createChild(item.key, item.icon, item.title, item.children)
+                        break
+                    case "image":
+                        row = this.createImage(item.key, item.icon, item.title)
                         break
                     default:
                         continue
@@ -2846,7 +3415,7 @@ class Setting extends Controller {
             props: {
                 style: 2,
                 separatorInset: $insets(0, 50, 0, 10), // 分割线边距
-                rowHeight: 50,
+                rowHeight: this.rowHeight,
                 bgcolor: UIKit.scrollViewBackgroundColor,
                 footer: footer,
                 data: this.#getSections(structure ?? this.structure)
@@ -2862,8 +3431,11 @@ class Setting extends Controller {
                 .setView(this.getListView(this.structure))
                 .navigationItem
                 .setTitle($l10n("SETTING"))
-            if (this.hasSectionTitle(this.structure))
-                pageController.navigationController.navigationBar.setContentViewHeightOffset(0)
+            if (this.hasSectionTitle(this.structure)) {
+                pageController.navigationController.navigationBar.setContentViewHeightOffset(-5)
+            } else {
+                pageController.navigationController.navigationBar.setContentViewHeightOffset(30)
+            }
             this.viewController.setRootPageController(pageController)
         }
         return this.viewController.getRootPageController().getPage()
@@ -2873,10 +3445,11 @@ class Setting extends Controller {
 module.exports = {
     VERSION,
     versionCompare,
+    compressImage,
     // class
     UIKit,
     ViewController,
-    ContainerView,
+    Matrix,
     Sheet,
     NavigationBar,
     BarButtonItem,
@@ -2889,5 +3462,6 @@ module.exports = {
     TabBarCellView,
     TabBarController,
     Kernel,
+    FileStorage,
     Setting
 }
