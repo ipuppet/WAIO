@@ -1,4 +1,5 @@
 const {
+    compressImage,
     UIKit,
     Sheet,
     Kernel,
@@ -87,19 +88,8 @@ class AppKernel extends Kernel {
         this.homeUI = new HomeUI(this)
     }
 
-    /**
-     * 压缩图片
-     * @param {$image} image $image
-     * @param {Number} maxSize 图片最大尺寸 单位：像素
-     * @returns $image
-     */
     compressImage(image, maxSize = 1280 * 720) {
-        const info = $imagekit.info(image)
-        if (info.height * info.width > maxSize) {
-            const scale = maxSize / (info.height * info.width)
-            image = $imagekit.scaleBy(image, scale)
-        }
-        return image
+        return compressImage(image, maxSize)
     }
 
     updateHomeScreenWidgetOptions() {

@@ -33,8 +33,8 @@ class BaseSetting {
 
         this.config = this.rootStorage.readAsJSON(this.widget, "config.json")
         this.setting = new Setting({
-            fileStorage: new FileStorage(`${this.kernel.widgetDataPath}/${this.widget}`),
             name: `${this.widget}Setting`,
+            fileStorage: new FileStorage({ basePath: `${this.kernel.widgetDataPath}/${this.widget}` }),
             saveFile: "setting.json",
             structure: this.rootStorage.readAsJSON(this.widget, "setting.json")
         })
