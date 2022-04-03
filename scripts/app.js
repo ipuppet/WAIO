@@ -65,11 +65,13 @@ class AppKernel extends Kernel {
     constructor() {
         super()
         this.query = $context.query
-        this.setting = new Setting()
-        this.setting.loadConfig()
-        this.initSettingMethods()
         // FileStorage
         this.fileStorage = fileStorage
+        // setting
+        this.setting = new Setting({ fileStorage: this.fileStorage })
+        this.setting.loadConfig()
+        this.initSettingMethods()
+
         // 小组件根目录
         this.widgetRootPath = widgetRootPath
         this.widgetDataPath = widgetDataPath
