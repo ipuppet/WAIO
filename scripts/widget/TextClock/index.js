@@ -12,7 +12,7 @@ class TextClockWidget extends Widget {
         this.oneDayInMillis = 60 * 60 * 24 * 1000
     }
 
-    view2x2(ctx) {
+    view2x2() {
         return {
             type: "text",
             props: {
@@ -24,7 +24,7 @@ class TextClockWidget extends Widget {
                     monospaced: true
                 },
                 frame: {
-                    maxWidth: ctx.displaySize.width - 30
+                    maxWidth: $widget.displaySize.width - 30
                 },
                 lineLimit: 1,
                 minimumScaleFactor: 0.01
@@ -32,13 +32,17 @@ class TextClockWidget extends Widget {
         }
     }
 
+    joinView() {
+        return this.view2x2()
+    }
+
     render() {
         $widget.setTimeline({
             policy: {
                 afterDate: new Date(this.midnight.getTime() + this.oneDayInMillis)
             },
-            render: ctx => {
-                const view = this.view2x2(ctx)
+            render: () => {
+                const view = this.view2x2()
                 this.printTimeConsuming()
                 return view
             }

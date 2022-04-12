@@ -64,7 +64,6 @@ function widgetInstance(widget, that) {
 class AppKernel extends Kernel {
     constructor() {
         super()
-        this.query = $context.query
         // FileStorage
         this.fileStorage = fileStorage
         // setting
@@ -78,11 +77,6 @@ class AppKernel extends Kernel {
         // backup
         this.backupPath = backupPath
         this.initComponents()
-        // 检查是否携带URL scheme
-        if (this.query["url-scheme"]) {
-            // 延时500ms后跳转
-            setTimeout(() => { $app.openURL(this.query["url-scheme"]) }, 500)
-        }
     }
 
     initComponents() {
@@ -304,6 +298,12 @@ class WidgetKernel extends Kernel {
 
 class AppUI {
     static renderMainUI() {
+        // 检查是否携带 URL scheme
+        if ($context.query["url-scheme"]) {
+            $delay(0, () => { $app.openURL($context.query["url-scheme"]) })
+            return
+        }
+
         const kernel = new AppKernel()
         const buttons = {
             home: {
@@ -406,7 +406,7 @@ module.exports = {
     run: () => {
         if ($app.env === $env.widget) {
             Widget.render()
-        } else if ($app.env === $env.app || $app.env === $env.today) {
+        } else if ($app.env === $env.app) {
             AppUI.renderMainUI()
         } else {
             AppUI.renderUnsupported()

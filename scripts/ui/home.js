@@ -9,16 +9,14 @@ class HomeUI {
     constructor(kernel) {
         this.kernel = kernel
         this.viewController = new ViewController()
-        // 检查是否携带widget参数，携带则打开设置页面
-        if (this.kernel.query["widget"]) {
-            setTimeout(() => {
-                const widget = this.kernel.widgetInstance(this.kernel.query["widget"])
+        // 检查是否携带 widget 参数，携带则打开设置页面
+        if ($context.query["widget"]) {
+            $delay(0.5, () => {
+                const widget = this.kernel.widgetInstance($context.query["widget"])
                 if (widget) {
                     widget.custom()
-                    // 清空参数
-                    this.kernel.query["widget"] = undefined
                 }
-            }, 500)
+            })
         }
     }
 
@@ -26,7 +24,7 @@ class HomeUI {
         const data = this.kernel.getWidgetList()
         const template = data => {
             return {
-                icon: {// 如果不设置image属性，默认为小组件目录下的icon.png
+                icon: {// 如果不设置 image 属性，默认为小组件目录下的 icon.png
                     image: $image(data.icon[0], data.icon[1])
                 },
                 title: {
@@ -61,7 +59,7 @@ class HomeUI {
                     src: fromPath,
                     dst: newPath
                 })
-                // 更新设置文件中的NAME常量
+                // 更新设置文件中的 NAME 常量
                 let settingjs = $file.read(`${newPath}/setting.js`).string
                 const firstLine = `const NAME = "${from}"`
                 const newFirstLine = `const NAME = "${newName}"`
@@ -70,7 +68,7 @@ class HomeUI {
                     data: $data({ string: settingjs }),
                     path: `${newPath}/setting.js`
                 })
-                // 更新config.json
+                // 更新 config.json
                 const config = JSON.parse($file.read(`${newPath}/config.json`).string)
                 if (config.from === undefined) config.from = from
                 config.name = newName

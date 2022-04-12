@@ -27,11 +27,15 @@ class JoinWidget extends Widget {
         const height = $widget.displaySize.height
         // 调节宽度并裁剪多余部分
         if (!leftView.props.frame) leftView.props.frame = {}
-        leftView.props.frame["maxWidth"] = width
+        if (leftView.props.frame["maxWidth"] > width) {
+            leftView.props.frame["maxWidth"] = width
+        }
         leftView.props["clipped"] = true
         leftView.widgetURL = undefined
         if (!rightView.props.frame) rightView.props.frame = {}
-        rightView.props.frame["maxWidth"] = width
+        if (rightView.props.frame["maxWidth"] > width) {
+            rightView.props.frame["maxWidth"] = width
+        }
         rightView.props["clipped"] = true
         rightView.widgetURL = undefined
         return {
