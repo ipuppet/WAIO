@@ -185,7 +185,7 @@ class Calendar {
             }
             if (weekOnly) { // 是否只获取一周
                 if (date > dateNow) { // 当循环日期大于当前日期时，说明本周已经循环完毕
-                    calendar = week
+                    calendar = [week]
                     break
                 }
             }
@@ -264,56 +264,46 @@ class Calendar {
     /**
      * 复杂内容视图模板
      * @param {*} props 
-     * @param {*} family 
      * @returns 
      */
-    multipleContentDayTemplate(props = {}, family) {
-        $widget.family = family
-        let lineHeight = Infinity
-        if (family === this.setting.family.small) {
-            lineHeight = ($widget.displaySize.height - 20) / 7
-        } else if (family === this.setting.family.large) {
-            lineHeight = ($widget.displaySize.height - 20) / 13
-        }
+    multipleContentDayTemplate(props = {}) {
         const views = [
             {
                 type: "text",
                 props: Object.assign({
-                    font: $font(12),
                     lineLimit: 1,
-                    minimumScaleFactor: 0.5,
                     frame: {
-                        maxWidth: Infinity,
-                        maxHeight: lineHeight
+                        maxWidth: Infinity
                     }
                 }, props.text)
             },
             {
                 type: "text",
                 props: Object.assign({
-                    font: $font(12),
-                    minimumScaleFactor: 0.5,
+                    minimumScaleFactor: 0.8,
                     frame: {
-                        maxWidth: Infinity,
-                        maxHeight: lineHeight
+                        maxWidth: Infinity
                     }
                 }, props.ext)
             }
         ]
         return {
-            type: "vstack",
+            type: "hgrid",
+            props: {
+                rows: Array(2).fill({
+                    flexible: {
+                        maximum: Infinity
+                    },
+                    spacing: 10
+                })
+            },
             modifiers: [
                 Object.assign({
                     background: $color("clear"),
                     color: $color("primaryText"),
-                    spacing: 0,
-                    padding: 2
+                    padding: 8,
                 }, props.box),
                 {
-                    frame: {
-                        maxWidth: Infinity,
-                        maxHeight: Infinity
-                    },
                     cornerRadius: 5
                 }
             ],
@@ -381,35 +371,38 @@ class Calendar {
      * @returns 
      */
     singleContentDayTemplate(props = {}) {
+        const views = [{
+            type: "text",
+            props: Object.assign({
+                font: $font(13),
+                lineLimit: 1,
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                }
+            }, props.text)
+        }]
         return {
-            type: "vstack",
+            type: "hgrid",
+            props: {
+                rows: [{
+                    flexible: {
+                        maximum: Infinity
+                    },
+                    spacing: 0
+                }]
+            },
             modifiers: [
                 Object.assign({
                     background: $color("clear"),
                     color: $color("primaryText"),
-                    spacing: 0,
-                    padding: 2
+                    padding: 3,
                 }, props.box),
                 {
-                    frame: {
-                        maxWidth: Infinity,
-                        maxHeight: Infinity
-                    },
                     cornerRadius: 5
                 }
             ],
-            views: [{
-                type: "text",
-                props: Object.assign({
-                    font: $font(12),
-                    lineLimit: 1,
-                    minimumScaleFactor: 0.5,
-                    frame: {
-                        maxWidth: Infinity,
-                        maxHeight: Infinity
-                    }
-                }, props.text)
-            }]
+            views: views
         }
     }
 
@@ -421,6 +414,7 @@ class Calendar {
         for (let i = 0; i < 7; i++) {
             title.push(this.singleContentDayTemplate({
                 text: {
+                    font: $font(14),
                     text: this.localizedWeek(i),
                     color: this.colorTone
                 }
@@ -431,14 +425,12 @@ class Calendar {
 
     /**
      * 标题模板
-     * @param {*} family 
      * @param {*} calendarInfo 
      * @returns 
      */
-    titleBarTemplate(family, calendarInfo) {
+    titleBarTemplate(calendarInfo) {
         // 标题栏文字内容
-        let leftText, views = [],
-            size = family === this.setting.family.small ? 12 : 18
+        let leftText, views = []
         if (this.titleYearMode !== 0) {
             const year = this.titleYearMode === 1 ? String(calendarInfo.year).slice(-2) : calendarInfo.year
             leftText = year + this.localizedMonth(calendarInfo.month)
@@ -452,7 +444,7 @@ class Calendar {
                 text: leftText,
                 lineLimit: 1,
                 color: this.colorTone,
-                font: $font("bold", size),
+                bold: true,
                 frame: {
                     alignment: $widget.alignment.leading,
                     maxWidth: Infinity,
@@ -469,7 +461,7 @@ class Calendar {
                     text: rightText,
                     lineLimit: 1,
                     color: this.colorTone,
-                    font: $font("bold", size),
+                    bold: true,
                     frame: {
                         alignment: $widget.alignment.trailing,
                         maxWidth: Infinity,
@@ -484,161 +476,78 @@ class Calendar {
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
-                },
-                padding: (() => {
-                    switch (family) {
-                        case this.setting.family.small:
-                            return $insets(0, 3, 0, 3)
-                        case this.setting.family.meduim:
-                            return $insets(0, 10, 0, 10)
-                        case this.setting.family.large:
-                            return $insets(0, 10, 0, 10)
-                    }
-                })()
+                }
             },
             views: views
         }
     }
 
+    calendarTemplate(calendarInfo, dayStyleModifier, dayTemplate, vSpacing = 5) {
+        const days = []
+        for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
+            for (let dayInfo of line) {
+                const props = dayStyleModifier(dayInfo, calendarInfo)
+                days.push(dayTemplate(props))
+            }
+        }
+
+        const calendar = {
+            type: "vgrid",
+            props: {
+                columns: Array(7).fill({
+                    flexible: {
+                        maximum: Infinity
+                    },
+                    spacing: 0
+                }),
+                spacing: vSpacing,
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                }
+            },
+            views: this.weekIndexTemplate().concat(days)
+        }
+        const titleBar = this.titleBarTemplate(calendarInfo)
+
+        return {
+            type: "vstack",
+            props: {
+                background: this.getBackground(),
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: Infinity
+                },
+                spacing: 0,
+                padding: 10,
+                widgetURL: this.setting.settingUrlScheme,
+                link: this.setting.settingUrlScheme
+            },
+            views: this.titleAddSpacer ? [
+                { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
+            ] : [
+                { type: "spacer" }, titleBar, calendar, { type: "spacer" }
+            ]
+        }
+    }
+
     smallCalendarView() {
         const calendarInfo = this.getCalendar(false)
-        const days = []
-        for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
-            for (let dayInfo of line) {
-                const props = this.singleContentDayStyleModifier(dayInfo, calendarInfo)
-                days.push(this.singleContentDayTemplate(props))
-            }
-        }
-        const calendar = {
-            type: "vgrid",
-            props: {
-                columns: Array(7).fill({
-                    flexible: {
-                        minimum: 0,
-                        maximum: Infinity
-                    },
-                    spacing: 0
-                }),
-                spacing: 0,
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                }
-            },
-            views: this.weekIndexTemplate().concat(days)
-        }
-        const titleBar = this.titleBarTemplate(this.setting.family.small, calendarInfo)
-        return {
-            type: "vstack",
-            props: {
-                background: this.getBackground(),
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                },
-                spacing: 0,
-                padding: 10,
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
-            },
-            views: this.titleAddSpacer ? [
-                { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
-            ] : [
-                { type: "spacer" }, titleBar, calendar, { type: "spacer" }
-            ]
-        }
+        return this.calendarTemplate(
+            calendarInfo,
+            (dayInfo, calendarInfo) => this.singleContentDayStyleModifier(dayInfo, calendarInfo),
+            props => this.singleContentDayTemplate(props),
+            0
+        )
     }
 
-    weekView() {
-        const calendarInfo = this.getCalendar(true, true)
-        const days = []
-        for (let dayInfo of calendarInfo.calendar) {
-            const props = this.multipleContentDayStyleModifier(dayInfo, calendarInfo)
-            days.push(this.multipleContentDayTemplate(props, this.setting.family.meduim))
-        }
-        const calendar = {
-            type: "vgrid",
-            props: {
-                columns: Array(7).fill({
-                    flexible: {
-                        minimum: 0,
-                        maximum: Infinity
-                    },
-                    spacing: 0
-                }),
-                spacing: 5,
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                },
-                padding: $insets(0, 3, 0, 3)
-            },
-            views: this.weekIndexTemplate().concat(days)
-        }
-        const titleBar = this.titleBarTemplate(this.setting.family.meduim, calendarInfo)
-        return {
-            type: "vstack",
-            props: {
-                background: this.getBackground(),
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                },
-                spacing: 0,
-                padding: 10,
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
-            },
-            views: [{ type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }]
-        }
-    }
-
-    largeCalendarView() {
-        const calendarInfo = this.getCalendar(true)
-        const days = []
-        for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
-            for (let dayInfo of line) {
-                const props = this.multipleContentDayStyleModifier(dayInfo, calendarInfo)
-                days.push(this.multipleContentDayTemplate(props))
-            }
-        }
-        const calendar = {
-            type: "vgrid",
-            props: {
-                columns: Array(7).fill({
-                    flexible: {
-                        minimum: 0,
-                        maximum: Infinity
-                    },
-                    spacing: 0
-                }),
-                spacing: 0,
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                }
-            },
-            views: this.weekIndexTemplate().concat(days)
-        }
-        const titleBar = this.titleBarTemplate(this.setting.family.large, calendarInfo)
-        return {
-            type: "vstack",
-            props: {
-                background: this.getBackground(),
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                },
-                spacing: 0,
-                padding: 10,
-                widgetURL: this.setting.settingUrlScheme
-            },
-            views: this.titleAddSpacer ? [
-                { type: "spacer" }, titleBar, { type: "spacer" }, calendar, { type: "spacer" }
-            ] : [
-                { type: "spacer" }, titleBar, calendar, { type: "spacer" }
-            ]
-        }
+    calendarView(family) {
+        const calendarInfo = this.getCalendar(true, family === this.setting.family.medium)
+        return this.calendarTemplate(
+            calendarInfo,
+            (dayInfo, calendarInfo) => this.multipleContentDayStyleModifier(dayInfo, calendarInfo),
+            props => this.multipleContentDayTemplate(props)
+        )
     }
 }
 

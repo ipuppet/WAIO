@@ -15,11 +15,11 @@ class CalendarWidget extends Widget {
     }
 
     view2x4() {
-        return this.calendar.weekView()
+        return this.calendar.calendarView(this.setting.family.medium)
     }
 
     view4x4() {
-        return this.calendar.largeCalendarView()
+        return this.calendar.calendarView(this.setting.family.large)
     }
 
     render() {

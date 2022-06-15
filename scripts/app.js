@@ -404,6 +404,7 @@ class Widget {
 
 module.exports = {
     run: () => {
+        //Widget.render("Calendar"); return
         if ($app.env === $env.widget) {
             Widget.render()
         } else if ($app.env === $env.app) {
