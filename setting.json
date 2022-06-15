@@ -4,15 +4,6 @@
         "items": [
             {
                 "icon": [
-                    "clock.fill"
-                ],
-                "title": "DEBUG_MODE",
-                "type": "switch",
-                "key": "debugMode",
-                "value": false
-            },
-            {
-                "icon": [
                     "arrow.2.circlepath",
                     "#FF9900"
                 ],

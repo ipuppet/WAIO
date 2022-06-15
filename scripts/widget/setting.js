@@ -5,7 +5,7 @@ const {
     PageController,
     FileStorage,
     Setting
-} = require("../lib/easy-jsbox")
+} = require("../libs/easy-jsbox")
 
 class BaseSetting {
     constructor(kernel, widget) {

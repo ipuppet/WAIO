@@ -17,7 +17,7 @@ class Widget {
     }
 
     printTimeConsuming() {
-        if (!this.kernel.inWidgetEnv && this.kernel.setting.get("debugMode"))
+        if (!this.kernel.inWidgetEnv)
             this.kernel.print(`Use ${Date.now() - this.startTime} ms`)
     }
 

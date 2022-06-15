@@ -1,7 +1,7 @@
 const NAME = "Album"
 const BaseSetting = require("../setting")
 const Album = require("./album")
-const { UIKit } = require("../../lib/easy-jsbox")
+const { UIKit } = require("../../libs/easy-jsbox")
 
 class PictureSetting extends BaseSetting {
     constructor(kernel) {

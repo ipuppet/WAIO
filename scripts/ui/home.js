@@ -3,7 +3,7 @@ const {
     ViewController,
     PageController,
     SearchBar
-} = require("../lib/easy-jsbox")
+} = require("../libs/easy-jsbox")
 
 class HomeUI {
     constructor(kernel) {

@@ -6,7 +6,7 @@ const {
     TabBarController,
     FileStorage,
     Setting
-} = require("./lib/easy-jsbox")
+} = require("./libs/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
@@ -404,6 +404,7 @@ class Widget {
 
 module.exports = {
     run: () => {
+        //Widget.render("Calendar"); return
         if ($app.env === $env.widget) {
             Widget.render()
         } else if ($app.env === $env.app) {
