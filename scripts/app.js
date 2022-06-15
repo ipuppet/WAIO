@@ -6,7 +6,7 @@ const {
     TabBarController,
     FileStorage,
     Setting
-} = require("./lib/easy-jsbox")
+} = require("./libs/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
