@@ -409,15 +409,14 @@ class Calendar {
     /**
      * 周指示器模板
      */
-    weekIndexTemplate() {
+    weekIndexTemplate(props = {}) {
         const title = []
         for (let i = 0; i < 7; i++) {
             title.push(this.singleContentDayTemplate({
-                text: {
-                    font: $font(14),
+                text: Object.assign({
                     text: this.localizedWeek(i),
                     color: this.colorTone
-                }
+                }, props)
             }))
         }
         return title
@@ -441,6 +440,7 @@ class Calendar {
         views.push({
             type: "text",
             props: {
+                font: $font(this.setting.get("title.fontsize")),
                 text: leftText,
                 lineLimit: 1,
                 color: this.colorTone,
@@ -458,6 +458,7 @@ class Calendar {
             views.push({
                 type: "text",
                 props: {
+                    font: $font(this.setting.get("title.fontsize")),
                     text: rightText,
                     lineLimit: 1,
                     color: this.colorTone,
@@ -482,7 +483,7 @@ class Calendar {
         }
     }
 
-    calendarTemplate(calendarInfo, dayStyleModifier, dayTemplate, vSpacing = 5) {
+    calendarTemplate(calendarInfo, weekIndexTemplate, dayStyleModifier, dayTemplate, vSpacing = 5) {
         const days = []
         for (let line of calendarInfo.calendar) { // 设置不同日期显示不同样式
             for (let dayInfo of line) {
@@ -506,7 +507,7 @@ class Calendar {
                     maxHeight: Infinity
                 }
             },
-            views: this.weekIndexTemplate().concat(days)
+            views: weekIndexTemplate.concat(days)
         }
         const titleBar = this.titleBarTemplate(calendarInfo)
 
@@ -535,8 +536,14 @@ class Calendar {
         const calendarInfo = this.getCalendar(false)
         return this.calendarTemplate(
             calendarInfo,
+            this.weekIndexTemplate({ font: $font(this.setting.get("2x2.fontsize")) }),
             (dayInfo, calendarInfo) => this.singleContentDayStyleModifier(dayInfo, calendarInfo),
-            props => this.singleContentDayTemplate(props),
+            props => {
+                if (props.text) {
+                    Object.assign(props.text, { font: $font(this.setting.get("2x2.fontsize")) })
+                }
+                return this.singleContentDayTemplate(props)
+            },
             0
         )
     }
@@ -545,6 +552,7 @@ class Calendar {
         const calendarInfo = this.getCalendar(true, family === this.setting.family.medium)
         return this.calendarTemplate(
             calendarInfo,
+            this.weekIndexTemplate(),
             (dayInfo, calendarInfo) => this.multipleContentDayStyleModifier(dayInfo, calendarInfo),
             props => this.multipleContentDayTemplate(props)
         )

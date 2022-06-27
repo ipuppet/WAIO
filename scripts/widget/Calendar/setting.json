@@ -182,6 +182,31 @@
                                 "type": "switch",
                                 "key": "title.lunarYear",
                                 "value": true
+                            },
+                            {
+                                "icon": [
+                                    "slider.horizontal.3",
+                                    "#FF9933"
+                                ],
+                                "title": "FONT_SIZE",
+                                "type": "number",
+                                "key": "title.fontsize",
+                                "value": 15
+                            }
+                        ]
+                    },
+                    {
+                        "title": "2x2",
+                        "items": [
+                            {
+                                "icon": [
+                                    "slider.horizontal.3",
+                                    "#FF9933"
+                                ],
+                                "title": "FONT_SIZE",
+                                "type": "number",
+                                "key": "2x2.fontsize",
+                                "value": 13
                             }
                         ]
                     }
