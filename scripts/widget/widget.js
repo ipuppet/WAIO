@@ -1,4 +1,6 @@
 class Widget {
+    join = false
+
     constructor(kernel, setting) {
         this.startTime = Date.now()
         this.kernel = kernel
@@ -34,6 +36,7 @@ class Widget {
     }
 
     async joinView(mode) {
+        this.join = true
         switch (mode) {
             case this.setting.joinMode.small:
                 return this.view2x2()
