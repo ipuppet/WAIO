@@ -68,11 +68,7 @@
                                 "title": "Style",
                                 "type": "menu",
                                 "key": "week.displayStyle",
-                                "withTitle": true,
-                                "value": [
-                                    0,
-                                    "X_WEEK_X_DAY"
-                                ],
+                                "value": 0,
                                 "items": [
                                     "X_WEEK_X_DAY",
                                     "WEEK_ONLY",

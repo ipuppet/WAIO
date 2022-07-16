@@ -38,11 +38,8 @@
                 "type": "menu",
                 "key": "left",
                 "items": "this.method.getMenu",
-                "withTitle": true,
-                "value": [
-                    0,
-                    "Calendar"
-                ]
+                "values": "this.method.getMenu",
+                "value": "Calendar"
             }
         ]
     },
@@ -68,11 +65,8 @@
                 "type": "menu",
                 "key": "right",
                 "items": "this.method.getMenu",
-                "withTitle": true,
-                "value": [
-                    0,
-                    "Calendar"
-                ]
+                "values": "this.method.getMenu",
+                "value": "Calendar"
             }
         ]
     },
