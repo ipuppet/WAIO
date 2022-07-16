@@ -3298,8 +3298,9 @@ class Setting extends Controller {
         }
     }
 
-    createTab(key, icon, title, items, withTitle) {
+    createTab(key, icon, title, items = [], values = []) {
         const id = this.getId(key)
+        const isCustomizeValues = values.length === items.length
         return {
             type: "view",
             props: { id },
@@ -3309,7 +3310,7 @@ class Setting extends Controller {
                     type: "tab",
                     props: {
                         items: items,
-                        index: this.get(key),
+                        index: isCustomizeValues ? values.indexOf(this.get(key)) : this.get(key),
                         dynamicWidth: true
                     },
                     layout: (make, view) => {
@@ -3318,8 +3319,11 @@ class Setting extends Controller {
                     },
                     events: {
                         changed: sender => {
-                            const value = withTitle ? [sender.index, title] : sender.index
-                            this.set(key, value)
+                            if (isCustomizeValues) {
+                                this.set(key, values[sender.index])
+                            } else {
+                                this.set(key, sender.index)
+                            }
                         }
                     }
                 }
@@ -3381,9 +3385,10 @@ class Setting extends Controller {
         }
     }
 
-    createMenu(key, icon, title, items, withTitle) {
+    createMenu(key, icon, title, items = [], values = []) {
         const id = this.getId(key)
         const labelId = `${id}-label`
+        const isCustomizeValues = values.length === items.length
         return {
             type: "view",
             props: { id: id },
@@ -3395,15 +3400,7 @@ class Setting extends Controller {
                         {
                             type: "label",
                             props: {
-                                text: withTitle
-                                    ? items[
-                                          (() => {
-                                              const value = this.get(key)
-                                              if (typeof value === "object") return value[0]
-                                              else return value
-                                          })()
-                                      ]
-                                    : items[this.get(key)],
+                                text: isCustomizeValues ? items[values.indexOf(this.get(key))] : items[this.get(key)],
                                 color: $color("secondaryText"),
                                 id: labelId
                             },
@@ -3426,8 +3423,11 @@ class Setting extends Controller {
                     $ui.menu({
                         items: items,
                         handler: (title, idx) => {
-                            const value = withTitle ? [idx, title] : idx
-                            this.set(key, value)
+                            if (isCustomizeValues) {
+                                this.set(key, values[idx])
+                            } else {
+                                this.set(key, idx)
+                            }
                             $(labelId).text = $l10n(title)
                         },
                         finished: () => {
@@ -3810,7 +3810,13 @@ class Setting extends Controller {
                         row = this.createScript(item.key, item.icon, item.title, value)
                         break
                     case "tab":
-                        row = this.createTab(item.key, item.icon, item.title, item.items, item.withTitle)
+                        if (typeof item.items === "string") {
+                            item.items = eval(`(()=>{return ${item.items}()})()`)
+                        }
+                        if (typeof item.values === "string") {
+                            item.values = eval(`(()=>{return ${item.values}()})()`)
+                        }
+                        row = this.createTab(item.key, item.icon, item.title, item.items, item.values)
                         break
                     case "color":
                         row = this.createColor(item.key, item.icon, item.title)
@@ -3819,7 +3825,10 @@ class Setting extends Controller {
                         if (typeof item.items === "string") {
                             item.items = eval(`(()=>{return ${item.items}()})()`)
                         }
-                        row = this.createMenu(item.key, item.icon, item.title, item.items, item.withTitle)
+                        if (typeof item.values === "string") {
+                            item.values = eval(`(()=>{return ${item.values}()})()`)
+                        }
+                        row = this.createMenu(item.key, item.icon, item.title, item.items, item.values)
                         break
                     case "date":
                         row = this.createDate(item.key, item.icon, item.title, item.mode)

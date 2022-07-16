@@ -24,7 +24,6 @@ class MyDaysWidget extends Widget {
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
         this.displayMode = this.setting.get("displayMode") // 0: 显示天数, 1: 显示周数
-        this.weekDisplayStyle = this.setting.get("week.displayStyle") // 周样式 0: index, 1: title
     }
 
     dateSpan(date) {
@@ -79,7 +78,7 @@ class MyDaysWidget extends Widget {
 
     weekTemplate(weekInfo, family) {
         let view = {}
-        switch (this.weekDisplayStyle[0]) {
+        switch (this.setting.get("week.displayStyle")) {
             case 0: // xW + xD
                 view = {
                     type: "hstack",

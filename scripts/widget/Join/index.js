@@ -8,13 +8,9 @@ class JoinWidget extends Widget {
         // 左侧视图设置
         this.left = this.setting.get("left")
         this.leftJoinMode = this.setting.get("left.joinMode")
-        if (typeof this.left === "object") this.left = this.left[1]
-        else this.left = this.setting.menu[this.left]
         // 右侧视图设置
         this.right = this.setting.get("right")
         this.rightJoinMode = this.setting.get("right.joinMode")
-        if (typeof this.right === "object") this.right = this.right[1]
-        else this.right = this.setting.menu[this.right]
     }
 
     async view2x4() {
