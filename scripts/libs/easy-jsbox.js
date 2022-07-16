@@ -3332,59 +3332,6 @@ class Setting extends Controller {
         }
     }
 
-    createColor(key, icon, title) {
-        const id = this.getId(key)
-        const colorId = `${id}-color`
-        return {
-            type: "view",
-            props: { id },
-            views: [
-                this.createLineLabel(title, icon),
-                {
-                    type: "view",
-                    views: [
-                        {
-                            // 颜色预览以及按钮功能
-                            type: "view",
-                            props: {
-                                id: colorId,
-                                bgcolor: this.getColor(this.get(key)),
-                                circular: true,
-                                borderWidth: 1,
-                                borderColor: $color("#e3e3e3")
-                            },
-                            layout: (make, view) => {
-                                make.centerY.equalTo(view.super)
-                                make.right.inset(this.edgeOffset)
-                                make.size.equalTo(20)
-                            }
-                        },
-                        {
-                            // 用来监听点击事件，增大可点击面积
-                            type: "view",
-                            events: {
-                                tapped: async () => {
-                                    const color = await $picker.color({ color: this.getColor(this.get(key)) })
-                                    this.set(key, color.components)
-                                    $(colorId).bgcolor = $rgba(color.components.red, color.components.green, color.components.blue, color.components.alpha)
-                                }
-                            },
-                            layout: (make, view) => {
-                                make.right.inset(0)
-                                make.height.width.equalTo(view.super.height)
-                            }
-                        }
-                    ],
-                    layout: (make, view) => {
-                        make.height.equalTo(this.rowHeight)
-                        make.width.equalTo(view.super)
-                    }
-                }
-            ],
-            layout: $layout.fill
-        }
-    }
-
     createMenu(key, icon, title, items = [], values = []) {
         const id = this.getId(key)
         const labelId = `${id}-label`
@@ -3436,6 +3383,59 @@ class Setting extends Controller {
                     })
                 }
             }),
+            layout: $layout.fill
+        }
+    }
+
+    createColor(key, icon, title) {
+        const id = this.getId(key)
+        const colorId = `${id}-color`
+        return {
+            type: "view",
+            props: { id },
+            views: [
+                this.createLineLabel(title, icon),
+                {
+                    type: "view",
+                    views: [
+                        {
+                            // 颜色预览以及按钮功能
+                            type: "view",
+                            props: {
+                                id: colorId,
+                                bgcolor: this.getColor(this.get(key)),
+                                circular: true,
+                                borderWidth: 1,
+                                borderColor: $color("#e3e3e3")
+                            },
+                            layout: (make, view) => {
+                                make.centerY.equalTo(view.super)
+                                make.right.inset(this.edgeOffset)
+                                make.size.equalTo(20)
+                            }
+                        },
+                        {
+                            // 用来监听点击事件，增大可点击面积
+                            type: "view",
+                            events: {
+                                tapped: async () => {
+                                    const color = await $picker.color({ color: this.getColor(this.get(key)) })
+                                    this.set(key, color.components)
+                                    $(colorId).bgcolor = $rgba(color.components.red, color.components.green, color.components.blue, color.components.alpha)
+                                }
+                            },
+                            layout: (make, view) => {
+                                make.right.inset(0)
+                                make.height.width.equalTo(view.super.height)
+                            }
+                        }
+                    ],
+                    layout: (make, view) => {
+                        make.height.equalTo(this.rowHeight)
+                        make.width.equalTo(view.super)
+                    }
+                }
+            ],
             layout: $layout.fill
         }
     }
@@ -3818,9 +3818,6 @@ class Setting extends Controller {
                         }
                         row = this.createTab(item.key, item.icon, item.title, item.items, item.values)
                         break
-                    case "color":
-                        row = this.createColor(item.key, item.icon, item.title)
-                        break
                     case "menu":
                         if (typeof item.items === "string") {
                             item.items = eval(`(()=>{return ${item.items}()})()`)
@@ -3829,6 +3826,9 @@ class Setting extends Controller {
                             item.values = eval(`(()=>{return ${item.values}()})()`)
                         }
                         row = this.createMenu(item.key, item.icon, item.title, item.items, item.values)
+                        break
+                    case "color":
+                        row = this.createColor(item.key, item.icon, item.title)
                         break
                     case "date":
                         row = this.createDate(item.key, item.icon, item.title, item.mode)
