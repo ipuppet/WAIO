@@ -58,8 +58,9 @@ class Calendar {
      * 用于解决 join 中错误的尺寸计算
      * @param {boolean} join
      */
-    setJoin(join) {
+    setJoin(join = false) {
         this.join = join
+        return this
     }
 
     initStyle() {
