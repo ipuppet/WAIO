@@ -1,9 +1,34 @@
-const { SloarToLunar } = require('../../libs/sloarToLunar')
+const { SloarToLunar } = require("../../libs/sloarToLunar")
 
 const s2l = new SloarToLunar()
 
 class Calendar {
+    family
+    join = false
     calendar = {}
+
+    singleContentMaxFontSize = 20
+    titleBarBottomPadding = 10
+    get padding() {
+        if (this.family === this.setting.family.small) {
+            return {
+                h: 10,
+                v: 10
+            }
+        }
+        if (this.family === this.setting.family.medium) {
+            return {
+                h: 15,
+                v: 25
+            }
+        }
+        if (this.family === this.setting.family.large) {
+            return {
+                h: 15,
+                v: 15
+            }
+        }
+    }
 
     constructor(kernel, setting) {
         this.kernel = kernel
@@ -13,7 +38,8 @@ class Calendar {
         this.hasHoliday = this.setting.get("holiday")
         this.holidayColor = this.setting.getColor(this.setting.get("holidayColor"))
         this.holidayNoRestColor = this.setting.getColor(this.setting.get("holidayNoRestColor")) // 调休
-        if (this.hasHoliday && $file.exists(this.setting.holidayPath)) { // 假期信息
+        if (this.hasHoliday && $file.exists(this.setting.holidayPath)) {
+            // 假期信息
             this.holiday = JSON.parse($file.read(this.setting.holidayPath).string).holiday
         }
         this.monthDisplayMode = this.setting.get("monthDisplayMode") // 月份显示模式
@@ -30,19 +56,24 @@ class Calendar {
 
     /**
      * 用于解决 join 中错误的尺寸计算
+     * @param {boolean} join
      */
-    initStyle(join) {
-        if (join) { // join 模式
+    setJoin(join) {
+        this.join = join
+    }
+
+    initStyle() {
+        if (this.join) {
+            // join 模式
             this.height = $widget.displaySize.height
             this.width = this.height
         } else {
             this.width = $widget.displaySize.width
             this.height = $widget.displaySize.height
         }
-        this.padding = 10
-        this.titleBarHeight = Math.min(this.height * 0.11, 15)
-        this.titleBarPadding = 5
-        this.columnWidth = (this.width - this.padding * 2) / 7
+        // titleBarHeight 最大值限制为 25
+        this.titleBarHeight = Math.min(this.width * 0.11, 25)
+        this.columnWidth = (this.width - this.padding.h * 2) / 7
     }
 
     getHelveticaNeueFontSize(height) {
@@ -128,7 +159,7 @@ class Calendar {
         return false
     }
 
-    getCalendar(lunar, weekOnly = false) {
+    initCalendar(lunar, weekOnly = false) {
         const dateInstance = new Date()
         const year = dateInstance.getFullYear()
         const month = dateInstance.getMonth()
@@ -138,14 +169,16 @@ class Calendar {
         let lastMonthDates = new Date(year, month, 0).getDate() // 上个月总天数
         let nextMonth = 1 // 下个月的日期计数器
         lastMonthDates -= 7 - firstDay // 补齐本月开始前的空位
-        if (this.firstDayOfWeek === 1) { // 设置中设定每周第一天是周几
+        if (this.firstDayOfWeek === 1) {
+            // 设置中设定每周第一天是周几
             firstDay -= 1
             if (firstDay < 0) firstDay = 6
             lastMonthDates++ // 上周补到这周的天数少一天，加上一才会少一天
         }
         let calendar = []
         let date = 1 // 日期计数器
-        for (let i = 0; i < 6; i++) { // 循环6次，每个月显示6周
+        for (let i = 0; i < 6; i++) {
+            // 循环6次，每个月显示6周
             const week = []
             for (let day = 0; day <= 6; day++) {
                 // 当每周第一天为0时，代表前方无偏移量
@@ -172,15 +205,18 @@ class Calendar {
                 } else {
                     if (firstDay === 0) {
                         // 判断是否到达最后一天
-                        formatDate = date > days ? {
-                            month: month + 1,
-                            date: nextMonth++,
-                            day: formatDay
-                        } : {
-                            month: month,
-                            date: date,
-                            day: formatDay
-                        }
+                        formatDate =
+                            date > days
+                                ? {
+                                      month: month + 1,
+                                      date: nextMonth++,
+                                      day: formatDay
+                                  }
+                                : {
+                                      month: month,
+                                      date: date,
+                                      day: formatDay
+                                  }
                     } else {
                         // 补齐第一周前面空缺的日期
                         formatDate = {
@@ -197,12 +233,11 @@ class Calendar {
                 }
                 if (lunar && formatDate !== 0) {
                     // month是0-11，故+1
-                    formatDate["lunar"] = date === dateNow ? this.lunar : s2l.sloarToLunar(
-                        year, formatDate.month + 1, formatDate.date
-                    )
+                    formatDate["lunar"] = date === dateNow ? this.lunar : s2l.sloarToLunar(year, formatDate.month + 1, formatDate.date)
                 }
                 // 节假日
-                if (this.hasHoliday && formatDate !== 0) { // 判断是否需要展示节假日
+                if (this.hasHoliday && formatDate !== 0) {
+                    // 判断是否需要展示节假日
                     // month是0-11，故+1
                     const holiday = this.isHoliday(year, formatDate.month + 1, formatDate.date)
                     if (holiday) {
@@ -212,35 +247,36 @@ class Calendar {
                 week.push(formatDate)
                 if (firstDay === 0) date++
             }
-            if (weekOnly) { // 是否只获取一周
-                if (date > dateNow) { // 当循环日期大于当前日期时，说明本周已经循环完毕
+            if (weekOnly) {
+                // 是否只获取一周
+                if (date > dateNow) {
+                    // 当循环日期大于当前日期时，说明本周已经循环完毕
                     calendar = [week]
                     break
                 }
             }
-            if (week.length > 0)
-                calendar.push(week)
+            if (week.length > 0) calendar.push(week)
         }
         this.calendar = {
             year: year,
             month: month,
             calendar: calendar,
-            date: dateNow,
+            date: dateNow
         }
     }
 
     /**
      * 复杂内容样式修饰器
-     * @param {*} dayInfo 
-     * @param {*} this.calendarInfo 
-     * @returns 
+     * @param {*} dayInfo
+     * @param {*} this.calendarInfo
+     * @returns
      */
     multipleContentDayStyleModifier(dayInfo) {
-        if (dayInfo === 0) { // 空白直接跳过
+        if (dayInfo === 0) {
+            // 空白直接跳过
             return {
-                date: "",
-                props: {},
-                extra: null
+                text: { text: " " },
+                ext: { text: " " }
             }
         }
         const extra = dayInfo.holiday ? dayInfo.holiday.name : dayInfo.lunar.lunarDay
@@ -276,10 +312,8 @@ class Calendar {
             if (!dayInfo.holiday) {
                 props.box.background = this.colorTone
             } else {
-                if (dayInfo.holiday.holiday)
-                    props.box.background = this.holidayColor
-                else
-                    props.box.background = this.holidayNoRestColor
+                if (dayInfo.holiday.holiday) props.box.background = this.holidayColor
+                else props.box.background = this.holidayNoRestColor
             }
         }
         // 本月前后补位日期
@@ -292,19 +326,19 @@ class Calendar {
 
     /**
      * 复杂内容视图模板
-     * @param {*} props 
-     * @returns 
+     * @param {*} props
+     * @returns
      */
     multipleContentDayTemplate(props = {}) {
         // 计算高度
         const weekIndexHeight = this.singleContentDayFont().fontHeight
-        const totalHeight = this.height - this.padding * 2 - this.titleBarPadding * 2 - this.titleBarHeight - weekIndexHeight
+        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
         const height = totalHeight / this.calendar.calendar.length
 
-        const fontHeight = height / 2 * 0.8
+        const fontHeight = (height / 2) * 0.8
         const fontSize = this.getHelveticaNeueFontSize(fontHeight)
 
-        const verticalPadding = (height - fontHeight * 2) / 3
+        const verticalPadding = (height - fontHeight * 2) / 2
         return {
             type: "hgrid",
             props: {
@@ -312,18 +346,21 @@ class Calendar {
                     flexible: {
                         maximum: Infinity
                     },
-                    spacing: verticalPadding
+                    spacing: 0
                 })
             },
             modifiers: [
-                Object.assign({
-                    background: $color("clear"),
-                    color: $color("primaryText"),
-                    padding: $insets(verticalPadding, 0, verticalPadding, 0),
-                    frame: {
-                        minHeight: fontHeight * 2
-                    }
-                }, props.box),
+                Object.assign(
+                    {
+                        background: $color("clear"),
+                        color: $color("primaryText"),
+                        padding: $insets(verticalPadding, 0, verticalPadding, 0),
+                        frame: {
+                            minHeight: fontHeight * 2
+                        }
+                    },
+                    props.box
+                ),
                 {
                     cornerRadius: 5
                 }
@@ -331,19 +368,25 @@ class Calendar {
             views: [
                 {
                     type: "text",
-                    props: Object.assign({
-                        font: $font("Helvetica Neue", fontSize),
-                        lineLimit: 1,
-                        frame: { width: this.columnWidth }
-                    }, props.text)
+                    props: Object.assign(
+                        {
+                            font: $font("Helvetica Neue", fontSize),
+                            lineLimit: 1,
+                            frame: { width: this.columnWidth }
+                        },
+                        props.text
+                    )
                 },
                 {
                     type: "text",
-                    props: Object.assign({
-                        font: $font("Helvetica Neue", Math.min(fontSize, this.columnWidth / 2 - verticalPadding)),
-                        lineLimit: 2,
-                        frame: { width: this.columnWidth }
-                    }, props.ext)
+                    props: Object.assign(
+                        {
+                            font: $font("Helvetica Neue", Math.min(fontSize, this.columnWidth / 2 - verticalPadding)),
+                            lineLimit: 2,
+                            frame: { width: this.columnWidth }
+                        },
+                        props.ext
+                    )
                 }
             ]
         }
@@ -351,17 +394,14 @@ class Calendar {
 
     /**
      * 简单内容样式修饰器
-     * @param {*} dayInfo 
-     * @param {*} this.calendarInfo 
-     * @returns 
+     * @param {*} dayInfo
+     * @param {*} this.calendarInfo
+     * @returns
      */
     singleContentDayStyleModifier(dayInfo) {
-        if (dayInfo === 0) { // 空白直接跳过
-            return {
-                date: "",
-                props: {},
-                extra: null
-            }
+        if (dayInfo === 0) {
+            // 空白直接跳过
+            return { text: { text: " " } }
         }
         // 初始样式
         const props = {
@@ -389,10 +429,8 @@ class Calendar {
             if (!dayInfo.holiday) {
                 props.box.background = this.colorTone
             } else {
-                if (dayInfo.holiday.holiday)
-                    props.box.background = this.holidayColor
-                else
-                    props.box.background = this.holidayNoRestColor
+                if (dayInfo.holiday.holiday) props.box.background = this.holidayColor
+                else props.box.background = this.holidayNoRestColor
             }
         }
         // 本月前后补位日期
@@ -404,7 +442,7 @@ class Calendar {
     }
 
     singleContentDayFont() {
-        const fontSize = Math.min(this.columnWidth * 0.6, this.titleBarHeight)
+        const fontSize = Math.min(this.columnWidth * 0.6, this.singleContentMaxFontSize)
         // 计算高度
         const fontHeight = $text.sizeThatFits({
             text: "1",
@@ -413,77 +451,99 @@ class Calendar {
         }).height
 
         return {
-            fontSize, fontHeight
+            fontSize,
+            fontHeight
         }
     }
 
     /**
      * 简单内容视图模板
-     * @param {*} props 
-     * @returns 
+     * @param {*} props
+     * @returns
      */
     singleContentDayTemplate(props = {}) {
         const { fontSize, fontHeight } = this.singleContentDayFont()
         // - fontHeight 为减去周指示器高度
-        const totalHeight = this.height - this.padding * 2 - this.titleBarPadding * 2 - this.titleBarHeight - fontHeight
+        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
         const height = totalHeight / this.calendar.calendar.length
         const verticalPadding = (height - fontHeight) / 2
         return {
             type: "hgrid",
             props: {
-                rows: [{
-                    flexible: {
-                        maximum: Infinity
-                    }
-                }]
+                rows: [{ flexible: { maximum: Infinity } }]
             },
             modifiers: [
-                {
-                    padding: $insets(verticalPadding, 0, verticalPadding, 0)
-                },
-                Object.assign({
-                    background: $color("clear"),
-                    color: $color("primaryText")
-                }, props.box),
+                Object.assign(
+                    {
+                        padding: $insets(verticalPadding, 0, verticalPadding, 0),
+                        background: $color("clear")
+                    },
+                    props.box
+                ),
                 {
                     cornerRadius: 5
                 }
             ],
-            views: [{
-                type: "text",
-                props: Object.assign({
-                    font: $font("Helvetica Neue", fontSize),
-                    lineLimit: 1,
-                    frame: { width: this.columnWidth }
-                }, props.text)
-            }]
+            views: [
+                {
+                    type: "text",
+                    props: Object.assign(
+                        {
+                            font: $font("Helvetica Neue", fontSize),
+                            lineLimit: 1,
+                            frame: { width: this.columnWidth }
+                        },
+                        props.text
+                    )
+                }
+            ]
         }
     }
 
     /**
      * 周指示器模板
      */
-    weekIndexTemplate(props = {}) {
+    weekIndexTemplate() {
         const title = []
         for (let i = 0; i < 7; i++) {
-            title.push(this.singleContentDayTemplate({
-                text: Object.assign({
-                    text: this.localizedWeek(i),
-                    color: this.colorTone
-                }, props)
-            }))
+            title.push(
+                this.singleContentDayTemplate({
+                    text: {
+                        text: this.localizedWeek(i),
+                        color: this.colorTone
+                    }
+                })
+            )
         }
-        return title
+
+        return {
+            type: "vgrid",
+            props: {
+                columns: Array(7).fill({
+                    flexible: {
+                        maximum: Infinity
+                    },
+                    spacing: 0
+                }),
+                frame: {
+                    maxWidth: Infinity,
+                    maxHeight: this.singleContentDayFont().fontHeight
+                }
+            },
+            views: title
+        }
     }
 
     /**
      * 标题模板
-     * @param {*} this.calendarInfo 
-     * @returns 
+     * @param {*} this.calendarInfo
+     * @returns
      */
     titleBarTemplate() {
         // 标题栏文字内容
-        let leftText, views = []
+        let leftText,
+            views = []
+
         if (this.titleYearMode !== 0) {
             const year = this.titleYearMode === 1 ? String(this.calendar.year).slice(-2) : this.calendar.year
             leftText = year + this.localizedMonth(this.calendar.month)
@@ -505,6 +565,7 @@ class Calendar {
                 }
             }
         })
+
         if (this.titleLunar) {
             let rightText = this.lunar.lunarMonth + "月" + this.lunar.lunarDay
             if (this.titleLunarYear) rightText = this.lunar.lunarYear + "年" + rightText
@@ -517,12 +578,12 @@ class Calendar {
                     color: this.colorTone,
                     bold: true,
                     frame: {
-                        alignment: $widget.alignment.trailing,
-                        maxWidth: Infinity
+                        alignment: $widget.alignment.trailing
                     }
                 }
             })
         }
+
         return {
             type: "hstack",
             props: {
@@ -530,37 +591,26 @@ class Calendar {
                     maxWidth: Infinity,
                     maxHeight: this.titleBarHeight
                 },
-                padding: $insets(this.titleBarPadding, 0, this.titleBarPadding, 0)
+                padding: $insets(0, 0, this.titleBarBottomPadding, 0)
             },
             views: views
         }
     }
 
-    calendarTemplate(weekIndexTemplate, dayStyleModifier, dayTemplate) {
+    calendarTemplate(dayStyleModifier, dayTemplate) {
+        // 计算样式
+        this.initStyle()
+        // 生成视图
         const days = []
-        for (let line of this.calendar.calendar) { // 设置不同日期显示不同样式
+        for (let line of this.calendar.calendar) {
+            // 设置不同日期显示不同样式
             for (let dayInfo of line) {
                 const props = dayStyleModifier(dayInfo, this.calendar)
                 days.push(dayTemplate(props))
             }
         }
 
-        const weekIndex = {
-            type: "vgrid",
-            props: {
-                columns: Array(7).fill({
-                    flexible: {
-                        maximum: Infinity
-                    },
-                    spacing: 0
-                }),
-                frame: {
-                    maxWidth: Infinity,
-                    maxHeight: this.singleContentDayFont().fontHeight
-                }
-            },
-            views: weekIndexTemplate
-        }
+        const weekIndex = this.weekIndexTemplate()
         const calendar = {
             type: "vgrid",
             props: {
@@ -590,7 +640,7 @@ class Calendar {
                     maxHeight: Infinity
                 },
                 spacing: 0,
-                padding: $insets(this.padding, this.padding, this.padding, this.padding),
+                padding: $insets(this.padding.v, this.padding.h, this.padding.v, this.padding.h),
                 widgetURL: this.setting.settingUrlScheme,
                 link: this.setting.settingUrlScheme
             },
@@ -599,20 +649,18 @@ class Calendar {
     }
 
     smallCalendarView() {
-        this.getCalendar(false)
+        this.family = this.setting.family.small
+        this.initCalendar(false)
         return this.calendarTemplate(
-            this.weekIndexTemplate(),
             dayInfo => this.singleContentDayStyleModifier(dayInfo),
-            props => {
-                return this.singleContentDayTemplate(props)
-            }
+            props => this.singleContentDayTemplate(props)
         )
     }
 
     calendarView(family) {
-        this.getCalendar(true, family === this.setting.family.medium)
+        this.family = family
+        this.initCalendar(true, family === this.setting.family.medium)
         return this.calendarTemplate(
-            this.weekIndexTemplate(),
             dayInfo => this.multipleContentDayStyleModifier(dayInfo),
             props => this.multipleContentDayTemplate(props)
         )
