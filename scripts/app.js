@@ -107,7 +107,6 @@ class AppKernel extends Kernel {
      */
     initSettingMethods() {
         this.setting.method.readme = animate => {
-            animate.touchHighlight()
             const content = $file.read("/README.md").string
             const sheet = new Sheet()
             sheet
@@ -123,7 +122,6 @@ class AppKernel extends Kernel {
         }
 
         this.setting.method.tips = animate => {
-            animate.touchHighlight()
             $ui.alert("每个小组件中都有README文件，点击可以得到一些信息。")
         }
 

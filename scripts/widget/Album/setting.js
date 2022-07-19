@@ -25,7 +25,6 @@ class PictureSetting extends BaseSetting {
         }
 
         this.setting.method.clearCache = animate => {
-            animate.touchHighlight()
             animate.actionStart()
             $cache.remove("switch.data")
             animate.actionDone()

@@ -119,7 +119,6 @@ class BaseSetting {
 
     defaultSettingMethods() {
         this.setting.method.readme = animate => {
-            animate.touchHighlight()
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
             const sheet = new Sheet()
             sheet
