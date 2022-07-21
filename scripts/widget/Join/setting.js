@@ -1,7 +1,7 @@
 const NAME = "Join"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class JoinSetting extends BaseSetting {
+class JoinSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
     }

@@ -1,7 +1,7 @@
 const NAME = "TextClock"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class TextClockSetting extends BaseSetting {
+class TextClockSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
     }

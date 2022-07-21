@@ -1,6 +1,21 @@
+/**
+ * @typedef {import("../app").AppKernel} AppKernel
+ */
+/**
+ * @typedef {import("./setting").WidgetSetting} WidgetSetting
+ */
+
+/**
+ * @typedef {Widget} Widget
+ */
 class Widget {
     join = false
 
+    /**
+     *
+     * @param {AppKernel} kernel
+     * @param {WidgetSetting} setting
+     */
     constructor(kernel, setting) {
         this.startTime = Date.now()
         this.kernel = kernel
@@ -19,8 +34,9 @@ class Widget {
     }
 
     printTimeConsuming() {
-        if (!this.kernel.inWidgetEnv)
+        if (!this.kernel.inWidgetEnv) {
             this.kernel.print(`Use ${Date.now() - this.startTime} ms`)
+        }
     }
 
     async view2x2() {

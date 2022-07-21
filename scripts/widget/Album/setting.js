@@ -1,9 +1,9 @@
 const NAME = "Album"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 const Album = require("./album")
 const { UIKit } = require("../../libs/easy-jsbox")
 
-class PictureSetting extends BaseSetting {
+class PictureSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
         this.album = new Album(this.kernel, this)

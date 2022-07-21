@@ -61,6 +61,9 @@ function widgetInstance(widget, that) {
     return new Widget(that)
 }
 
+/**
+ * @typedef {AppKernel} AppKernel
+ */
 class AppKernel extends Kernel {
     constructor() {
         super()

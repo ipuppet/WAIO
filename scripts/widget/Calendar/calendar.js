@@ -2,6 +2,13 @@ const { SloarToLunar } = require("../../libs/sloarToLunar")
 
 const s2l = new SloarToLunar()
 
+/**
+ * @typedef {import("../../app").AppKernel} AppKernel
+ */
+/**
+ * @typedef {import("../setting").WidgetSetting} WidgetSetting
+ */
+
 class Calendar {
     family
     join = false
@@ -30,6 +37,11 @@ class Calendar {
         }
     }
 
+    /**
+     *
+     * @param {AppKernel} kernel
+     * @param {WidgetSetting} setting
+     */
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
@@ -468,37 +480,35 @@ class Calendar {
         const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
         const height = totalHeight / this.calendar.calendar.length
         const verticalPadding = (height - fontHeight) / 2
-        return {
-            type: "hgrid",
-            props: {
-                rows: [{ flexible: { maximum: Infinity } }]
-            },
-            modifiers: [
-                Object.assign(
-                    {
-                        padding: $insets(verticalPadding, 0, verticalPadding, 0),
-                        background: $color("clear")
+        let view = {
+            type: "text",
+            props: Object.assign(
+                {
+                    font: $font("Helvetica Neue", fontSize),
+                    lineLimit: 1,
+                    frame: {
+                        alignment: $widget.alignment.center,
+                        width: this.columnWidth
                     },
-                    props.box
-                ),
-                {
-                    cornerRadius: 5
-                }
-            ],
-            views: [
-                {
-                    type: "text",
-                    props: Object.assign(
-                        {
-                            font: $font("Helvetica Neue", fontSize),
-                            lineLimit: 1,
-                            frame: { width: this.columnWidth }
-                        },
-                        props.text
-                    )
-                }
-            ]
+                    padding: $insets(verticalPadding, 0, verticalPadding, 0),
+                    background: $color("clear")
+                },
+                props.text
+            )
         }
+
+        if (props?.box?.background) {
+            view = {
+                type: "zstack",
+                props: {
+                    alignment: $widget.alignment.center,
+                    cornerRadius: 4
+                },
+                views: [props?.box?.background, view]
+            }
+        }
+
+        return view
     }
 
     /**

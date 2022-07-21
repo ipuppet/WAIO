@@ -1,7 +1,7 @@
 const NAME = "MyDays"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class MyDaysSetting extends BaseSetting {
+class MyDaysSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
         this.path = `${this.kernel.widgetDataPath}/${NAME}`

@@ -7,7 +7,22 @@ const {
     Setting
 } = require("../libs/easy-jsbox")
 
-class BaseSetting {
+/**
+ * @typedef {import("../app").AppKernel} AppKernel
+ */
+/**
+ * @typedef {import("./widget").Widget} Widget
+ */
+
+/**
+ * @typedef {WidgetSetting} WidgetSetting
+ */
+class WidgetSetting {
+    /**
+     * 
+     * @param {AppKernel} kernel 
+     * @param {Widget} widget 
+     */
     constructor(kernel, widget) {
         this.kernel = kernel
         this.widget = widget
@@ -137,4 +152,4 @@ class BaseSetting {
     initSettingMethods() { }
 }
 
-module.exports = BaseSetting
+module.exports = WidgetSetting
