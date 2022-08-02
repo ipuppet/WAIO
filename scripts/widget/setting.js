@@ -1,11 +1,4 @@
-const {
-    UIKit,
-    Sheet,
-    NavigationItem,
-    PageController,
-    FileStorage,
-    Setting
-} = require("../libs/easy-jsbox")
+const { UIKit, Sheet, NavigationItem, PageController, FileStorage, Setting } = require("../libs/easy-jsbox")
 
 /**
  * @typedef {import("../app").AppKernel} AppKernel
@@ -19,9 +12,9 @@ const {
  */
 class WidgetSetting {
     /**
-     * 
-     * @param {AppKernel} kernel 
-     * @param {Widget} widget 
+     *
+     * @param {AppKernel} kernel
+     * @param {Widget} widget
      */
     constructor(kernel, widget) {
         this.kernel = kernel
@@ -105,14 +98,15 @@ class WidgetSetting {
             const pageController = new PageController()
             pageController
                 .setView(listView)
-                .navigationItem
-                .setTitle(title)
+                .navigationItem.setTitle(title)
                 .setLargeTitleDisplayMode(NavigationItem.largeTitleDisplayModeNever)
-                .setRightButtons(navButtons.map(button => {
-                    button.tapped = button.handler
-                    delete button.handler
-                    return button
-                }))
+                .setRightButtons(
+                    navButtons.map(button => {
+                        button.tapped = button.handler
+                        delete button.handler
+                        return button
+                    })
+                )
             this.kernel?.homeUI.viewController.push(pageController)
         }
     }
@@ -149,7 +143,7 @@ class WidgetSetting {
         }
     }
 
-    initSettingMethods() { }
+    initSettingMethods() {}
 }
 
 module.exports = WidgetSetting

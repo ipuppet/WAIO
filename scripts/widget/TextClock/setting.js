@@ -6,8 +6,7 @@ class TextClockSetting extends WidgetSetting {
         super(kernel, NAME)
     }
 
-    initSettingMethods() {
-    }
+    initSettingMethods() {}
 }
 
 module.exports = TextClockSetting

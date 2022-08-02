@@ -35,9 +35,11 @@ class Album {
      */
     getImages(imageType) {
         const images = $file.list(`${this.albumPath}/${imageType}`)
-        return images.length > 0 ? images.map(image => {
-            return `${this.albumPath}/${imageType}/${image}`
-        }) : []
+        return images.length > 0
+            ? images.map(image => {
+                  return `${this.albumPath}/${imageType}/${image}`
+              })
+            : []
     }
 
     deleteImage(src, indexPath, alert = true) {
@@ -65,16 +67,21 @@ class Album {
             $ui.alert({
                 title: $l10n("CONFIRM_DELETE_MSG"),
                 actions: [
-                    Object.assign({
-                        title: $l10n("DELETE"),
-                        handler: () => {
-                            action()
-                        }
-                    }, style),
+                    Object.assign(
+                        {
+                            title: $l10n("DELETE"),
+                            handler: () => {
+                                action()
+                            }
+                        },
+                        style
+                    ),
                     { title: $l10n("CANCEL") }
                 ]
             })
-        } else { action() }
+        } else {
+            action()
+        }
     }
 
     previewImage(index, data) {
@@ -97,30 +104,32 @@ class Album {
             })
         }
         UIKit.push({
-            views: [{
-                type: "gallery",
-                props: {
-                    items: getData(index),
-                    hidden: true,
-                    page: index,
-                    interval: 0
-                },
-                events: {
-                    ready: sender => {
-                        setTimeout(() => {
-                            //sender.scrollToPage(index)
-                            setTimeout(() => {
-                                sender.hidden = false
-                            }, 500)
-                        }, 100)
+            views: [
+                {
+                    type: "gallery",
+                    props: {
+                        items: getData(index),
+                        hidden: true,
+                        page: index,
+                        interval: 0
                     },
-                    changed: sender => {
-                        this.kernel.print(sender.page)
-                        sender.items = getData(sender.page)
-                    }
-                },
-                layout: $layout.fill
-            }]
+                    events: {
+                        ready: sender => {
+                            setTimeout(() => {
+                                //sender.scrollToPage(index)
+                                setTimeout(() => {
+                                    sender.hidden = false
+                                }, 500)
+                            }, 100)
+                        },
+                        changed: sender => {
+                            this.kernel.print(sender.page)
+                            sender.items = getData(sender.page)
+                        }
+                    },
+                    layout: $layout.fill
+                }
+            ]
         })
     }
 
@@ -157,7 +166,7 @@ class Album {
                     Object.values(this.selected).forEach(item => {
                         matrix.cell(item.indexPath).alpha = 1
                     })
-                } catch (error) { }
+                } catch (error) {}
                 break
         }
         // 清空数据
@@ -166,7 +175,8 @@ class Album {
 
     getAlbumButtons() {
         return [
-            { // 添加新图片
+            {
+                // 添加新图片
                 symbol: "plus",
                 handler: () => {
                     $ui.menu({
@@ -209,7 +219,8 @@ class Album {
                                     }
                                 })
                             }
-                            if (idx === 0) { // 从系统相册选取图片
+                            if (idx === 0) {
+                                // 从系统相册选取图片
                                 $photo.pick({
                                     format: "data",
                                     multi: true,
@@ -233,7 +244,8 @@ class Album {
                                         })
                                     }
                                 })
-                            } else if (idx === 1) { // 从iCloud选取图片
+                            } else if (idx === 1) {
+                                // 从iCloud选取图片
                                 $drive.open({
                                     handler: file => {
                                         if (!file) {
@@ -260,21 +272,24 @@ class Album {
                         $ui.alert({
                             title: $l10n("CONFIRM_DELETE_MSG"),
                             actions: [
-                                Object.assign({
-                                    title: $l10n("DELETE"),
-                                    handler: () => {
-                                        for (let i = $("picture-edit-matrix").data.length - 1; i >= 0; i--) {
-                                            if (length === 0) break
-                                            Object.values(this.selected).forEach(item => {
-                                                if (i === item.indexPath.item) {
-                                                    this.deleteImage(item.data.image.src, item.indexPath, false)
-                                                    length--
-                                                }
-                                            })
+                                Object.assign(
+                                    {
+                                        title: $l10n("DELETE"),
+                                        handler: () => {
+                                            for (let i = $("picture-edit-matrix").data.length - 1; i >= 0; i--) {
+                                                if (length === 0) break
+                                                Object.values(this.selected).forEach(item => {
+                                                    if (i === item.indexPath.item) {
+                                                        this.deleteImage(item.data.image.src, item.indexPath, false)
+                                                        length--
+                                                    }
+                                                })
+                                            }
+                                            this.changeMode() // 切换回普通模式
                                         }
-                                        this.changeMode() // 切换回普通模式
-                                    }
-                                }, style),
+                                    },
+                                    style
+                                ),
                                 {
                                     title: $l10n("CANCEL")
                                 }
@@ -293,7 +308,8 @@ class Album {
             image: { src: item }
         }))
         return [
-            { // 无图片提示字符
+            {
+                // 无图片提示字符
                 type: "label",
                 layout: $layout.fill,
                 props: {
@@ -304,7 +320,8 @@ class Album {
                     align: $align.center
                 }
             },
-            { // 图片列表
+            {
+                // 图片列表
                 type: "matrix",
                 props: {
                     id: "picture-edit-matrix",
@@ -323,10 +340,8 @@ class Album {
                                     $photo.save({
                                         data: $file.read(data.image.src),
                                         handler: success => {
-                                            if (success)
-                                                $ui.success($l10n("SUCCESS"))
-                                            else
-                                                $ui.error($l10n("ERROR"))
+                                            if (success) $ui.success($l10n("SUCCESS"))
+                                            else $ui.error($l10n("ERROR"))
                                         }
                                     })
                                 }
@@ -382,7 +397,8 @@ class Album {
                 },
                 layout: $layout.fill
             },
-            { // 选中图片指示器
+            {
+                // 选中图片指示器
                 type: "view",
                 props: {
                     id: this.selectedImageCounter,

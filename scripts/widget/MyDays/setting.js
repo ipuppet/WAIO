@@ -16,11 +16,13 @@ class MyDaysSetting extends WidgetSetting {
         for (let i = 0; i < len; i++) {
             const path = `${this.path}/${files[i]}`
             if (this.setting.get("compressImage")) {
-                if (files[i].indexOf("compress") > -1)
+                if (files[i].indexOf("compress") > -1) {
                     return path
+                }
             } else {
-                if (files[i].indexOf("background") > -1)
+                if (files[i].indexOf("background") > -1) {
                     return path
+                }
             }
         }
     }
@@ -52,7 +54,8 @@ class MyDaysSetting extends WidgetSetting {
                                     if (!resp.data) return
                                     // 清除旧图片
                                     this.clearBackgroundImage()
-                                    const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
+                                    const fileName =
+                                        "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     // 控制压缩图片大小
                                     const image = this.kernel.compressImage(resp.data.image)
                                     $file.write({
@@ -73,9 +76,8 @@ class MyDaysSetting extends WidgetSetting {
                             break
                     }
                 },
-                finished: (cancelled) => {
-                    if (cancelled)
-                        animate.touchHighlightEnd()
+                finished: cancelled => {
+                    if (cancelled) animate.touchHighlightEnd()
                 }
             })
         }

@@ -1,12 +1,4 @@
-const {
-    compressImage,
-    UIKit,
-    Sheet,
-    Kernel,
-    TabBarController,
-    FileStorage,
-    Setting
-} = require("./libs/easy-jsbox")
+const { compressImage, UIKit, Sheet, Kernel, TabBarController, FileStorage, Setting } = require("./libs/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
@@ -23,8 +15,8 @@ const backupPath = `${fileStorage.basePath}/backup`
 function widgetInstance(widget, that) {
     const recover = name => {
         if (
-            !$file.exists(`${widgetRootPath}/${name}/index.js`)
-            && $file.exists(`${widgetRootPath}/${name}/config.json`)
+            !$file.exists(`${widgetRootPath}/${name}/index.js`) &&
+            $file.exists(`${widgetRootPath}/${name}/config.json`)
         ) {
             const config = JSON.parse($file.read(`${widgetRootPath}/${name}/config.json`).string)
             if (config.from) {
@@ -52,7 +44,7 @@ function widgetInstance(widget, that) {
         } else if (!$file.exists(`${widgetRootPath}/${name}/config.json`)) {
             $ui.alert({
                 title: $l10n("ERROR"),
-                message: $l10n("CANNOT_TRACE_TO_THE_SOURCE") + `: ${name}`,
+                message: $l10n("CANNOT_TRACE_TO_THE_SOURCE") + `: ${name}`
             })
         }
     }
@@ -184,7 +176,9 @@ class AppKernel extends Kernel {
                     },
                     {
                         title: $l10n("CANCEL"),
-                        handler: () => { animate.actionCancel() }
+                        handler: () => {
+                            animate.actionCancel()
+                        }
                     }
                 ]
             })
@@ -206,7 +200,10 @@ class AppKernel extends Kernel {
                         dest: this.backupPath,
                         handler: async success => {
                             if (success) {
-                                if ($file.exists(`${this.backupPath}/widgets.zip`) && $file.exists(`${this.backupPath}/userdata.zip`)) {
+                                if (
+                                    $file.exists(`${this.backupPath}/widgets.zip`) &&
+                                    $file.exists(`${this.backupPath}/userdata.zip`)
+                                ) {
                                     try {
                                         // 保证目录存在
                                         $file.mkdir(`${this.backupPath}/widgets`)
@@ -269,13 +266,14 @@ class AppKernel extends Kernel {
                 if (typeof config.icon !== "object") {
                     config.icon = [config.icon, config.icon]
                 }
-                config.icon = config.icon.map(icon => icon[0] === "@" ? icon.replace("@", widgetPath) : icon)
+                config.icon = config.icon.map(icon => (icon[0] === "@" ? icon.replace("@", widgetPath) : icon))
                 data.push({
                     describe: config.describe,
                     name: widget,
                     icon: config.icon
                 })
-            } else {// 没有config.json文件则跳过
+            } else {
+                // 没有config.json文件则跳过
                 continue
             }
         }
@@ -301,7 +299,9 @@ class AppUI {
     static renderMainUI() {
         // 检查是否携带 URL scheme
         if ($context.query["url-scheme"]) {
-            $delay(0, () => { $app.openURL($context.query["url-scheme"]) })
+            $delay(0, () => {
+                $app.openURL($context.query["url-scheme"])
+            })
             return
         }
 
@@ -344,13 +344,15 @@ class AppUI {
             const tabBarController = new TabBarController()
             const homePageController = kernel.homeUI.getPageController()
             kernel.homeUI.viewController.setRootPageController(homePageController)
-            tabBarController.setPages({
-                home: homePageController.getPage(),
-                setting: kernel.setting.getPageView()
-            }).setCells({
-                home: buttons.home,
-                setting: buttons.setting
-            })
+            tabBarController
+                .setPages({
+                    home: homePageController.getPage(),
+                    setting: kernel.setting.getPageView()
+                })
+                .setCells({
+                    home: buttons.home,
+                    setting: buttons.setting
+                })
 
             kernel.UIRender(tabBarController.generateView().definition)
         }
@@ -366,14 +368,16 @@ class AppUI {
     static renderUnsupported() {
         $intents.finish("不支持在此环境中运行")
         $ui.render({
-            views: [{
-                type: "label",
-                props: {
-                    text: "不支持在此环境中运行",
-                    align: $align.center
-                },
-                layout: $layout.fill
-            }]
+            views: [
+                {
+                    type: "label",
+                    props: {
+                        text: "不支持在此环境中运行",
+                        align: $align.center
+                    },
+                    layout: $layout.fill
+                }
+            ]
         })
     }
 }

@@ -246,7 +246,8 @@ class Calendar {
                 }
                 if (lunar && formatDate !== 0) {
                     // month是0-11，故+1
-                    formatDate["lunar"] = date === dateNow ? this.lunar : s2l.sloarToLunar(year, formatDate.month + 1, formatDate.date)
+                    formatDate["lunar"] =
+                        date === dateNow ? this.lunar : s2l.sloarToLunar(year, formatDate.month + 1, formatDate.date)
                 }
                 // 节假日
                 if (this.hasHoliday && formatDate !== 0) {
@@ -345,7 +346,8 @@ class Calendar {
     multipleContentDayTemplate(props = {}) {
         // 计算高度
         const weekIndexHeight = this.singleContentDayFont().fontHeight
-        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
+        const totalHeight =
+            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
         const height = totalHeight / this.calendar.calendar.length
 
         const fontHeight = (height / 2) * 0.8
@@ -477,7 +479,8 @@ class Calendar {
     singleContentDayTemplate(props = {}) {
         const { fontSize, fontHeight } = this.singleContentDayFont()
         // - fontHeight 为减去周指示器高度
-        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
+        const totalHeight =
+            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
         const height = totalHeight / this.calendar.calendar.length
         const verticalPadding = (height - fontHeight) / 2
         let view = {

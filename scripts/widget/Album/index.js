@@ -8,13 +8,17 @@ class PictureWidget extends Widget {
         this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
         this.switchInterval = 1000 * 60 * Number(this.setting.get("switchInterval"))
-        this.urlScheme = this.setting.get("urlScheme") !== ""
-            ? `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
-            : this.setting.settingUrlScheme
-        this.pictures = this.album.getImages(this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original)
+        this.urlScheme =
+            this.setting.get("urlScheme") !== ""
+                ? `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
+                : this.setting.settingUrlScheme
+        this.pictures = this.album.getImages(
+            this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original
+        )
         // 缓存
         this.data = $cache.get("switch.data")
-        if (!this.data) { // 首次写入缓存
+        if (!this.data) {
+            // 首次写入缓存
             this.data = {
                 date: Date.now(),
                 index: this.imageSwitchMethod === 0 ? this.randomNum(0, this.pictures.length - 1) : 0
@@ -36,8 +40,10 @@ class PictureWidget extends Widget {
 
     view2x2() {
         let index = 0 // 图片索引
-        if (Date.now() - this.data.date > this.switchInterval) { // 下一张
-            if (this.imageSwitchMethod === 0) { // 0随机切换，1顺序切换
+        if (Date.now() - this.data.date > this.switchInterval) {
+            // 下一张
+            if (this.imageSwitchMethod === 0) {
+                // 0随机切换，1顺序切换
                 index = this.randomNum(0, this.pictures.length - 1)
             } else {
                 index = this.data.index + 1
@@ -47,7 +53,8 @@ class PictureWidget extends Widget {
                 date: Date.now(),
                 index: index
             })
-        } else { // 维持不变
+        } else {
+            // 维持不变
             index = this.data.index
         }
         let imagePath = this.pictures[index] // 获取图片

@@ -1,9 +1,4 @@
-const {
-    UIKit,
-    ViewController,
-    PageController,
-    SearchBar
-} = require("../libs/easy-jsbox")
+const { UIKit, ViewController, PageController, SearchBar } = require("../libs/easy-jsbox")
 
 class HomeUI {
     constructor(kernel) {
@@ -24,7 +19,8 @@ class HomeUI {
         const data = this.kernel.getWidgetList()
         const template = data => {
             return {
-                icon: {// 如果不设置 image 属性，默认为小组件目录下的 icon.png
+                icon: {
+                    // 如果不设置 image 属性，默认为小组件目录下的 icon.png
                     image: $image(data.icon[0], data.icon[1])
                 },
                 title: {
@@ -101,8 +97,6 @@ class HomeUI {
         })
     }
 
-    searchAction(text) { }
-
     getListView() {
         return {
             type: "list",
@@ -164,7 +158,9 @@ class HomeUI {
                         handler: (sender, indexPath) => {
                             this.copyWidget(sender.object(indexPath).name, () => {
                                 // 更新列表
-                                setTimeout(() => { sender.data = this.getWidgetListView() }, 200)
+                                setTimeout(() => {
+                                    sender.data = this.getWidgetListView()
+                                }, 200)
                             })
                         }
                     },
@@ -191,7 +187,9 @@ class HomeUI {
                 },
                 pulled: sender => {
                     $("waio-home-list").data = this.getWidgetListView()
-                    setTimeout(() => { sender.endRefreshing() }, 500)
+                    setTimeout(() => {
+                        sender.endRefreshing()
+                    }, 500)
                 }
             },
             layout: $layout.fill
@@ -201,18 +199,11 @@ class HomeUI {
     getPageController() {
         const pageController = new PageController()
 
-        // TODO 初始化搜索功能
-        //const searchBar = new SearchBar()
-        //searchBar.controller.setEvent("onChange", text => this.searchAction(text))
-        pageController.navigationItem
-            .setTitle("WAIO")
-        //.setTitleView(searchBar)
+        pageController.navigationItem.setTitle("WAIO")
 
         pageController
             .setView(this.getListView())
-            .navigationController
-            .navigationBar
-            .setBackgroundColor($color("primarySurface"))
+            .navigationController.navigationBar.setBackgroundColor($color("primarySurface"))
         return pageController
     }
 }
