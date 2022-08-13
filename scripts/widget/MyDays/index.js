@@ -30,7 +30,7 @@ class MyDaysWidget extends Widget {
         if (typeof date === "number") date = new Date(date)
         // 重置时间
         date.setHours(0, 0, 0, 0)
-        const span = (date.getTime() - (Date.now())) / 1000 / 3600 / 24
+        const span = (date.getTime() - Date.now()) / 1000 / 3600 / 24
         return Math.ceil(span)
     }
 
@@ -58,21 +58,25 @@ class MyDaysWidget extends Widget {
     mainContentTemplate(content, props = {}) {
         return {
             type: "text",
-            props: Object.assign({
-                text: content,
-                font: $font(this.dateFontSize),
-                color: this.remainingDays >= 0
-                    ? $color(this.dateColor, this.dateColorDark)
-                    : $color(this.overdueColor, this.overdueColorDark),
-                padding: 0,
-                lineLimit: 1,
-                minimumScaleFactor: 0.5,
-                frame: {
-                    alignment: $widget.alignment.topLeading,
-                    maxWidth: Infinity,
-                    maxHeight: Infinity
-                }
-            }, props)
+            props: Object.assign(
+                {
+                    text: content,
+                    font: $font(this.dateFontSize),
+                    color:
+                        this.remainingDays >= 0
+                            ? $color(this.dateColor, this.dateColorDark)
+                            : $color(this.overdueColor, this.overdueColorDark),
+                    padding: 0,
+                    lineLimit: 1,
+                    minimumScaleFactor: 0.5,
+                    frame: {
+                        alignment: $widget.alignment.topLeading,
+                        maxWidth: Infinity,
+                        maxHeight: Infinity
+                    }
+                },
+                props
+            )
         }
     }
 
@@ -95,17 +99,17 @@ class MyDaysWidget extends Widget {
                         })
                     ]
                 }
-                break;
+                break
             case 1: // 只显示周
                 view = this.mainContentTemplate(weekInfo.week)
-                break;
+                break
             case 2: // 显示小数
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day}`)
-                break;
+                break
             case 3: // 显示小数 + 单位
                 const unit = family === this.setting.family.small ? $l10n("UNIT_WEEK_2X2") : $l10n("UNIT_WEEK")
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day} ${unit}`)
-                break;
+                break
         }
         return view
     }
@@ -123,15 +127,18 @@ class MyDaysWidget extends Widget {
     }
 
     view(family) {
-        if (!this.myday) return {
-            type: "text",
-            props: { text: $l10n("NONE") }
-        }
+        if (!this.myday)
+            return {
+                type: "text",
+                props: { text: $l10n("NONE") }
+            }
         let mainView = {}
-        if (this.displayMode) { // 周数
+        if (this.displayMode) {
+            // 周数
             const weekInfo = this.getWeekInfo(this.remainingDays)
             mainView = this.weekTemplate(weekInfo, family)
-        } else { //天数
+        } else {
+            //天数
             mainView = this.mainContentTemplate(this.dateSpanToString(this.remainingDays))
         }
         const view = {

@@ -1,7 +1,7 @@
 const NAME = "Join"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class JoinSetting extends BaseSetting {
+class JoinSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
     }
@@ -12,8 +12,9 @@ class JoinSetting extends BaseSetting {
             const data = this.kernel.getWidgetList()
             const result = []
             data.forEach(item => {
-                if (item.name !== NAME && item.name !== "Calendar")
+                if (item.name !== NAME && item.name !== "Calendar") {
                     result.push(item.name)
+                }
             })
             // "Calendar" 作为默认值，永远排在最前面
             result.unshift("Calendar")

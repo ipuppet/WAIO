@@ -1,7 +1,7 @@
 const NAME = "Calendar"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class CalendarSetting extends BaseSetting {
+class CalendarSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
         this.path = `${this.kernel.widgetDataPath}/${NAME}`
@@ -89,16 +89,21 @@ class CalendarSetting extends BaseSetting {
             $ui.alert({
                 title: $l10n("CLEAR_HOLIDAY_DATA"),
                 actions: [
-                    Object.assign({
-                        title: $l10n("CLEAR"),
-                        handler: () => {
-                            $file.delete(this.holidayPath)
-                            animate.actionDone()
-                        }
-                    }, style),
+                    Object.assign(
+                        {
+                            title: $l10n("CLEAR"),
+                            handler: () => {
+                                $file.delete(this.holidayPath)
+                                animate.actionDone()
+                            }
+                        },
+                        style
+                    ),
                     {
                         title: $l10n("CANCEL"),
-                        handler: () => { animate.actionCancel() }
+                        handler: () => {
+                            animate.actionCancel()
+                        }
                     }
                 ]
             })
@@ -147,11 +152,15 @@ class CalendarSetting extends BaseSetting {
                         },
                         {
                             title: $l10n("CANCEL"),
-                            handler: () => { animate.actionCancel() }
+                            handler: () => {
+                                animate.actionCancel()
+                            }
                         }
                     ]
                 })
-            } else { saveHolidayAction() }
+            } else {
+                saveHolidayAction()
+            }
             return
         }
 
@@ -173,7 +182,8 @@ class CalendarSetting extends BaseSetting {
                                     if (!resp.data) return
                                     // 清除旧图片
                                     this.clearBackgroundImage()
-                                    const fileName = "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
+                                    const fileName =
+                                        "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     const image = this.kernel.compressImage(resp.data.image)
                                     $file.write({
                                         data: image.png,
@@ -189,9 +199,8 @@ class CalendarSetting extends BaseSetting {
                             break
                     }
                 },
-                finished: (cancelled) => {
-                    if (cancelled)
-                        animate.touchHighlightEnd()
+                finished: cancelled => {
+                    if (cancelled) animate.touchHighlightEnd()
                 }
             })
         }

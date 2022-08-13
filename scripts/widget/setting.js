@@ -1,13 +1,21 @@
-const {
-    UIKit,
-    Sheet,
-    NavigationItem,
-    PageController,
-    FileStorage,
-    Setting
-} = require("../libs/easy-jsbox")
+const { UIKit, Sheet, NavigationItem, PageController, FileStorage, Setting } = require("../libs/easy-jsbox")
 
-class BaseSetting {
+/**
+ * @typedef {import("../app").AppKernel} AppKernel
+ */
+/**
+ * @typedef {import("./widget").Widget} Widget
+ */
+
+/**
+ * @typedef {WidgetSetting} WidgetSetting
+ */
+class WidgetSetting {
+    /**
+     *
+     * @param {AppKernel} kernel
+     * @param {Widget} widget
+     */
     constructor(kernel, widget) {
         this.kernel = kernel
         this.widget = widget
@@ -90,14 +98,15 @@ class BaseSetting {
             const pageController = new PageController()
             pageController
                 .setView(listView)
-                .navigationItem
-                .setTitle(title)
+                .navigationItem.setTitle(title)
                 .setLargeTitleDisplayMode(NavigationItem.largeTitleDisplayModeNever)
-                .setRightButtons(navButtons.map(button => {
-                    button.tapped = button.handler
-                    delete button.handler
-                    return button
-                }))
+                .setRightButtons(
+                    navButtons.map(button => {
+                        button.tapped = button.handler
+                        delete button.handler
+                        return button
+                    })
+                )
             this.kernel?.homeUI.viewController.push(pageController)
         }
     }
@@ -119,7 +128,6 @@ class BaseSetting {
 
     defaultSettingMethods() {
         this.setting.method.readme = animate => {
-            animate.touchHighlight()
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string
             const sheet = new Sheet()
             sheet
@@ -135,7 +143,7 @@ class BaseSetting {
         }
     }
 
-    initSettingMethods() { }
+    initSettingMethods() {}
 }
 
-module.exports = BaseSetting
+module.exports = WidgetSetting

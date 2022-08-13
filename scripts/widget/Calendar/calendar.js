@@ -2,6 +2,13 @@ const { SloarToLunar } = require("../../libs/sloarToLunar")
 
 const s2l = new SloarToLunar()
 
+/**
+ * @typedef {import("../../app").AppKernel} AppKernel
+ */
+/**
+ * @typedef {import("../setting").WidgetSetting} WidgetSetting
+ */
+
 class Calendar {
     family
     join = false
@@ -30,6 +37,11 @@ class Calendar {
         }
     }
 
+    /**
+     *
+     * @param {AppKernel} kernel
+     * @param {WidgetSetting} setting
+     */
     constructor(kernel, setting) {
         this.kernel = kernel
         this.setting = setting
@@ -234,7 +246,8 @@ class Calendar {
                 }
                 if (lunar && formatDate !== 0) {
                     // month是0-11，故+1
-                    formatDate["lunar"] = date === dateNow ? this.lunar : s2l.sloarToLunar(year, formatDate.month + 1, formatDate.date)
+                    formatDate["lunar"] =
+                        date === dateNow ? this.lunar : s2l.sloarToLunar(year, formatDate.month + 1, formatDate.date)
                 }
                 // 节假日
                 if (this.hasHoliday && formatDate !== 0) {
@@ -333,7 +346,8 @@ class Calendar {
     multipleContentDayTemplate(props = {}) {
         // 计算高度
         const weekIndexHeight = this.singleContentDayFont().fontHeight
-        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
+        const totalHeight =
+            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
         const height = totalHeight / this.calendar.calendar.length
 
         const fontHeight = (height / 2) * 0.8
@@ -465,40 +479,39 @@ class Calendar {
     singleContentDayTemplate(props = {}) {
         const { fontSize, fontHeight } = this.singleContentDayFont()
         // - fontHeight 为减去周指示器高度
-        const totalHeight = this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
+        const totalHeight =
+            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
         const height = totalHeight / this.calendar.calendar.length
         const verticalPadding = (height - fontHeight) / 2
-        return {
-            type: "hgrid",
-            props: {
-                rows: [{ flexible: { maximum: Infinity } }]
-            },
-            modifiers: [
-                Object.assign(
-                    {
-                        padding: $insets(verticalPadding, 0, verticalPadding, 0),
-                        background: $color("clear")
+        let view = {
+            type: "text",
+            props: Object.assign(
+                {
+                    font: $font("Helvetica Neue", fontSize),
+                    lineLimit: 1,
+                    frame: {
+                        alignment: $widget.alignment.center,
+                        width: this.columnWidth
                     },
-                    props.box
-                ),
-                {
-                    cornerRadius: 5
-                }
-            ],
-            views: [
-                {
-                    type: "text",
-                    props: Object.assign(
-                        {
-                            font: $font("Helvetica Neue", fontSize),
-                            lineLimit: 1,
-                            frame: { width: this.columnWidth }
-                        },
-                        props.text
-                    )
-                }
-            ]
+                    padding: $insets(verticalPadding, 0, verticalPadding, 0),
+                    background: $color("clear")
+                },
+                props.text
+            )
         }
+
+        if (props?.box?.background) {
+            view = {
+                type: "zstack",
+                props: {
+                    alignment: $widget.alignment.center,
+                    cornerRadius: 4
+                },
+                views: [props?.box?.background, view]
+            }
+        }
+
+        return view
     }
 
     /**

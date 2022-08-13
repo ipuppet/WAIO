@@ -1,7 +1,7 @@
 const NAME = "Schedule"
-const BaseSetting = require("../setting")
+const WidgetSetting = require("../setting")
 
-class ScheduleSetting extends BaseSetting {
+class ScheduleSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
     }
