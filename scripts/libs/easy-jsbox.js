@@ -2288,8 +2288,8 @@ class Kernel {
         return uuid()
     }
 
-    l10n(language, content) {
-        l10n(language, content)
+    l10n(language, content, override = true) {
+        l10n(language, content, override)
     }
 
     debug(print, error) {
