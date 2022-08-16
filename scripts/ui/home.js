@@ -1,4 +1,4 @@
-const { UIKit, ViewController, PageController, SearchBar } = require("../libs/easy-jsbox")
+const { UIKit, ViewController, NavigationView } = require("../libs/easy-jsbox")
 
 class HomeUI {
     constructor(kernel) {
@@ -196,15 +196,13 @@ class HomeUI {
         }
     }
 
-    getPageController() {
-        const pageController = new PageController()
+    getNavigationView() {
+        const navigationView = new NavigationView()
 
-        pageController.navigationItem.setTitle("WAIO")
+        navigationView.setView(this.getListView()).navigationBarTitle("WAIO")
+        navigationView.navigationBar.setBackgroundColor($color("primarySurface"))
 
-        pageController
-            .setView(this.getListView())
-            .navigationController.navigationBar.setBackgroundColor($color("primarySurface"))
-        return pageController
+        return navigationView
     }
 }
 

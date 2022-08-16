@@ -342,11 +342,10 @@ class AppUI {
             kernel.UIRender({ views: [kernel.homeUI.getListView()] })
         } else {
             const tabBarController = new TabBarController()
-            const homePageController = kernel.homeUI.getPageController()
-            kernel.homeUI.viewController.setRootPageController(homePageController)
+            const homeNavigationView = kernel.homeUI.getNavigationView()
             tabBarController
                 .setPages({
-                    home: homePageController.getPage(),
+                    home: homeNavigationView.getPage(),
                     setting: kernel.setting.getPageView()
                 })
                 .setCells({
