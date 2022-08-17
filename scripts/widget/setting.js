@@ -1,4 +1,4 @@
-const { UIKit, Sheet, NavigationItem, PageController, FileStorage, Setting } = require("../libs/easy-jsbox")
+const { Kernel, UIKit, Sheet, NavigationBar, NavigationView, FileStorage, Setting } = require("../libs/easy-jsbox")
 
 /**
  * @typedef {import("../app").AppKernel} AppKernel
@@ -67,7 +67,7 @@ class WidgetSetting {
         const stringsPath = `${this.kernel.widgetRootPath}/${this.widget}/strings`
         if ($file.exists(stringsPath)) {
             $file.list(stringsPath).forEach(file => {
-                this.kernel.l10n(file.slice(0, file.indexOf(".")), $file.read(`${stringsPath}/${file}`).string)
+                Kernel.l10n(file.slice(0, file.indexOf(".")), $file.read(`${stringsPath}/${file}`).string)
             })
         }
     }
@@ -95,19 +95,17 @@ class WidgetSetting {
                 navButtons: navButtons
             })
         } else {
-            const pageController = new PageController()
-            pageController
-                .setView(listView)
-                .navigationItem.setTitle(title)
-                .setLargeTitleDisplayMode(NavigationItem.largeTitleDisplayModeNever)
-                .setRightButtons(
-                    navButtons.map(button => {
-                        button.tapped = button.handler
-                        delete button.handler
-                        return button
-                    })
-                )
-            this.kernel?.homeUI.viewController.push(pageController)
+            const navigationView = new NavigationView()
+            navigationView.setView(listView).navigationBarTitle(title)
+            navigationView.navigationBar.setLargeTitleDisplayMode(NavigationBar.largeTitleDisplayModeNever)
+            navigationView.navigationBarItems.setRightButtons(
+                navButtons.map(button => {
+                    button.tapped = button.handler
+                    delete button.handler
+                    return button
+                })
+            )
+            this.kernel?.homeUI.viewController.push(navigationView)
         }
     }
 

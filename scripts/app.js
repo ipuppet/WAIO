@@ -1,4 +1,4 @@
-const { compressImage, UIKit, Sheet, Kernel, TabBarController, FileStorage, Setting } = require("./libs/easy-jsbox")
+const { UIKit, Sheet, Kernel, TabBarController, FileStorage, Setting } = require("./libs/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
@@ -77,10 +77,6 @@ class AppKernel extends Kernel {
     initComponents() {
         // homeUI
         this.homeUI = new HomeUI(this)
-    }
-
-    compressImage(image, maxSize = 1280 * 720) {
-        return compressImage(image, maxSize)
     }
 
     updateHomeScreenWidgetOptions() {
@@ -342,11 +338,10 @@ class AppUI {
             kernel.UIRender({ views: [kernel.homeUI.getListView()] })
         } else {
             const tabBarController = new TabBarController()
-            const homePageController = kernel.homeUI.getPageController()
-            kernel.homeUI.viewController.setRootPageController(homePageController)
+            const homeNavigationView = kernel.homeUI.getNavigationView()
             tabBarController
                 .setPages({
-                    home: homePageController.getPage(),
+                    home: homeNavigationView.getPage(),
                     setting: kernel.setting.getPageView()
                 })
                 .setCells({

@@ -1,4 +1,4 @@
-const { UIKit } = require("../../libs/easy-jsbox")
+const { Kernel, UIKit } = require("../../libs/easy-jsbox")
 
 class Album {
     constructor(kernel, setting) {
@@ -192,7 +192,7 @@ class Album {
                                 })
                                 this.kernel.print(`original saved:`)
                                 this.kernel.print(fileName)
-                                const image = this.kernel.compressImage(data.image)
+                                const image = Kernel.compressImage(data.image)
                                 // preview
                                 $file.write({
                                     data: image.jpg(0.1),
