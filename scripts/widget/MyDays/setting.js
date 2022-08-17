@@ -1,5 +1,6 @@
 const NAME = "MyDays"
 const WidgetSetting = require("../setting")
+const { Kernel } = require("../../libs/easy-jsbox")
 
 class MyDaysSetting extends WidgetSetting {
     constructor(kernel) {
@@ -57,7 +58,7 @@ class MyDaysSetting extends WidgetSetting {
                                     const fileName =
                                         "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
                                     // 控制压缩图片大小
-                                    const image = this.kernel.compressImage(resp.data.image)
+                                    const image = Kernel.compressImage(resp.data.image)
                                     $file.write({
                                         data: image.jpg(0.8),
                                         path: `${this.path}/compress.${fileName}`

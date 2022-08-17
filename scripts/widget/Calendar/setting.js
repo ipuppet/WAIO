@@ -1,5 +1,6 @@
 const NAME = "Calendar"
 const WidgetSetting = require("../setting")
+const { Kernel } = require("../../libs/easy-jsbox")
 
 class CalendarSetting extends WidgetSetting {
     constructor(kernel) {
@@ -184,7 +185,7 @@ class CalendarSetting extends WidgetSetting {
                                     this.clearBackgroundImage()
                                     const fileName =
                                         "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
-                                    const image = this.kernel.compressImage(resp.data.image)
+                                    const image = Kernel.compressImage(resp.data.image)
                                     $file.write({
                                         data: image.png,
                                         path: `${this.path}/${fileName}`
