@@ -63,22 +63,10 @@ class JoinWidget extends Widget {
             },
             render: ctx => {
                 this.printTimeConsuming()
-                switch (ctx.family) {
-                    case 0:
-                        return {
-                            type: "text",
-                            props: { text: $l10n("NO_SMALL_VIEW") }
-                        }
-                    case 1:
-                        return mediumView
-                    /* case 2:
-                        return this.getLargeView() */
-                    default:
-                        return {
-                            type: "text",
-                            props: { text: "在未来可能会提供该视图" }
-                        }
+                if (ctx.family === this.setting.family.medium) {
+                    return mediumView
                 }
+                return this.errorView
             }
         })
     }

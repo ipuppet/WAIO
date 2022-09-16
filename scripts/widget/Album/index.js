@@ -98,7 +98,10 @@ class PictureWidget extends Widget {
             policy: {
                 afterDate: expireDate
             },
-            render: () => {
+            render: ctx => {
+                if (ctx.family >= this.setting.family.accessoryCircular) {
+                    return this.errorView
+                }
                 const view = this.getSmallView()
                 this.printTimeConsuming()
                 return view

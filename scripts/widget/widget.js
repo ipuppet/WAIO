@@ -19,6 +19,9 @@ class Widget {
     constructor(kernel, widgetSetting) {
         this.startTime = Date.now()
         this.kernel = kernel
+        /**
+         * @type {WidgetSetting}
+         */
         this.setting = widgetSetting // 此设置是小组件的设置，主程序设置需要从kernel中取
         this.cacheDateStartFromZero = false
         this.errorView = {
@@ -37,6 +40,34 @@ class Widget {
         if (!this.kernel.inWidgetEnv) {
             this.kernel.print(`Use ${Date.now() - this.startTime} ms`)
         }
+    }
+
+    getContentSizeByFontSize(font, fontSize, content = "A") {
+        return $text.sizeThatFits({
+            text: content,
+            width: content.length * content,
+            font: $font(font, fontSize)
+        })
+    }
+
+    getFontSizeByHeight(font, height, text = "A") {
+        if (!this.helveticaNeueFontSize) {
+            this.helveticaNeueFontSize = {}
+        }
+
+        if (this.helveticaNeueFontSize[height] !== undefined) {
+            return this.helveticaNeueFontSize[height]
+        }
+
+        const _fontSize = height
+        const _fontHeight = $text.sizeThatFits({
+            text: text,
+            width: _fontSize,
+            font: $font(font, _fontSize)
+        }).height
+        const s = _fontSize / _fontHeight
+        this.helveticaNeueFontSize[height] = height * s
+        return this.helveticaNeueFontSize[height]
     }
 
     async getSmallView() {
