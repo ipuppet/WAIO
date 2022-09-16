@@ -28,7 +28,10 @@ class WidgetSetting {
             small: 0,
             medium: 1,
             large: 2,
-            xLarge: 3
+            xLarge: 3,
+            accessoryCircular: 5,
+            accessoryRectangular: 6,
+            accessoryInline: 7
         }
         this.joinMode = {
             small: 0,

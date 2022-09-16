@@ -5,24 +5,25 @@ const Calendar = require("./calendar")
 class CalendarWidget extends Widget {
     constructor(kernel) {
         super(kernel, new CalendarSetting(kernel))
-        this.calendar = new Calendar(this.kernel, this.setting)
+        this.calendar = new Calendar(this)
         this.cacheLife = 1000 * 60 * 60 * 24
         this.cacheDateStartFromZero = true
     }
 
-    view2x2() {
-        $widget.family = this.setting.family.small
-        return this.calendar.setJoin(this.join).smallCalendarView()
+    getSmallView() {
+        return this.calendar.setJoin(this.join).getCalendarView(this.setting.family.small)
     }
 
-    view2x4() {
-        $widget.family = this.setting.family.medium
-        return this.calendar.setJoin(this.join).calendarView(this.setting.family.medium)
+    getMediumView() {
+        return this.calendar.setJoin(this.join).getCalendarView(this.setting.family.medium)
     }
 
-    view4x4() {
-        $widget.family = this.setting.family.large
-        return this.calendar.setJoin(this.join).calendarView(this.setting.family.large)
+    getLargeView() {
+        return this.calendar.setJoin(this.join).getCalendarView(this.setting.family.large)
+    }
+
+    getAccessoryCircularView() {
+        return this.calendar.getAccessoryCircularView()
     }
 
     render() {
@@ -43,14 +44,17 @@ class CalendarWidget extends Widget {
             render: ctx => {
                 let view
                 switch (ctx.family) {
-                    case 0:
-                        view = this.view2x2()
+                    case this.setting.family.small:
+                        view = this.getSmallView()
                         break
-                    case 1:
-                        view = this.view2x4()
+                    case this.setting.family.medium:
+                        view = this.getMediumView()
                         break
-                    case 2:
-                        view = this.view4x4()
+                    case this.setting.family.large:
+                        view = this.getLargeView()
+                        break
+                    case this.setting.family.accessoryRectangular:
+                        view = this.getAccessoryCircularView()
                         break
                     default:
                         view = this.errorView

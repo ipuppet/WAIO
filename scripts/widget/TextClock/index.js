@@ -12,7 +12,7 @@ class TextClockWidget extends Widget {
         this.oneDayInMillis = 60 * 60 * 24 * 1000
     }
 
-    view2x2() {
+    getSmallView() {
         return {
             type: "text",
             props: {
@@ -33,7 +33,7 @@ class TextClockWidget extends Widget {
     }
 
     joinView() {
-        return this.view2x2()
+        return this.getSmallView()
     }
 
     render() {
@@ -42,7 +42,7 @@ class TextClockWidget extends Widget {
                 afterDate: new Date(this.midnight.getTime() + this.oneDayInMillis)
             },
             render: () => {
-                const view = this.view2x2()
+                const view = this.getSmallView()
                 this.printTimeConsuming()
                 return view
             }

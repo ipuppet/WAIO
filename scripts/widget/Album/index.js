@@ -38,7 +38,7 @@ class PictureWidget extends Widget {
         }
     }
 
-    view2x2() {
+    getSmallView() {
         let index = 0 // 图片索引
         if (Date.now() - this.data.date > this.switchInterval) {
             // 下一张
@@ -98,8 +98,11 @@ class PictureWidget extends Widget {
             policy: {
                 afterDate: expireDate
             },
-            render: () => {
-                const view = this.view2x2()
+            render: ctx => {
+                if (ctx.family >= this.setting.family.accessoryCircular) {
+                    return this.errorView
+                }
+                const view = this.getSmallView()
                 this.printTimeConsuming()
                 return view
             }

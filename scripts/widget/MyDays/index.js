@@ -10,7 +10,14 @@ class MyDaysWidget extends Widget {
             date: this.setting.get("date") === 0 ? Date.now() : this.setting.get("date")
         }
         this.remainingDays = this.dateSpan(this.myday.date)
+
         // style
+        this.fullWeekUnit = true // 是否显示完整周单位
+        this.titleFontSize = 16
+        this.infoFontSize = 12
+        this.fullDateFontSize = 12
+        this.font = "Helvetica Neue"
+
         this.dateFontSize = this.setting.get("dateFontSize")
         this.dateColor = this.setting.getColor(this.setting.get("dateColor"))
         this.dateColorDark = this.setting.getColor(this.setting.get("dateColorDark"))
@@ -24,6 +31,17 @@ class MyDaysWidget extends Widget {
         this.isImageBackground = $file.exists(this.backgroundImage)
         this.showMinus = this.setting.get("showMinus")
         this.displayMode = this.setting.get("displayMode") // 0: 显示天数, 1: 显示周数
+    }
+
+    initStyle() {
+        if (this.join) {
+            // join 模式
+            this.height = $widget.displaySize.height
+            this.width = this.height
+        } else {
+            this.width = $widget.displaySize.width
+            this.height = $widget.displaySize.height
+        }
     }
 
     dateSpan(date) {
@@ -61,14 +79,14 @@ class MyDaysWidget extends Widget {
             props: Object.assign(
                 {
                     text: content,
-                    font: $font(this.dateFontSize),
+                    font: $font(this.font, this.dateFontSize),
                     color:
                         this.remainingDays >= 0
                             ? $color(this.dateColor, this.dateColorDark)
                             : $color(this.overdueColor, this.overdueColorDark),
                     padding: 0,
                     lineLimit: 1,
-                    minimumScaleFactor: 0.5,
+                    minimumScaleFactor: 0.6,
                     frame: {
                         alignment: $widget.alignment.topLeading,
                         maxWidth: Infinity,
@@ -80,7 +98,7 @@ class MyDaysWidget extends Widget {
         }
     }
 
-    weekTemplate(weekInfo, family) {
+    weekTemplate(weekInfo) {
         let view = {}
         switch (this.setting.get("week.displayStyle")) {
             case 0: // xW + xD
@@ -94,7 +112,7 @@ class MyDaysWidget extends Widget {
                     views: [
                         this.mainContentTemplate(weekInfo.week, { frame: {} }),
                         this.mainContentTemplate(weekInfo.day, {
-                            font: $font(this.dateFontSize / 2),
+                            font: $font(this.font, this.dateFontSize / 2),
                             offset: $point(5, this.dateFontSize - this.dateFontSize / 2)
                         })
                     ]
@@ -107,40 +125,72 @@ class MyDaysWidget extends Widget {
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day}`)
                 break
             case 3: // 显示小数 + 单位
-                const unit = family === this.setting.family.small ? $l10n("UNIT_WEEK_2X2") : $l10n("UNIT_WEEK")
+                const unit = this.fullWeekUnit ? $l10n("UNIT_WEEK") : $l10n("UNIT_WEEK_2X2")
                 view = this.mainContentTemplate(`${weekInfo.week}.${weekInfo.day} ${unit}`)
                 break
         }
         return view
     }
 
-    view2x2() {
-        return this.view(this.setting.family.small)
+    fullDateTemplate(props = {}) {
+        return {
+            type: "text",
+            props: Object.assign(
+                {
+                    text: new Date(this.myday.date).toLocaleDateString(),
+                    font: $font(this.font, this.fullDateFontSize),
+                    color: $color(this.infoColor, this.infoColorDark),
+                    frame: {
+                        alignment: $widget.alignment.bottomTrailing,
+                        maxWidth: Infinity
+                    }
+                },
+                props
+            )
+        }
     }
 
-    view2x4() {
-        return this.view(this.setting.family.medium)
+    infoTemplate() {
+        return [
+            {
+                type: "text",
+                props: {
+                    text: this.myday.title,
+                    font: $font(this.font, this.titleFontSize),
+                    color: $color(this.infoColor, this.infoColorDark),
+                    frame: {
+                        alignment: $widget.alignment.bottomTrailing,
+                        maxWidth: Infinity
+                    }
+                }
+            },
+            {
+                type: "text",
+                props: {
+                    text: this.myday.describe,
+                    font: $font(this.font, this.infoFontSize),
+                    color: $color(this.infoColor, this.infoColorDark),
+                    frame: {
+                        alignment: $widget.alignment.bottomTrailing,
+                        maxWidth: Infinity
+                    }
+                }
+            }
+        ]
     }
 
-    view4x4() {
-        return this.view(this.setting.family.large)
-    }
-
-    view(family) {
-        if (!this.myday)
+    view() {
+        if (!this.myday) {
             return {
                 type: "text",
                 props: { text: $l10n("NONE") }
             }
-        let mainView = {}
-        if (this.displayMode) {
-            // 周数
-            const weekInfo = this.getWeekInfo(this.remainingDays)
-            mainView = this.weekTemplate(weekInfo, family)
-        } else {
-            //天数
-            mainView = this.mainContentTemplate(this.dateSpanToString(this.remainingDays))
         }
+        this.initStyle()
+        // this.displayMode 0: 天数, 1: 周数
+        const mainView = this.displayMode
+            ? this.weekTemplate(this.getWeekInfo(this.remainingDays))
+            : this.mainContentTemplate(this.dateSpanToString(this.remainingDays))
         const view = {
             type: "vstack",
             props: {
@@ -155,44 +205,7 @@ class MyDaysWidget extends Widget {
                 link: this.setting.settingUrlScheme,
                 widgetURL: this.setting.settingUrlScheme
             },
-            views: [mainView].concat([
-                {
-                    type: "text",
-                    props: {
-                        text: this.myday.title,
-                        font: $font(16),
-                        color: $color(this.infoColor, this.infoColorDark),
-                        frame: {
-                            alignment: $widget.alignment.bottomTrailing,
-                            maxWidth: Infinity
-                        }
-                    }
-                },
-                {
-                    type: "text",
-                    props: {
-                        text: this.myday.describe,
-                        font: $font(12),
-                        color: $color(this.infoColor, this.infoColorDark),
-                        frame: {
-                            alignment: $widget.alignment.bottomTrailing,
-                            maxWidth: Infinity
-                        }
-                    }
-                },
-                {
-                    type: "text",
-                    props: {
-                        text: new Date(this.myday.date).toLocaleDateString(),
-                        font: $font(12),
-                        color: $color(this.infoColor, this.infoColorDark),
-                        frame: {
-                            alignment: $widget.alignment.bottomTrailing,
-                            maxWidth: Infinity
-                        }
-                    }
-                }
-            ])
+            views: [mainView, ...this.infoTemplate(), this.fullDateTemplate()]
         }
         if (this.isImageBackground) {
             return {
@@ -216,7 +229,76 @@ class MyDaysWidget extends Widget {
                 },
                 views: [view]
             }
-        } else return view
+        } else {
+            return view
+        }
+    }
+
+    getSmallView() {
+        this.fullWeekUnit = false
+        $widget.family = this.setting.family.small
+        return this.view()
+    }
+
+    getMediumView() {
+        this.fullWeekUnit = true
+        $widget.family = this.setting.family.medium
+        return this.view()
+    }
+
+    getLargeView() {
+        this.fullWeekUnit = true
+        $widget.family = this.setting.family.large
+        return this.view()
+    }
+
+    getAccessoryRectangular() {
+        if (!this.myday) {
+            return {
+                type: "text",
+                props: { text: $l10n("NONE") }
+            }
+        }
+        this.initStyle()
+        this.fullWeekUnit = false
+        this.dateFontHeight = this.height / 2
+        this.dateFontSize = this.getFontSizeByHeight(this.font, this.dateFontHeight)
+        this.titleFontSize = this.getFontSizeByHeight(this.font, (this.height - this.dateFontHeight) / 2)
+        this.infoFontSize = this.titleFontSize
+        this.fullDateFontSize = 10
+
+        const mainView = this.displayMode
+            ? this.weekTemplate(this.getWeekInfo(this.remainingDays))
+            : this.mainContentTemplate(this.dateSpanToString(this.remainingDays))
+
+        const infoView = this.infoTemplate()
+        const dateView = this.fullDateTemplate({
+            frame: {
+                alignment: $widget.alignment.topTrailing,
+                maxHeight: Infinity
+            }
+        })
+        return {
+            type: "vstack",
+            props: {
+                spacing: 0,
+                padding: 0,
+                frame: {
+                    maxWidth: this.width,
+                    maxHeight: this.height
+                },
+                link: this.setting.settingUrlScheme,
+                widgetURL: this.setting.settingUrlScheme
+            },
+            views: [
+                {
+                    type: "hstack",
+                    props: { padding: 0 },
+                    views: [mainView, dateView]
+                },
+                ...infoView
+            ]
+        }
     }
 
     render() {
@@ -235,7 +317,23 @@ class MyDaysWidget extends Widget {
                 afterDate: expireDate
             },
             render: ctx => {
-                const view = this.view(ctx.family)
+                let view
+                switch (ctx.family) {
+                    case this.setting.family.small:
+                        view = this.getSmallView()
+                        break
+                    case this.setting.family.medium:
+                        view = this.getMediumView()
+                        break
+                    case this.setting.family.large:
+                        view = this.getLargeView()
+                        break
+                    case this.setting.family.accessoryRectangular:
+                        view = this.getAccessoryRectangular()
+                        break
+                    default:
+                        view = this.errorView
+                }
                 this.printTimeConsuming()
                 return view
             }

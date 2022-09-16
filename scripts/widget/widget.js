@@ -14,12 +14,15 @@ class Widget {
     /**
      *
      * @param {AppKernel} kernel
-     * @param {WidgetSetting} setting
+     * @param {WidgetSetting} widgetSetting
      */
-    constructor(kernel, setting) {
+    constructor(kernel, widgetSetting) {
         this.startTime = Date.now()
         this.kernel = kernel
-        this.setting = setting // 此设置是小组件的设置，主程序设置需要从kernel中取
+        /**
+         * @type {WidgetSetting}
+         */
+        this.setting = widgetSetting // 此设置是小组件的设置，主程序设置需要从kernel中取
         this.cacheDateStartFromZero = false
         this.errorView = {
             type: "text",
@@ -39,15 +42,47 @@ class Widget {
         }
     }
 
-    async view2x2() {
+    getContentSizeByFontSize(font, fontSize, content = "A") {
+        return $text.sizeThatFits({
+            text: content,
+            width: content.length * content,
+            font: $font(font, fontSize)
+        })
+    }
+
+    getFontSizeByHeight(font, height, text = "A") {
+        if (!this.helveticaNeueFontSize) {
+            this.helveticaNeueFontSize = {}
+        }
+
+        if (this.helveticaNeueFontSize[height] !== undefined) {
+            return this.helveticaNeueFontSize[height]
+        }
+
+        const _fontSize = height
+        const _fontHeight = $text.sizeThatFits({
+            text: text,
+            width: _fontSize,
+            font: $font(font, _fontSize)
+        }).height
+        const s = _fontSize / _fontHeight
+        this.helveticaNeueFontSize[height] = height * s
+        return this.helveticaNeueFontSize[height]
+    }
+
+    async getSmallView() {
         return this.errorView
     }
 
-    async view2x4() {
+    async getMediumView() {
         return this.errorView
     }
 
-    async view4x4() {
+    async getLargeView() {
+        return this.errorView
+    }
+
+    async getAccessoryCircularView() {
         return this.errorView
     }
 
@@ -55,9 +90,9 @@ class Widget {
         this.join = true
         switch (mode) {
             case this.setting.joinMode.small:
-                return this.view2x2()
+                return this.getSmallView()
             case this.setting.joinMode.medium:
-                return this.view2x4()
+                return this.getMediumView()
             default:
                 return false
         }
