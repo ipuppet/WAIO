@@ -10,17 +10,17 @@ class CalendarWidget extends Widget {
         this.cacheDateStartFromZero = true
     }
 
-    view2x2() {
+    getSmallView() {
         $widget.family = this.setting.family.small
         return this.calendar.setJoin(this.join).smallCalendarView()
     }
 
-    view2x4() {
+    getMediumView() {
         $widget.family = this.setting.family.medium
         return this.calendar.setJoin(this.join).calendarView(this.setting.family.medium)
     }
 
-    view4x4() {
+    getLargeView() {
         $widget.family = this.setting.family.large
         return this.calendar.setJoin(this.join).calendarView(this.setting.family.large)
     }
@@ -44,13 +44,13 @@ class CalendarWidget extends Widget {
                 let view
                 switch (ctx.family) {
                     case 0:
-                        view = this.view2x2()
+                        view = this.getSmallView()
                         break
                     case 1:
-                        view = this.view2x4()
+                        view = this.getMediumView()
                         break
                     case 2:
-                        view = this.view4x4()
+                        view = this.getLargeView()
                         break
                     default:
                         view = this.errorView

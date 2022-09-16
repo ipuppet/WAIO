@@ -13,7 +13,7 @@ class JoinWidget extends Widget {
         this.rightJoinMode = this.setting.get("right.joinMode")
     }
 
-    async view2x4() {
+    async getMediumView() {
         const leftWidget = this.kernel.widgetInstance(this.left)
         const rightWidget = this.kernel.widgetInstance(this.right)
         const leftView = await leftWidget.joinView(this.leftJoinMode)
@@ -50,7 +50,7 @@ class JoinWidget extends Widget {
     async render() {
         const nowDate = Date.now()
         const expireDate = new Date(nowDate + 1000 * 60 * 10) // 每十分钟切换
-        const view2x4 = await this.view2x4()
+        const mediumView = await this.getMediumView()
         $widget.setTimeline({
             entries: [
                 {
@@ -70,9 +70,9 @@ class JoinWidget extends Widget {
                             props: { text: $l10n("NO_SMALL_VIEW") }
                         }
                     case 1:
-                        return view2x4
+                        return mediumView
                     /* case 2:
-                        return this.view4x4() */
+                        return this.getLargeView() */
                     default:
                         return {
                             type: "text",
