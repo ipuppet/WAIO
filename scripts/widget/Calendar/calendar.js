@@ -705,7 +705,9 @@ class Calendar {
                 frame: {
                     maxWidth: Infinity,
                     maxHeight: Infinity
-                }
+                },
+                widgetURL: this.setting.settingUrlScheme,
+                link: this.setting.settingUrlScheme
             },
             views: days
         }
