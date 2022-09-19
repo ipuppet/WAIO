@@ -86,6 +86,10 @@ class Widget {
         return this.errorView
     }
 
+    async getAccessoryRectangularView() {
+        return this.errorView
+    }
+
     async joinView(mode) {
         this.join = true
         switch (mode) {

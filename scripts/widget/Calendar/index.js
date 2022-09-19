@@ -5,7 +5,11 @@ const Calendar = require("./calendar")
 class CalendarWidget extends Widget {
     constructor(kernel) {
         super(kernel, new CalendarSetting(kernel))
+        /**
+         * @type {Calendar}
+         */
         this.calendar = new Calendar(this)
+
         this.cacheLife = 1000 * 60 * 60 * 24
         this.cacheDateStartFromZero = true
     }
@@ -22,8 +26,8 @@ class CalendarWidget extends Widget {
         return this.calendar.setJoin(this.join).getCalendarView(this.setting.family.large)
     }
 
-    getAccessoryCircularView() {
-        return this.calendar.getAccessoryCircularView()
+    getAccessoryRectangularView() {
+        return this.calendar.getAccessoryRectangularView()
     }
 
     render() {
@@ -54,7 +58,7 @@ class CalendarWidget extends Widget {
                         view = this.getLargeView()
                         break
                     case this.setting.family.accessoryRectangular:
-                        view = this.getAccessoryCircularView()
+                        view = this.getAccessoryRectangularView()
                         break
                     default:
                         view = this.errorView

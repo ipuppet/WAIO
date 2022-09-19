@@ -64,6 +64,10 @@ class Calendar {
         this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
     }
 
+    get isLockscreen() {
+        return this.family > this.setting.family.xLarge
+    }
+
     /**
      * 用于解决 join 中错误的尺寸计算
      * @param {boolean} join
@@ -406,7 +410,7 @@ class Calendar {
      * @param {*} this.calendarInfo
      * @returns
      */
-    singleContentDayStyleModifier(dayInfo, currentDateTextColor = $color("white")) {
+    singleContentDayStyleModifier(dayInfo) {
         if (dayInfo === 0) {
             // 空白直接跳过
             return { text: { text: " " } }
@@ -433,12 +437,17 @@ class Calendar {
         }
         // 当天
         if (dayInfo.date === this.calendar.date) {
-            props.text.color = currentDateTextColor
-            if (!dayInfo.holiday) {
-                props.box.background = this.colorTone
+            if (this.isLockscreen) {
+                props.text.color = $color("black")
+                props.box.background = $color("white")
             } else {
-                if (dayInfo.holiday.holiday) props.box.background = this.holidayColor
-                else props.box.background = this.holidayNoRestColor
+                props.text.color = $color("white")
+                if (!dayInfo.holiday) {
+                    props.box.background = this.colorTone
+                } else {
+                    if (dayInfo.holiday.holiday) props.box.background = this.holidayColor
+                    else props.box.background = this.holidayNoRestColor
+                }
             }
         }
         // 本月前后补位日期
@@ -670,7 +679,8 @@ class Calendar {
         return this.viewTemplate()
     }
 
-    getAccessoryCircularView() {
+    getAccessoryRectangularView() {
+        this.family = this.setting.family.accessoryRectangular
         // 计算样式
         this.initStyle(false)
         // 初始化数据
@@ -687,7 +697,7 @@ class Calendar {
         for (let i = weekStart - 1; i < length; i++) {
             // 设置不同日期显示不同样式
             for (let dayInfo of this.calendar.calendar[i]) {
-                const props = this.singleContentDayStyleModifier(dayInfo, $color("black"))
+                const props = this.singleContentDayStyleModifier(dayInfo)
                 days.push(this.singleContentDayTemplate(props))
             }
         }
