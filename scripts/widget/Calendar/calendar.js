@@ -13,27 +13,12 @@ class Calendar {
     family
     join = false
     calendar = {}
+    height
+    width
 
-    singleContentMaxFontSize = 20
-    titleBarBottomPadding = 10
-    get padding() {
-        if (this.family === this.setting.family.medium) {
-            return {
-                h: 15,
-                v: 25
-            }
-        }
-        if (this.family === this.setting.family.large) {
-            return {
-                h: 15,
-                v: 15
-            }
-        }
-        return {
-            h: 10,
-            v: 10
-        }
-    }
+    font = "Helvetica Neue"
+    titleBarBottomPadding = 5
+    weekIndexBottomPadding = 5
 
     /**
      *
@@ -43,6 +28,7 @@ class Calendar {
         this.widget = widget
         this.kernel = widget.kernel
         this.setting = widget.setting
+
         this.onlyCurrentMonth = this.setting.get("onlyCurrentMonth")
         this.colorTone = this.setting.getColor(this.setting.get("colorTone"))
         this.hasHoliday = this.setting.get("holiday")
@@ -64,6 +50,16 @@ class Calendar {
         this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
     }
 
+    get padding() {
+        if (this.family === this.setting.family.medium) {
+            return { h: 15, v: 25 }
+        }
+        if (this.family === this.setting.family.large) {
+            return { h: 15, v: 15 }
+        }
+        return { h: 10, v: 10 }
+    }
+
     get isLockscreen() {
         return this.family > this.setting.family.xLarge
     }
@@ -77,20 +73,19 @@ class Calendar {
         return this
     }
 
-    initStyle(titleBar = true) {
-        if (this.join) {
-            // join 模式
-            this.height = $widget.displaySize.height
-            this.width = this.height
-        } else {
-            this.width = $widget.displaySize.width
-            this.height = $widget.displaySize.height
+    initStyle() {
+        this.height = $widget.displaySize.height
+        this.width = this.join ? this.height : $widget.displaySize.width
+
+        this.titleBarHeight = Math.min(this.width * 0.11, 25) // titleBarHeight 最大值限制为 25
+        this.columnWidth = (this.width - this.padding.h * 2) / 7 // 每列内容宽度
+        this.singleContentFontSize = Math.min(this.columnWidth * 0.6, 20) // 字体最大 20
+        this.singleContentHeight = this.widget.getContentSize($font(this.font, this.singleContentFontSize)).height
+        this.contentViewHeight = this.height - this.singleContentHeight // 周指示器高度
+        if (!this.isLockscreen) {
+            this.contentViewHeight -=
+                this.padding.v * 2 + this.titleBarHeight + this.titleBarBottomPadding + this.weekIndexBottomPadding
         }
-        if (titleBar) {
-            // titleBarHeight 最大值限制为 25
-            this.titleBarHeight = Math.min(this.width * 0.11, 25)
-        }
-        this.columnWidth = (this.width - this.padding.h * 2) / 7
     }
 
     localizedWeek(index) {
@@ -338,14 +333,11 @@ class Calendar {
      */
     multipleContentDayTemplate(props = {}) {
         // 计算高度
-        const weekIndexHeight = this.singleContentDayFont().fontHeight
-        const totalHeight =
-            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - weekIndexHeight
-        const height = totalHeight / this.calendar.calendar.length
+        const height = this.contentViewHeight / this.calendar.calendar.length
 
         const verticalPadding = height * 0.1
         const fontHeight = (height - verticalPadding * 2) / 2
-        const fontSize = this.widget.getFontSizeByHeight("Helvetica Neue", fontHeight)
+        const fontSize = this.widget.getFontSizeByHeight(this.font, fontHeight)
         const extFontWidth = Math.min(
             fontSize,
             (this.columnWidth - verticalPadding * 2) / Math.min(props.ext.text.length, 4) // 最多 4 个字
@@ -382,7 +374,7 @@ class Calendar {
                     type: "text",
                     props: Object.assign(
                         {
-                            font: $font("Helvetica Neue", fontSize),
+                            font: $font(this.font, fontSize),
                             lineLimit: 1,
                             frame: { width: this.columnWidth }
                         },
@@ -393,7 +385,7 @@ class Calendar {
                     type: "text",
                     props: Object.assign(
                         {
-                            font: $font("Helvetica Neue", extFontWidth),
+                            font: $font(this.font, extFontWidth),
                             lineLimit: 2,
                             frame: { width: this.columnWidth }
                         },
@@ -458,37 +450,18 @@ class Calendar {
         return props
     }
 
-    singleContentDayFont() {
-        const fontSize = Math.min(this.columnWidth * 0.6, this.singleContentMaxFontSize)
-        // 计算高度
-        const fontHeight = $text.sizeThatFits({
-            text: "1",
-            width: fontSize,
-            font: $font("Helvetica Neue", fontSize)
-        }).height
-
-        return {
-            fontSize,
-            fontHeight
-        }
-    }
-
     /**
      * 简单内容视图模板
      * @param {*} props
      * @returns
      */
     singleContentDayTemplate(props = {}) {
-        const { fontSize, fontHeight } = this.singleContentDayFont()
-        // - fontHeight 为减去周指示器高度
-        const totalHeight =
-            this.height - this.padding.v * 2 - this.titleBarBottomPadding - this.titleBarHeight - fontHeight
-        const height = totalHeight / this.calendar.calendar.length
+        const height = this.contentViewHeight / this.calendar.calendar.length
         let view = {
             type: "text",
             props: Object.assign(
                 {
-                    font: $font("Helvetica Neue", fontSize),
+                    font: $font(this.font, this.singleContentFontSize),
                     lineLimit: 1,
                     frame: {
                         alignment: $widget.alignment.center,
@@ -542,8 +515,9 @@ class Calendar {
                 }),
                 frame: {
                     maxWidth: Infinity,
-                    maxHeight: this.singleContentDayFont().fontHeight
-                }
+                    maxHeight: this.singleContentHeight
+                },
+                padding: $insets(0, 0, this.weekIndexBottomPadding, 0)
             },
             views: title
         }
@@ -556,9 +530,7 @@ class Calendar {
      */
     titleBarTemplate() {
         // 标题栏文字内容
-        let leftText,
-            views = []
-
+        let leftText
         if (this.titleYearMode !== 0) {
             const year = this.titleYearMode === 1 ? String(this.calendar.year).slice(-2) : this.calendar.year
             leftText = year + this.localizedMonth(this.calendar.month)
@@ -566,17 +538,20 @@ class Calendar {
         } else {
             leftText = this.localizedMonth(this.calendar.month)
         }
+
+        const views = []
+        const fontSize = this.widget.getFontSizeByHeight(this.font, this.titleBarHeight)
         views.push({
             type: "text",
             props: {
-                font: $font("Helvetica Neue", this.titleBarHeight),
+                font: $font(this.font, fontSize),
                 text: leftText,
                 lineLimit: 1,
                 color: this.colorTone,
                 bold: true,
                 frame: {
                     alignment: $widget.alignment.leading,
-                    maxWidth: Infinity
+                    width: this.widget.getContentSize($font(this.font, fontSize), leftText).width
                 }
             }
         })
@@ -587,12 +562,14 @@ class Calendar {
             views.push({
                 type: "text",
                 props: {
-                    font: $font("Helvetica Neue", this.titleBarHeight),
+                    font: $font(this.font, fontSize),
                     text: rightText,
                     lineLimit: 1,
+                    minimumScaleFactor: 0.6,
                     color: this.colorTone,
                     bold: true,
                     frame: {
+                        maxWidth: Infinity,
                         alignment: $widget.alignment.trailing
                     }
                 }
@@ -603,6 +580,7 @@ class Calendar {
             type: "hstack",
             props: {
                 frame: {
+                    alignment: $widget.alignment.leading,
                     maxWidth: Infinity,
                     maxHeight: this.titleBarHeight
                 },
@@ -682,9 +660,9 @@ class Calendar {
     getAccessoryRectangularView() {
         this.family = this.setting.family.accessoryRectangular
         // 计算样式
-        this.initStyle(false)
+        this.initStyle()
         // 初始化数据
-        this.initCalendar(false, false)
+        this.initCalendar(false)
         // 计算周数
         const dateInstance = new Date()
         const saturday = dateInstance.getDate() + (6 - dateInstance.getDay())
@@ -692,6 +670,7 @@ class Calendar {
         const length = this.calendar.calendar.length
         const weekStart = week + 2 > length ? length - 2 : week
         const weekLength = Math.min(weekStart + 2, length) // 最多显示 3 周
+        this.calendar.calendar = this.calendar.calendar.slice(weekStart - 1, weekLength)
 
         // 生成视图
         const days = this.weekIndexTemplate().views

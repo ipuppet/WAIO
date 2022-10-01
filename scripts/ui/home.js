@@ -4,6 +4,9 @@ class HomeUI {
     constructor(kernel) {
         this.kernel = kernel
         this.viewController = new ViewController()
+
+        this.listId = "waio-home-list"
+
         // 检查是否携带 widget 参数，携带则打开设置页面
         if ($context.query["widget"]) {
             $delay(0.5, () => {
@@ -101,7 +104,7 @@ class HomeUI {
         return {
             type: "list",
             props: {
-                id: "waio-home-list",
+                id: this.listId,
                 rowHeight: 100,
                 bgcolor: UIKit.primaryViewBackgroundColor,
                 data: this.getWidgetListView(),
@@ -186,7 +189,7 @@ class HomeUI {
                     }
                 },
                 pulled: sender => {
-                    $("waio-home-list").data = this.getWidgetListView()
+                    $(this.listId).data = this.getWidgetListView()
                     setTimeout(() => {
                         sender.endRefreshing()
                     }, 500)
