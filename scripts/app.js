@@ -389,7 +389,7 @@ class Widget {
 
 module.exports = {
     run: () => {
-        //Widget.render("MyDays"); return
+        //Widget.render("Calendar"); return
         if ($app.env === $env.widget) {
             Widget.render()
         } else if ($app.env === $env.app) {
