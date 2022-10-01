@@ -688,13 +688,14 @@ class Calendar {
         // 计算周数
         const dateInstance = new Date()
         const saturday = dateInstance.getDate() + (6 - dateInstance.getDay())
-        const week = Math.ceil(saturday / 7)
+        const week = Math.ceil(saturday / 7) // start from 1
         const length = this.calendar.calendar.length
         const weekStart = week + 2 > length ? length - 2 : week
+        const weekLength = Math.min(weekStart + 2, length) // 最多显示 3 周
 
         // 生成视图
         const days = this.weekIndexTemplate().views
-        for (let i = weekStart - 1; i < length; i++) {
+        for (let i = weekStart - 1; i < weekLength; i++) {
             // 设置不同日期显示不同样式
             for (let dayInfo of this.calendar.calendar[i]) {
                 const props = this.singleContentDayStyleModifier(dayInfo)

@@ -97,21 +97,6 @@ class AppKernel extends Kernel {
      * 注入设置中的脚本类型方法
      */
     initSettingMethods() {
-        this.setting.method.readme = animate => {
-            const content = $file.read("/README.md").string
-            const sheet = new Sheet()
-            sheet
-                .setView({
-                    type: "markdown",
-                    props: { content: content },
-                    layout: (make, view) => {
-                        make.size.equalTo(view.super)
-                    }
-                })
-                .init()
-                .present()
-        }
-
         this.setting.method.tips = animate => {
             $ui.alert("每个小组件中都有README文件，点击可以得到一些信息。")
         }
@@ -404,7 +389,7 @@ class Widget {
 
 module.exports = {
     run: () => {
-        //Widget.render("MyDays"); return
+        //Widget.render("Calendar"); return
         if ($app.env === $env.widget) {
             Widget.render()
         } else if ($app.env === $env.app) {
