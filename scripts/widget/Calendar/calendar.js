@@ -669,12 +669,12 @@ class Calendar {
         const week = Math.ceil(saturday / 7) // start from 1
         const length = this.calendar.calendar.length
         const weekStart = week + 2 > length ? length - 2 : week
-        const weekLength = Math.min(weekStart + 2, length) // 最多显示 3 周
-        this.calendar.calendar = this.calendar.calendar.slice(weekStart - 1, weekLength)
+        const weekEnd = Math.min(weekStart + 2, length) // 最多显示 3 周
+        this.calendar.calendar = this.calendar.calendar.slice(weekStart - 1, weekEnd)
 
         // 生成视图
         const days = this.weekIndexTemplate().views
-        for (let i = weekStart - 1; i < weekLength; i++) {
+        for (let i = 0; i < this.calendar.calendar.length; i++) {
             // 设置不同日期显示不同样式
             for (let dayInfo of this.calendar.calendar[i]) {
                 const props = this.singleContentDayStyleModifier(dayInfo)
