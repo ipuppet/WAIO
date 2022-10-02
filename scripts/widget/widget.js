@@ -43,6 +43,20 @@ class Widget {
     }
 
     /**
+     * 计算文本尺寸 不使用 UIKit 内的函数，防止加载 easy-jsbox 导致内存爆炸
+     * @param {$font} font
+     * @param {string} content
+     * @returns
+     */
+    getContentSize(font, content = "A") {
+        return $text.sizeThatFits({
+            text: content,
+            width: 1000,
+            font: font
+        })
+    }
+
+    /**
      * 计算给定高度内的合适字体大小
      * @param {string} font
      * @param {number} height
