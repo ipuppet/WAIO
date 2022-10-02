@@ -1,3 +1,4 @@
+const { UIKit } = require("../../libs/easy-jsbox")
 const { SloarToLunar } = require("../../libs/sloarToLunar")
 
 const s2l = new SloarToLunar()
@@ -80,7 +81,7 @@ class Calendar {
         this.titleBarHeight = Math.min(this.width * 0.11, 25) // titleBarHeight 最大值限制为 25
         this.columnWidth = (this.width - this.padding.h * 2) / 7 // 每列内容宽度
         this.singleContentFontSize = Math.min(this.columnWidth * 0.6, 20) // 字体最大 20
-        this.singleContentHeight = this.widget.getContentSize($font(this.font, this.singleContentFontSize)).height
+        this.singleContentHeight = UIKit.getContentSize($font(this.font, this.singleContentFontSize)).height
         this.contentViewHeight = this.height - this.singleContentHeight // 周指示器高度
         if (!this.isLockscreen) {
             this.contentViewHeight -=
@@ -551,7 +552,7 @@ class Calendar {
                 bold: true,
                 frame: {
                     alignment: $widget.alignment.leading,
-                    width: this.widget.getContentSize($font(this.font, fontSize), leftText).width
+                    width: UIKit.getContentSize($font(this.font, fontSize), leftText).width
                 }
             }
         })
@@ -584,6 +585,7 @@ class Calendar {
                     maxWidth: Infinity,
                     maxHeight: this.titleBarHeight
                 },
+                spacing: 5,
                 padding: $insets(0, 0, this.titleBarBottomPadding, 0)
             },
             views: views
