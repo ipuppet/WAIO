@@ -43,20 +43,6 @@ class Widget {
     }
 
     /**
-     * 计算文本尺寸
-     * @param {$font} font
-     * @param {string} content
-     * @returns
-     */
-    getContentSize(font, content = "A") {
-        return $text.sizeThatFits({
-            text: content,
-            width: content.length * content,
-            font: font
-        })
-    }
-
-    /**
      * 计算给定高度内的合适字体大小
      * @param {string} font
      * @param {number} height
@@ -75,7 +61,7 @@ class Widget {
         const _fontSize = height
         const _fontHeight = $text.sizeThatFits({
             text: text,
-            width: _fontSize,
+            width: _fontSize * text.length,
             font: $font(font, _fontSize)
         }).height
         const s = _fontSize / _fontHeight
