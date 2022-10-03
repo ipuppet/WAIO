@@ -1,7 +1,19 @@
+/**
+ * @typedef {import("../widget").Widget} Widget
+ */
+
 class Schedule {
-    constructor(kernel, setting) {
-        this.kernel = kernel
-        this.setting = setting
+    static date = new Date()
+
+    family
+
+    /**
+     *
+     * @param {Widget} widget
+     */
+    constructor(widget) {
+        this.widget = widget
+        this.setting = widget.setting
         this.colorDate = this.setting.getColor(this.setting.get("colorDate"))
         this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
         this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
@@ -39,22 +51,109 @@ class Schedule {
             $l10n("FRIDAY"),
             $l10n("SATURDAY")
         ]
+
+        this.height = $widget.displaySize.height
+        this.width = $widget.displaySize.width
+    }
+
+    setData(calendar, reminder) {
+        this.calendar = calendar
+        this.reminder = reminder
+    }
+
+    getNothingView(text) {
+        return {
+            type: "vstack",
+            props: {
+                background: $color(this.backgroundColor, this.backgroundColorDark),
+                frame: {
+                    maxHeight: Infinity,
+                    maxWidth: Infinity
+                },
+                padding: 15,
+                spacing: 8,
+                widgetURL: this.urlScheme,
+                link: this.urlScheme
+            },
+            views: [
+                {
+                    type: "vstack",
+                    props: {
+                        background: $color(this.backgroundColor, this.backgroundColorDark),
+                        frame: {
+                            maxHeight: Infinity,
+                            maxWidth: Infinity,
+                            alignment: $widget.alignment.leading
+                        },
+                        spacing: 0
+                    },
+                    views: [
+                        {
+                            type: "text",
+                            props: {
+                                background: $color(this.backgroundColor, this.backgroundColorDark),
+                                frame: {
+                                    maxHeight: Infinity,
+                                    maxWidth: Infinity,
+                                    alignment: $widget.alignment.leading
+                                },
+                                text: this.week[Schedule.date.getDay()],
+                                font: $font(11),
+                                color: this.colorDate
+                            }
+                        },
+                        {
+                            type: "text",
+                            props: {
+                                background: $color(this.backgroundColor, this.backgroundColorDark),
+                                frame: {
+                                    maxHeight: Infinity,
+                                    maxWidth: Infinity,
+                                    alignment: $widget.alignment.leading
+                                },
+                                text: String(Schedule.date.getDate()),
+                                font: $font(33)
+                            }
+                        }
+                    ]
+                },
+                {
+                    type: "text",
+                    props: {
+                        background: $color(this.backgroundColor, this.backgroundColorDark),
+                        frame: {
+                            maxHeight: Infinity,
+                            maxWidth: Infinity,
+                            alignment: $widget.alignment.leading
+                        },
+                        text: text,
+                        color: $color("secondaryText")
+                    }
+                }
+            ]
+        }
+    }
+
+    compareByDate(item, compare) {
+        const nowDate = new Date()
+        const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
+        const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
+        return itemDate.getTime() >= compareDate.getTime()
     }
 
     /**
      * 排序
      * @param {Array} arr 数组
-     * @param {CallableFunction} compare 比较大小
      */
-    quicksort(arr, left, right, compare) {
+    quicksort(arr, left, right) {
         let i, j, temp, middle
         if (left > right) return
         middle = arr[left]
         i = left
         j = right
         while (i != j) {
-            while (compare(arr[j], middle) && i < j) j--
-            while (compare(middle, arr[i]) && i < j) i++
+            while (this.compareByDate(arr[j], middle) && i < j) j--
+            while (this.compareByDate(middle, arr[i]) && i < j) i++
             if (i < j) {
                 temp = arr[i]
                 arr[i] = arr[j]
@@ -63,8 +162,8 @@ class Schedule {
         }
         arr[left] = arr[i]
         arr[i] = middle
-        this.quicksort(arr, left, i - 1, compare)
-        this.quicksort(arr, i + 1, right, compare)
+        this.quicksort(arr, left, i - 1)
+        this.quicksort(arr, i + 1, right)
     }
 
     /**
@@ -87,6 +186,7 @@ class Schedule {
     getListView(list, maxItemLength = null) {
         if (maxItemLength === null) maxItemLength = this.itemLength2x2
         if (list.length === 0) return null
+
         let itemLength = 0
         const dateCollect = {}
         const isReminder = item => item.completed !== undefined
@@ -99,11 +199,36 @@ class Schedule {
             itemLength++
             dateCollect[dateString].push(item)
         }
-        const views = []
-        for (let date of Object.keys(dateCollect)) {
-            const view = []
-            for (let item of dateCollect[date]) {
-                view.push({
+
+        const itemSpace = 3
+
+        const titleFontSize = 14
+        const colorBarHeight = this.widget.getContentSize($font(titleFontSize)).height
+        const colorBarWidth = 2
+
+        const dateFontSize = 12
+        const dateHeight = this.widget.getContentSize($font(dateFontSize)).height
+        const iconFrame = { width: dateFontSize, height: dateFontSize }
+
+        return Object.keys(dateCollect).map(date => ({
+            type: "vstack",
+            props: { spacing: 0 },
+            views: [
+                {
+                    type: "text",
+                    props: {
+                        text: date,
+                        color: this.colorDate,
+                        font: $font("bold", 12),
+                        frame: {
+                            maxWidth: Infinity,
+                            alignment: $widget.alignment.leading,
+                            height: 12
+                        },
+                        padding: $insets(0, itemSpace, 0, 0) // 不需要加 colorBarWidth
+                    }
+                },
+                ...dateCollect[date].map(item => ({
                     type: "vstack",
                     props: {
                         frame: { maxWidth: Infinity },
@@ -116,10 +241,10 @@ class Schedule {
                             props: {
                                 frame: {
                                     maxWidth: Infinity,
-                                    height: 20,
+                                    maxHeight: colorBarHeight,
                                     alignment: $widget.alignment.leading
                                 },
-                                spacing: 5
+                                spacing: itemSpace
                             },
                             views: [
                                 {
@@ -127,9 +252,8 @@ class Schedule {
                                     type: "color",
                                     props: {
                                         frame: {
-                                            alignment: $widget.alignment.trailing,
-                                            width: 2,
-                                            height: 12
+                                            width: colorBarWidth,
+                                            height: colorBarHeight * 0.75
                                         },
                                         color: isReminder(item) ? this.colorReminder : this.colorCalendar
                                     }
@@ -140,7 +264,7 @@ class Schedule {
                                     props: {
                                         lineLimit: 1,
                                         text: item.title,
-                                        font: $font(14),
+                                        font: $font(titleFontSize),
                                         color: $color(this.textColor, this.textColorDark),
                                         frame: {
                                             maxWidth: Infinity,
@@ -156,10 +280,11 @@ class Schedule {
                             props: {
                                 frame: {
                                     maxWidth: Infinity,
+                                    maxHeight: dateHeight,
                                     alignment: $widget.alignment.leading
                                 },
-                                spacing: 5,
-                                padding: $insets(0, 7, 0, 0)
+                                spacing: itemSpace,
+                                padding: $insets(0, itemSpace + colorBarWidth, 0, 0)
                             },
                             views: [
                                 {
@@ -167,12 +292,9 @@ class Schedule {
                                     type: "image",
                                     props: {
                                         symbol: isReminder(item) ? "list.dash" : "calendar",
-                                        frame: {
-                                            width: 12,
-                                            height: 12
-                                        },
                                         color: isReminder(item) ? this.colorReminder : this.colorCalendar,
-                                        resizable: true
+                                        resizable: true,
+                                        frame: iconFrame
                                     }
                                 },
                                 {
@@ -187,9 +309,8 @@ class Schedule {
                                                   const endDate = this.formatDate(item.endDate, 1)
                                                   return `${startDate}-${endDate}`
                                               })(),
-                                        font: $font(12),
-                                        color: $color("systemGray2"),
-                                        frame: { height: 12 }
+                                        font: $font(dateFontSize),
+                                        color: $color("systemGray2")
                                     }
                                 },
                                 {
@@ -202,124 +323,25 @@ class Schedule {
                                         })(),
                                         symbol: "exclamationmark.triangle.fill",
                                         color: $color("red"),
-                                        frame: {
-                                            width: 12,
-                                            height: 12
-                                        },
-                                        resizable: true
+                                        resizable: true,
+                                        frame: iconFrame
                                     }
                                 }
                             ]
                         }
                     ]
-                })
-            }
-            views.push({
-                type: "vstack",
-                props: { spacing: 0 },
-                views: [
-                    {
-                        type: "text",
-                        props: {
-                            text: date,
-                            color: this.colorDate,
-                            font: $font("bold", 12),
-                            frame: {
-                                maxWidth: Infinity,
-                                alignment: $widget.alignment.leading,
-                                height: 12
-                            },
-                            padding: $insets(0, 7, 0, 0) // +2为竖线颜色条宽度
-                        }
-                    }
-                ].concat(view)
-            })
-        }
-        return views
-    }
-
-    setData(calendar, reminder) {
-        this.calendar = calendar
-        this.reminder = reminder
+                }))
+            ]
+        }))
     }
 
     /**
      * 获取视图
      */
     scheduleView(family) {
-        const nothingView = text => {
-            const date = new Date()
-            return {
-                type: "vstack",
-                props: {
-                    background: $color(this.backgroundColor, this.backgroundColorDark),
-                    frame: {
-                        maxHeight: Infinity,
-                        maxWidth: Infinity
-                    },
-                    padding: 15,
-                    spacing: 8,
-                    widgetURL: this.urlScheme,
-                    link: this.urlScheme
-                },
-                views: [
-                    {
-                        type: "vstack",
-                        props: {
-                            background: $color(this.backgroundColor, this.backgroundColorDark),
-                            frame: {
-                                maxHeight: Infinity,
-                                maxWidth: Infinity,
-                                alignment: $widget.alignment.leading
-                            },
-                            spacing: 0
-                        },
-                        views: [
-                            {
-                                type: "text",
-                                props: {
-                                    background: $color(this.backgroundColor, this.backgroundColorDark),
-                                    frame: {
-                                        maxHeight: Infinity,
-                                        maxWidth: Infinity,
-                                        alignment: $widget.alignment.leading
-                                    },
-                                    text: this.week[date.getDay()],
-                                    font: $font(11),
-                                    color: this.colorDate
-                                }
-                            },
-                            {
-                                type: "text",
-                                props: {
-                                    background: $color(this.backgroundColor, this.backgroundColorDark),
-                                    frame: {
-                                        maxHeight: Infinity,
-                                        maxWidth: Infinity,
-                                        alignment: $widget.alignment.leading
-                                    },
-                                    text: String(date.getDate()),
-                                    font: $font(33)
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        type: "text",
-                        props: {
-                            background: $color(this.backgroundColor, this.backgroundColorDark),
-                            frame: {
-                                maxHeight: Infinity,
-                                maxWidth: Infinity,
-                                alignment: $widget.alignment.leading
-                            },
-                            text: text,
-                            color: $color("secondaryText")
-                        }
-                    }
-                ]
-            }
-        }
+        $widget.family = family
+        this.family = family
+
         const listView = (views, props = {}) => {
             return {
                 type: "vstack",
@@ -327,23 +349,19 @@ class Schedule {
                     {
                         background: $color(this.backgroundColor, this.backgroundColorDark),
                         frame: {
+                            maxWidth: Infinity,
                             maxHeight: Infinity,
                             alignment: $widget.verticalAlignment.firstTextBaseline
                         },
                         padding: 15,
-                        spacing: 8
+                        spacing: 5
                     },
                     props
                 ),
                 views: views
             }
         }
-        const compareByDate = (item, compare) => {
-            const nowDate = new Date()
-            const itemDate = item.endDate ? item.endDate : item.alarmDate ? item.alarmDate : nowDate
-            const compareDate = compare.endDate ? compare.endDate : compare.alarmDate ? compare.alarmDate : nowDate
-            return itemDate.getTime() >= compareDate.getTime()
-        }
+
         if (family === this.setting.family.small) {
             let schedule, emptyText
             const dataMode = this.dataMode2x2
@@ -359,11 +377,11 @@ class Schedule {
                 schedule = [].concat(this.calendar).concat(this.reminder)
             }
             // 按结束日期排序
-            this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
+            this.quicksort(schedule, 0, schedule.length - 1)
             // 获取视图
             const view = this.getListView(schedule)
             if (null === view) {
-                return nothingView(emptyText)
+                return this.getNothingView(emptyText)
             }
             return listView(view, {
                 widgetURL: this.urlScheme,
@@ -381,10 +399,10 @@ class Schedule {
             if (dataMode === 0) {
                 // LEFT_AND_RIGHT
                 // 按结束日期排序
-                this.quicksort(this.calendar, 0, this.calendar.length - 1, compareByDate)
-                this.quicksort(this.reminder, 0, this.reminder.length - 1, compareByDate)
-                leftView = this.getListView(this.calendar, eachCont) ?? [nothingView($l10n("NO_CALENDAR"))]
-                rightView = this.getListView(this.reminder, eachCont) ?? [nothingView($l10n("NO_REMINDER"))]
+                this.quicksort(this.calendar, 0, this.calendar.length - 1)
+                this.quicksort(this.reminder, 0, this.reminder.length - 1)
+                leftView = this.getListView(this.calendar, eachCont) ?? [this.getNothingView($l10n("NO_CALENDAR"))]
+                rightView = this.getListView(this.reminder, eachCont) ?? [this.getNothingView($l10n("NO_REMINDER"))]
                 // UrlScheme
                 leftScheme = this.calendarUrlScheme
                 rightScheme = this.reminderUrlScheme
@@ -394,10 +412,10 @@ class Schedule {
                 const schedule = [].concat(this.calendar).concat(this.reminder)
                 // 空列表则直接返回
                 if (schedule.length === 0) {
-                    return nothingView($l10n("NO_CALENDAR&REMINDER"))
+                    return this.getNothingView($l10n("NO_CALENDAR&REMINDER"))
                 }
                 // 按结束日期排序
-                this.quicksort(schedule, 0, schedule.length - 1, compareByDate)
+                this.quicksort(schedule, 0, schedule.length - 1)
                 // 获取视图
                 leftView = this.getListView(schedule.slice(0, eachCont), eachCont)
                 rightView = this.getListView(schedule.slice(eachCont, eachCont * 2), eachCont)
@@ -418,7 +436,7 @@ class Schedule {
             }
         } else {
             // TODO 超大 widget
-            return nothingView("Not currently supported")
+            return this.getNothingView("Not currently supported")
         }
     }
 }

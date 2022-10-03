@@ -58,12 +58,12 @@ class Widget {
 
     /**
      * 计算给定高度内的合适字体大小
-     * @param {string} font
      * @param {number} height
+     * @param {string} font
      * @param {string} text
      * @returns {number}
      */
-    getFontSizeByHeight(font, height, text = "A") {
+    getFontSizeByHeight(height, font = "default", text = "A") {
         if (!this.helveticaNeueFontSize) {
             this.helveticaNeueFontSize = {}
         }

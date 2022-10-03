@@ -337,7 +337,7 @@ class Calendar {
 
         const verticalPadding = height * 0.1
         const fontHeight = (height - verticalPadding * 2) / 2
-        const fontSize = this.widget.getFontSizeByHeight(this.font, fontHeight)
+        const fontSize = this.widget.getFontSizeByHeight(fontHeight, this.font)
         const extFontWidth = Math.min(
             fontSize,
             (this.columnWidth - verticalPadding * 2) / Math.min(props.ext.text.length, 4) // 最多 4 个字
@@ -540,7 +540,7 @@ class Calendar {
         }
 
         const views = []
-        const fontSize = this.widget.getFontSizeByHeight(this.font, this.titleBarHeight)
+        const fontSize = this.widget.getFontSizeByHeight(this.titleBarHeight, this.font)
         views.push({
             type: "text",
             props: {
