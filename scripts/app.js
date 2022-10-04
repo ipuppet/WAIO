@@ -327,7 +327,7 @@ class AppUI {
             tabBarController
                 .setPages({
                     home: homeNavigationView.getPage(),
-                    setting: kernel.setting.getPageView()
+                    setting: kernel.setting.getPage()
                 })
                 .setCells({
                     home: buttons.home,
@@ -389,7 +389,7 @@ class Widget {
 
 module.exports = {
     run: () => {
-        //Widget.render("Calendar");return
+        //Widget.render("Schedule");return
         if ($app.env === $env.widget) {
             Widget.render()
         } else if ($app.env === $env.app) {

@@ -262,8 +262,8 @@ class MyDaysWidget extends Widget {
         this.initStyle()
         this.fullWeekUnit = false
         this.dateFontHeight = this.height / 2
-        this.dateFontSize = this.getFontSizeByHeight(this.font, this.dateFontHeight)
-        this.titleFontSize = this.getFontSizeByHeight(this.font, (this.height - this.dateFontHeight) / 2)
+        this.dateFontSize = this.getFontSizeByHeight(this.dateFontHeight, this.font)
+        this.titleFontSize = this.getFontSizeByHeight((this.height - this.dateFontHeight) / 2, this.font)
         this.infoFontSize = this.titleFontSize
         this.fullDateFontSize = 10
 

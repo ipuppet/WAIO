@@ -123,7 +123,7 @@ class ScheduleWidget extends Widget {
     }
 
     async initSchedule() {
-        this.schedule = new Schedule(this.kernel, this.setting)
+        this.schedule = new Schedule(this)
         // 存在长时间跨度的日程，因此不能从今天开始取。以今天为中心的前后时间跨度。
         const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24 * parseInt(this.timeSpan / 2))
         const hours = this.timeSpan * 24 // 此处不用除 2，因为开始日期为今天往前数半个 this.timeSpan
