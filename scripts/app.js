@@ -327,7 +327,7 @@ class AppUI {
             tabBarController
                 .setPages({
                     home: homeNavigationView.getPage(),
-                    setting: kernel.setting.getPageView()
+                    setting: kernel.setting.getPage()
                 })
                 .setCells({
                     home: buttons.home,
