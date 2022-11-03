@@ -16,7 +16,6 @@ class Calendar {
     height
     width
 
-    font = "Helvetica Neue"
     titleBarBottomPadding = 5
     weekIndexBottomPadding = 5
 
@@ -80,7 +79,7 @@ class Calendar {
         this.titleBarHeight = Math.min(this.width * 0.11, 25) // titleBarHeight 最大值限制为 25
         this.columnWidth = (this.width - this.padding.h * 2) / 7 // 每列内容宽度
         this.singleContentFontSize = Math.min(this.columnWidth * 0.6, 20) // 字体最大 20
-        this.singleContentHeight = this.widget.getContentSize($font(this.font, this.singleContentFontSize)).height
+        this.singleContentHeight = this.widget.getContentSize($font(this.singleContentFontSize)).height
         this.contentViewHeight = this.height - this.singleContentHeight // 周指示器高度
         if (!this.isLockscreen) {
             this.contentViewHeight -=
@@ -209,15 +208,15 @@ class Calendar {
                         formatDate =
                             date > days
                                 ? {
-                                      month: month + 1,
-                                      date: nextMonth++,
-                                      day: formatDay
-                                  }
+                                    month: month + 1,
+                                    date: nextMonth++,
+                                    day: formatDay
+                                }
                                 : {
-                                      month: month,
-                                      date: date,
-                                      day: formatDay
-                                  }
+                                    month: month,
+                                    date: date,
+                                    day: formatDay
+                                }
                     } else {
                         // 补齐第一周前面空缺的日期
                         formatDate = {
@@ -337,7 +336,7 @@ class Calendar {
 
         const verticalPadding = height * 0.1
         const fontHeight = (height - verticalPadding * 2) / 2
-        const fontSize = this.widget.getFontSizeByHeight(fontHeight, this.font)
+        const fontSize = this.widget.getFontSizeByHeight(fontHeight,)
         const extFontWidth = Math.min(
             fontSize,
             (this.columnWidth - verticalPadding * 2) / Math.min(props.ext.text.length, 4) // 最多 4 个字
@@ -374,7 +373,7 @@ class Calendar {
                     type: "text",
                     props: Object.assign(
                         {
-                            font: $font(this.font, fontSize),
+                            font: $font(fontSize),
                             lineLimit: 1,
                             frame: { width: this.columnWidth }
                         },
@@ -385,7 +384,7 @@ class Calendar {
                     type: "text",
                     props: Object.assign(
                         {
-                            font: $font(this.font, extFontWidth),
+                            font: $font(extFontWidth),
                             lineLimit: 2,
                             frame: { width: this.columnWidth }
                         },
@@ -461,7 +460,7 @@ class Calendar {
             type: "text",
             props: Object.assign(
                 {
-                    font: $font(this.font, this.singleContentFontSize),
+                    font: $font(this.singleContentFontSize),
                     lineLimit: 1,
                     frame: {
                         alignment: $widget.alignment.center,
@@ -540,18 +539,19 @@ class Calendar {
         }
 
         const views = []
-        const fontSize = this.widget.getFontSizeByHeight(this.titleBarHeight, this.font)
+        const fontSize = this.widget.getFontSizeByHeight(this.titleBarHeight, "bold")
+        const font = $font("bold", fontSize)
         views.push({
             type: "text",
             props: {
-                font: $font(this.font, fontSize),
+                font: font,
                 text: leftText,
                 lineLimit: 1,
                 color: this.colorTone,
                 bold: true,
                 frame: {
                     alignment: $widget.alignment.leading,
-                    width: this.widget.getContentSize($font(this.font, fontSize), leftText).width
+                    width: Math.min(this.width, this.widget.getContentSize(font, leftText).width)
                 }
             }
         })
@@ -562,7 +562,7 @@ class Calendar {
             views.push({
                 type: "text",
                 props: {
-                    font: $font(this.font, fontSize),
+                    font: font,
                     text: rightText,
                     lineLimit: 1,
                     minimumScaleFactor: 0.6,
@@ -627,13 +627,13 @@ class Calendar {
         const calendar =
             this.family === this.setting.family.small
                 ? this.calendarTemplate(
-                      dayInfo => this.singleContentDayStyleModifier(dayInfo),
-                      props => this.singleContentDayTemplate(props)
-                  )
+                    dayInfo => this.singleContentDayStyleModifier(dayInfo),
+                    props => this.singleContentDayTemplate(props)
+                )
                 : this.calendarTemplate(
-                      dayInfo => this.multipleContentDayStyleModifier(dayInfo),
-                      props => this.multipleContentDayTemplate(props)
-                  )
+                    dayInfo => this.multipleContentDayStyleModifier(dayInfo),
+                    props => this.multipleContentDayTemplate(props)
+                )
         return {
             type: "vstack",
             props: {
