@@ -13,7 +13,7 @@
 "SHORT_FRIDAY" = "F";
 "SHORT_SATURDAY" = "S";
 
-"BLANK_MONTH" = " ";
+"BLANK_MONTH" = "";
 "JANUARY_C" = "January";
 "FEBRUARY_C" = "February";
 "MARCH_C" = "March";
