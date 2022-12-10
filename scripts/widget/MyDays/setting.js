@@ -44,13 +44,13 @@ class MyDaysSetting extends WidgetSetting {
                 handler: (title, idx) => {
                     switch (idx) {
                         case 0:
-                            animate.actionStart()
+                            animate.start()
                             $photo.pick({
                                 format: "data",
                                 handler: resp => {
                                     if (!resp.status) {
                                         if (resp.error.description !== "canceled") $ui.toast($l10n("ERROR"))
-                                        else animate.actionCancel()
+                                        else animate.cancel()
                                     }
                                     if (!resp.data) return
                                     // 清除旧图片
@@ -67,13 +67,13 @@ class MyDaysSetting extends WidgetSetting {
                                         data: resp.data,
                                         path: `${this.path}/${fileName}`
                                     })
-                                    animate.actionDone()
+                                    animate.done()
                                 }
                             })
                             break
                         case 1:
                             this.clearBackgroundImage()
-                            animate.actionDone()
+                            animate.done()
                             break
                     }
                 },

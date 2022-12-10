@@ -25,9 +25,9 @@ class PictureSetting extends WidgetSetting {
         }
 
         this.setting.method.clearCache = animate => {
-            animate.actionStart()
+            animate.start()
             $cache.remove("switch.data")
-            animate.actionDone()
+            animate.done()
         }
     }
 }

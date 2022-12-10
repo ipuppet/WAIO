@@ -82,7 +82,7 @@ class CalendarSetting extends WidgetSetting {
 
     initSettingMethods() {
         this.setting.method.clearHoliday = animate => {
-            animate.actionStart()
+            animate.start()
             let style = {}
             if ($alertActionType) {
                 style = { style: $alertActionType.destructive }
@@ -95,7 +95,7 @@ class CalendarSetting extends WidgetSetting {
                             title: $l10n("CLEAR"),
                             handler: () => {
                                 $file.delete(this.holidayPath)
-                                animate.actionDone()
+                                animate.done()
                             }
                         },
                         style
@@ -103,7 +103,7 @@ class CalendarSetting extends WidgetSetting {
                     {
                         title: $l10n("CANCEL"),
                         handler: () => {
-                            animate.actionCancel()
+                            animate.cancel()
                         }
                     }
                 ]
@@ -114,7 +114,7 @@ class CalendarSetting extends WidgetSetting {
          * 用于设置页面手动获取节假日信息
          */
         this.setting.method.getHoliday = async animate => {
-            animate.actionStart()
+            animate.start()
             const saveHolidayAction = () => {
                 const year = new Date().getFullYear()
                 $http.get({
@@ -122,12 +122,12 @@ class CalendarSetting extends WidgetSetting {
                     handler: response => {
                         if (response.error) {
                             $ui.error(response.error)
-                            animate.actionCancel()
+                            animate.cancel()
                             return
                         }
                         if (response.data.code !== 0) {
                             $ui.error($l10n("HOLIDAY_API_ERROR"))
-                            animate.actionCancel()
+                            animate.cancel()
                             return
                         }
                         const content = {
@@ -138,7 +138,7 @@ class CalendarSetting extends WidgetSetting {
                             data: $data({ string: JSON.stringify(content) }),
                             path: this.holidayPath
                         })
-                        animate.actionDone()
+                        animate.done()
                     }
                 })
             }
@@ -154,7 +154,7 @@ class CalendarSetting extends WidgetSetting {
                         {
                             title: $l10n("CANCEL"),
                             handler: () => {
-                                animate.actionCancel()
+                                animate.cancel()
                             }
                         }
                     ]
@@ -172,13 +172,13 @@ class CalendarSetting extends WidgetSetting {
                 handler: (title, idx) => {
                     switch (idx) {
                         case 0:
-                            animate.actionStart()
+                            animate.start()
                             $photo.pick({
                                 format: "data",
                                 handler: resp => {
                                     if (!resp.status) {
                                         if (resp.error.description !== "canceled") $ui.toast($l10n("ERROR"))
-                                        else animate.actionCancel()
+                                        else animate.cancel()
                                     }
                                     if (!resp.data) return
                                     // 清除旧图片
@@ -190,13 +190,13 @@ class CalendarSetting extends WidgetSetting {
                                         data: image.png,
                                         path: `${this.path}/${fileName}`
                                     })
-                                    animate.actionDone()
+                                    animate.done()
                                 }
                             })
                             break
                         case 1:
                             this.clearBackgroundImage()
-                            animate.actionDone()
+                            animate.done()
                             break
                     }
                 },

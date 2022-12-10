@@ -102,13 +102,13 @@ class AppKernel extends Kernel {
         }
 
         this.setting.method.updateHomeScreenWidgetOptions = animate => {
-            animate.actionStart()
+            animate.start()
             this.updateHomeScreenWidgetOptions()
-            animate.actionDone()
+            animate.done()
         }
 
         this.setting.method.backupToICloud = animate => {
-            animate.actionStart()
+            animate.start()
             const backupAction = async () => {
                 // 保证目录存在
                 if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
@@ -134,14 +134,14 @@ class AppKernel extends Kernel {
                             //删除压缩文件
                             $file.delete(this.backupPath)
                             if (success) {
-                                animate.actionDone()
+                                animate.done()
                             } else {
-                                animate.actionCancel()
+                                animate.cancel()
                             }
                         }
                     })
                 } catch (error) {
-                    animate.actionCancel()
+                    animate.cancel()
                     this.print(error)
                 }
             }
@@ -158,7 +158,7 @@ class AppKernel extends Kernel {
                     {
                         title: $l10n("CANCEL"),
                         handler: () => {
-                            animate.actionCancel()
+                            animate.cancel()
                         }
                     }
                 ]
@@ -166,7 +166,7 @@ class AppKernel extends Kernel {
         }
 
         this.setting.method.recoverFromICloud = animate => {
-            animate.actionStart()
+            animate.start()
             $drive.open({
                 handler: data => {
                     // 保证目录存在
@@ -217,14 +217,14 @@ class AppKernel extends Kernel {
                                         $file.delete(`${this.backupPath}/widgets.zip`)
                                         $file.delete(`${this.backupPath}/userdata.zip`)
                                         $file.delete(this.backupPath)
-                                        animate.actionDone()
+                                        animate.done()
                                     } catch (error) {
-                                        animate.actionCancel()
+                                        animate.cancel()
                                         throw error
                                     }
                                 }
                             } else {
-                                animate.actionCancel()
+                                animate.cancel()
                             }
                         }
                     })

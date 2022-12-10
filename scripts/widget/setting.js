@@ -42,12 +42,12 @@ class WidgetSetting {
     init() {
         this.rootStorage = new FileStorage({ basePath: this.kernel.widgetRootPath })
 
-        this.config = this.rootStorage.readAsJSON(this.widget, "config.json")
+        this.config = this.rootStorage.readAsJSON(`${this.widget}/config.json`)
         this.setting = new Setting({
             name: `${this.widget}Setting`,
             fileStorage: new FileStorage({ basePath: `${this.kernel.widgetDataPath}/${this.widget}` }),
             saveFile: "setting.json",
-            structure: this.rootStorage.readAsJSON(this.widget, "setting.json")
+            structure: this.rootStorage.readAsJSON(`${this.widget}/setting.json`)
         })
         this.setting.loadConfig()
         // 判断当前环境
