@@ -130,6 +130,7 @@
                 ],
                 "title": "CLICK_EVENT",
                 "type": "menu",
+                "pullDown": true,
                 "key": "clickEvent",
                 "items": [
                     "SETTING",
@@ -144,6 +145,7 @@
                 ],
                 "title": "DATA_DISPLAY_MODE",
                 "type": "menu",
+                "pullDown": true,
                 "key": "dataMode2x2",
                 "items": [
                     "CALENDAR",
@@ -175,6 +177,7 @@
                 ],
                 "title": "DATA_DISPLAY_MODE",
                 "type": "menu",
+                "pullDown": true,
                 "key": "dataMode2x4",
                 "items": [
                     "LEFT_AND_RIGHT",
@@ -205,6 +208,7 @@
                 ],
                 "title": "DATA_DISPLAY_MODE",
                 "type": "menu",
+                "pullDown": true,
                 "key": "dataMode4x4",
                 "items": [
                     "LEFT_AND_RIGHT",

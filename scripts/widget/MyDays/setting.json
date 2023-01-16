@@ -67,6 +67,7 @@
                             {
                                 "title": "Style",
                                 "type": "menu",
+                                "pullDown": true,
                                 "key": "week.displayStyle",
                                 "value": 0,
                                 "items": [
