@@ -80,7 +80,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "album",
                 "value": "this.method.readme"
             }
         ]

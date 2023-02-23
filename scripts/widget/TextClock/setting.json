@@ -9,7 +9,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "calendar",
                 "value": "this.method.readme"
             }
         ]

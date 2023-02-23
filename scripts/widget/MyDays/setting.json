@@ -8,7 +8,6 @@
                 ],
                 "title": "BACKGROUND_IMAGE",
                 "type": "script",
-                "key": "backgroundImage",
                 "value": "this.method.backgroundImage"
             },
             {
@@ -24,7 +23,6 @@
             {
                 "type": "child",
                 "title": "DISPLAY_MODE",
-                "key": "DISPLAY_MODE-parent",
                 "children": [
                     {
                         "title": "GENERAL",
@@ -82,13 +80,12 @@
                 ]
             },
             {
-                "type": "child",
-                "title": "COLOR_SETTING",
                 "icon": [
                     "wand.and.rays",
                     "#FF0033"
                 ],
-                "key": "COLOR_SETTING-parent",
+                "type": "child",
+                "title": "COLOR_SETTING",
                 "children": [
                     {
                         "title": "LIGHT_MODE",
@@ -230,7 +227,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "calendar",
                 "value": "this.method.readme"
             }
         ]

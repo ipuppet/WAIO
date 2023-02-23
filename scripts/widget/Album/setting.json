@@ -18,7 +18,6 @@
                 ],
                 "title": "ALBUM",
                 "type": "script",
-                "key": "manager",
                 "value": "this.method.album"
             }
         ]
@@ -84,7 +83,6 @@
                 ],
                 "title": "CLEAR_CACHE",
                 "type": "script",
-                "key": "clearCache",
                 "value": "this.method.clearCache"
             },
             {
@@ -94,7 +92,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "album",
                 "value": "this.method.readme"
             }
         ]

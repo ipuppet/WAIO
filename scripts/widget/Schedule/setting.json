@@ -13,13 +13,12 @@
                 "value": 10
             },
             {
-                "type": "child",
-                "title": "COLOR_SETTING",
                 "icon": [
                     "wand.and.rays",
                     "#FF0033"
                 ],
-                "key": "COLOR_SETTING-parent",
+                "type": "child",
+                "title": "COLOR_SETTING",
                 "children": [
                     {
                         "title": "GENERAL",
@@ -228,7 +227,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "calendar",
                 "value": "this.method.readme"
             }
         ]
