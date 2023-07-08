@@ -29,10 +29,10 @@ class Calendar {
         this.setting = widget.setting
 
         this.onlyCurrentMonth = this.setting.get("onlyCurrentMonth")
-        this.colorTone = this.setting.getColor(this.setting.get("colorTone"))
+        this.colorTone = this.setting.get("colorTone")
         this.hasHoliday = this.setting.get("holiday")
-        this.holidayColor = this.setting.getColor(this.setting.get("holidayColor"))
-        this.holidayNoRestColor = this.setting.getColor(this.setting.get("holidayNoRestColor")) // 调休
+        this.holidayColor = this.setting.get("holidayColor")
+        this.holidayNoRestColor = this.setting.get("holidayNoRestColor") // 调休
         if (this.hasHoliday && $file.exists(this.setting.holidayPath)) {
             // 假期信息
             this.holiday = JSON.parse($file.read(this.setting.holidayPath).string).holiday
@@ -43,10 +43,10 @@ class Calendar {
         this.titleLunar = this.setting.get("title.lunar") // 标题是否显示农历
         this.titleLunarYear = this.setting.get("title.lunarYear") // 标题是否显示农历年
         this.backgroundImage = this.setting.getBackgroundImage() // 背景图片
-        this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
-        this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
-        this.textColor = this.setting.getColor(this.setting.get("textColor"))
-        this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
+        this.backgroundColor = this.setting.get("backgroundColor")
+        this.backgroundColorDark = this.setting.get("backgroundColorDark")
+        this.textColor = this.setting.get("textColor")
+        this.textColorDark = this.setting.get("textColorDark")
     }
 
     get padding() {
@@ -208,15 +208,15 @@ class Calendar {
                         formatDate =
                             date > days
                                 ? {
-                                    month: month + 1,
-                                    date: nextMonth++,
-                                    day: formatDay
-                                }
+                                      month: month + 1,
+                                      date: nextMonth++,
+                                      day: formatDay
+                                  }
                                 : {
-                                    month: month,
-                                    date: date,
-                                    day: formatDay
-                                }
+                                      month: month,
+                                      date: date,
+                                      day: formatDay
+                                  }
                     } else {
                         // 补齐第一周前面空缺的日期
                         formatDate = {
@@ -336,7 +336,7 @@ class Calendar {
 
         const verticalPadding = height * 0.1
         const fontHeight = (height - verticalPadding * 2) / 2
-        const fontSize = this.widget.getFontSizeByHeight(fontHeight,)
+        const fontSize = this.widget.getFontSizeByHeight(fontHeight)
         const extFontWidth = Math.min(
             fontSize,
             (this.columnWidth - verticalPadding * 2) / Math.min(props.ext.text.length, 4) // 最多 4 个字
@@ -627,13 +627,13 @@ class Calendar {
         const calendar =
             this.family === this.setting.family.small
                 ? this.calendarTemplate(
-                    dayInfo => this.singleContentDayStyleModifier(dayInfo),
-                    props => this.singleContentDayTemplate(props)
-                )
+                      dayInfo => this.singleContentDayStyleModifier(dayInfo),
+                      props => this.singleContentDayTemplate(props)
+                  )
                 : this.calendarTemplate(
-                    dayInfo => this.multipleContentDayStyleModifier(dayInfo),
-                    props => this.multipleContentDayTemplate(props)
-                )
+                      dayInfo => this.multipleContentDayStyleModifier(dayInfo),
+                      props => this.multipleContentDayTemplate(props)
+                  )
         return {
             type: "vstack",
             props: {

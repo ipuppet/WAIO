@@ -123,10 +123,6 @@ class WidgetSetting {
         return this.setting.get(key)
     }
 
-    getColor(color) {
-        return this.setting.getColor(color)
-    }
-
     defaultSettingMethods() {
         this.setting.method.readme = animate => {
             const content = $file.read(`${this.kernel.widgetRootPath}/${this.widget}/README.md`).string

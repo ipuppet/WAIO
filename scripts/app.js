@@ -97,8 +97,8 @@ class AppKernel extends Kernel {
      * 注入设置中的脚本类型方法
      */
     initSettingMethods() {
-        this.setting.method.tips = animate => {
-            $ui.alert("每个小组件中都有README文件，点击可以得到一些信息。")
+        this.setting.method.tips = () => {
+            $ui.alert("每个小组件中都有 README 文件，点击可以得到一些信息。")
         }
 
         this.setting.method.updateHomeScreenWidgetOptions = animate => {
