@@ -14,13 +14,13 @@ class Schedule {
     constructor(widget) {
         this.widget = widget
         this.setting = widget.setting
-        this.colorDate = this.setting.getColor(this.setting.get("colorDate"))
-        this.colorCalendar = this.setting.getColor(this.setting.get("colorCalendar"))
-        this.colorReminder = this.setting.getColor(this.setting.get("colorReminder"))
-        this.backgroundColor = this.setting.getColor(this.setting.get("backgroundColor"))
-        this.backgroundColorDark = this.setting.getColor(this.setting.get("backgroundColorDark"))
-        this.textColor = this.setting.getColor(this.setting.get("textColor"))
-        this.textColorDark = this.setting.getColor(this.setting.get("textColorDark"))
+        this.colorDate = this.setting.get("colorDate")
+        this.colorCalendar = this.setting.get("colorCalendar")
+        this.colorReminder = this.setting.get("colorReminder")
+        this.backgroundColor = this.setting.get("backgroundColor")
+        this.backgroundColorDark = this.setting.get("backgroundColorDark")
+        this.textColor = this.setting.get("textColor")
+        this.textColorDark = this.setting.get("textColorDark")
         this.itemLength2x2 = this.setting.get("itemLength2x2")
         this.itemLength2x4 = this.setting.get("itemLength2x4")
         this.itemLength4x4 = this.setting.get("itemLength4x4")

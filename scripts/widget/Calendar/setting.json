@@ -3,13 +3,12 @@
         "title": "GENERAL",
         "items": [
             {
-                "type": "child",
-                "title": "BACKGROUND_AND_COLOR",
                 "icon": [
                     "photo",
                     "#0099CC"
                 ],
-                "key": "BACKGROUND_AND_COLOR-parent",
+                "type": "child",
+                "title": "BACKGROUND_AND_COLOR",
                 "children": [
                     {
                         "title": "GENERAL",
@@ -21,7 +20,6 @@
                                 ],
                                 "title": "BACKGROUND_IMAGE",
                                 "type": "script",
-                                "key": "backgroundImage",
                                 "value": "this.method.backgroundImage"
                             },
                             {
@@ -91,7 +89,6 @@
             {
                 "type": "child",
                 "title": "DISPLAY_MODE",
-                "key": "display-parent",
                 "children": [
                     {
                         "title": "GENERAL",
@@ -179,12 +176,11 @@
                 ]
             },
             {
-                "type": "child",
                 "icon": [
                     "photo"
                 ],
+                "type": "child",
                 "title": "HOLIDAY",
-                "key": "holiday-parent",
                 "children": [
                     {
                         "title": "HOLIDAY",
@@ -235,7 +231,6 @@
                                 ],
                                 "title": "GET_HOLIDAY",
                                 "type": "script",
-                                "key": "get_holiday",
                                 "value": "this.method.getHoliday"
                             },
                             {
@@ -245,7 +240,6 @@
                                 ],
                                 "title": "CLEAR_HOLIDAY_DATA",
                                 "type": "script",
-                                "key": "clear_holiday",
                                 "value": "this.method.clearHoliday"
                             }
                         ]
@@ -264,7 +258,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "calendar",
                 "value": "this.method.readme"
             }
         ]

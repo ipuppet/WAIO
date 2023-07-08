@@ -9,7 +9,6 @@
                 ],
                 "title": "UPDATE_HOME_SCREEN_WIDGET_OPTIONS",
                 "type": "script",
-                "key": "updateHomeScreenWidgetOptions",
                 "value": "this.method.updateHomeScreenWidgetOptions"
             }
         ]
@@ -23,7 +22,6 @@
                 ],
                 "title": "BACKUP_TO_ICLOUD",
                 "type": "script",
-                "key": "backup",
                 "value": "this.method.backupToICloud"
             },
             {
@@ -33,7 +31,6 @@
                 ],
                 "title": "RECOVER_FROM_ICLOUD",
                 "type": "script",
-                "key": "recover",
                 "value": "this.method.recoverFromICloud"
             }
         ]
@@ -66,7 +63,6 @@
                 ],
                 "title": "Github",
                 "type": "info",
-                "key": "github",
                 "value": [
                     "ipuppet/WAIO",
                     "https://github.com/ipuppet/WAIO"
@@ -79,7 +75,6 @@
                 ],
                 "title": "AUTHOR",
                 "type": "info",
-                "key": "author",
                 "value": [
                     "ipuppet",
                     "https://blog.ipuppet.top"
@@ -92,7 +87,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "readme",
                 "value": "this.method.readme"
             }
         ]

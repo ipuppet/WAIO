@@ -36,6 +36,7 @@
                 ],
                 "title": "SELECT_WIDGET",
                 "type": "menu",
+                "pullDown": true,
                 "key": "left",
                 "items": "this.method.getMenu",
                 "values": "this.method.getMenu",
@@ -63,6 +64,7 @@
                 ],
                 "title": "SELECT_WIDGET",
                 "type": "menu",
+                "pullDown": true,
                 "key": "right",
                 "items": "this.method.getMenu",
                 "values": "this.method.getMenu",
@@ -80,7 +82,6 @@
                 ],
                 "title": "README",
                 "type": "script",
-                "key": "album",
                 "value": "this.method.readme"
             }
         ]
