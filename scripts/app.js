@@ -129,7 +129,7 @@ class AppKernel extends Kernel {
                     // 用户选择保存位置
                     $drive.save({
                         data: $data({ path: `${this.backupPath}/backup.zip` }),
-                        name: `${this.name}Backup-${Date.now()}.zip`,
+                        name: `${$addin.current.name}-${Date.now()}.zip`,
                         handler: success => {
                             //删除压缩文件
                             $file.delete(this.backupPath)
