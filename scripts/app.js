@@ -63,7 +63,6 @@ class AppKernel extends Kernel {
         this.fileStorage = fileStorage
         // setting
         this.setting = new Setting({ fileStorage: this.fileStorage })
-        this.setting.loadConfig()
         this.initSettingMethods()
 
         // 小组件根目录

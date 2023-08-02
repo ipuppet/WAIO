@@ -49,7 +49,6 @@ class WidgetSetting {
             saveFile: "setting.json",
             structure: this.rootStorage.readAsJSON(`${this.widget}/setting.json`)
         })
-        this.setting.loadConfig()
         // 判断当前环境
         if (!this.kernel.inWidgetEnv) {
             if (this.kernel.isUseJsboxNav) {
