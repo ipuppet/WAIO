@@ -1,4 +1,4 @@
-const { Kernel, UIKit } = require("../../libs/easy-jsbox")
+const { UIKit } = require("../../libs/easy-jsbox")
 
 class Album {
     constructor(kernel, setting) {

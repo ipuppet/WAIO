@@ -1,6 +1,6 @@
 const NAME = "Calendar"
 const WidgetSetting = require("../setting")
-const { Kernel } = require("../../libs/easy-jsbox")
+const { UIKit } = require("../../libs/easy-jsbox")
 
 class CalendarSetting extends WidgetSetting {
     constructor(kernel) {

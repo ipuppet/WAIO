@@ -1,6 +1,6 @@
 const NAME = "MyDays"
 const WidgetSetting = require("../setting")
-const { Kernel } = require("../../libs/easy-jsbox")
+const { UIKit } = require("../../libs/easy-jsbox")
 
 class MyDaysSetting extends WidgetSetting {
     constructor(kernel) {
