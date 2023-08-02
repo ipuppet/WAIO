@@ -192,7 +192,7 @@ class Album {
                                 })
                                 this.kernel.print(`original saved:`)
                                 this.kernel.print(fileName)
-                                const image = Kernel.compressImage(data.image)
+                                const image = UIKit.compressImage(data.image)
                                 // preview
                                 $file.write({
                                     data: image.jpg(0.1),

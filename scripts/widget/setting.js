@@ -1,4 +1,4 @@
-const { Kernel, UIKit, Sheet, NavigationBar, NavigationView, FileStorage, Setting } = require("../libs/easy-jsbox")
+const { L10n, UIKit, Sheet, NavigationBar, NavigationView, FileStorage, Setting } = require("../libs/easy-jsbox")
 
 /**
  * @typedef {import("../app").AppKernel} AppKernel
@@ -70,7 +70,7 @@ class WidgetSetting {
         const stringsPath = `${this.kernel.widgetRootPath}/${this.widget}/strings`
         if ($file.exists(stringsPath)) {
             $file.list(stringsPath).forEach(file => {
-                Kernel.l10n(file.slice(0, file.indexOf(".")), $file.read(`${stringsPath}/${file}`).string)
+                L10n.add(file.slice(0, file.indexOf(".")), $file.read(`${stringsPath}/${file}`).string)
             })
         }
     }

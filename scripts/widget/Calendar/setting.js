@@ -185,7 +185,7 @@ class CalendarSetting extends WidgetSetting {
                                     this.clearBackgroundImage()
                                     const fileName =
                                         "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
-                                    const image = Kernel.compressImage(resp.data.image)
+                                    const image = UIKit.compressImage(resp.data.image)
                                     $file.write({
                                         data: image.png,
                                         path: `${this.path}/${fileName}`
