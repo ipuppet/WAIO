@@ -1,4 +1,4 @@
-const { UIKit, Kernel, TabBarController, FileStorage, Setting } = require("./libs/easy-jsbox")
+const { UIKit, Kernel, TabBarController, FileStorage, Setting, Logger } = require("./libs/easy-jsbox")
 const HomeUI = require("./ui/home")
 
 // path
@@ -61,8 +61,9 @@ class AppKernel extends Kernel {
         super()
         // FileStorage
         this.fileStorage = fileStorage
+        this.logger = new Logger()
         // setting
-        this.setting = new Setting({ fileStorage: this.fileStorage })
+        this.setting = new Setting({ logger: this.logger, fileStorage: this.fileStorage })
         this.initSettingMethods()
 
         // 小组件根目录

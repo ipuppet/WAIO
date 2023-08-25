@@ -123,7 +123,7 @@ class Album {
                             }, 100)
                         },
                         changed: sender => {
-                            this.kernel.print(sender.page)
+                            this.kernel.logger.info(sender.page)
                             sender.items = getData(sender.page)
                         }
                     },
@@ -190,8 +190,8 @@ class Album {
                                     data: data,
                                     path: `${this.albumPath}/${this.imageType.original}/${fileName}`
                                 })
-                                this.kernel.print(`original saved:`)
-                                this.kernel.print(fileName)
+                                this.kernel.logger.info(`original saved:`)
+                                this.kernel.logger.info(fileName)
                                 const image = UIKit.compressImage(data.image)
                                 // preview
                                 $file.write({
@@ -205,8 +205,8 @@ class Album {
                                         path: `${this.albumPath}/${this.imageType.compressed}/${fileName}`
                                     })
                                 }
-                                this.kernel.print(`compressed & preview saved:`)
-                                this.kernel.print(fileName)
+                                this.kernel.logger.info(`compressed & preview saved:`)
+                                this.kernel.logger.info(fileName)
                                 // UI 隐藏无图片提示字符
                                 if (!$("no-image-text").hidden) $("no-image-text").hidden = true
                                 // UI 插入图片

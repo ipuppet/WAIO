@@ -25,7 +25,7 @@ class CalendarSetting extends WidgetSetting {
                 url: `http://timor.tech/api/holiday/year/${year}/`,
                 handler: response => {
                     if (response.error) {
-                        this.kernel.print(response.error)
+                        this.kernel.logger.info(response.error)
                         $ui.error(response.error)
                         return
                     }
