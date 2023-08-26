@@ -107,9 +107,14 @@ class AppKernel extends Kernel {
             animate.done()
         }
 
-        this.setting.method.backupToICloud = animate => {
+        this.setting.method.backupToICloud = async animate => {
             animate.start()
-            const backupAction = async () => {
+            const res = await $ui.alert({
+                title: $l10n("BACKUP"),
+                message: $l10n("START_BACKUP") + "?",
+                actions: [{ title: $l10n("OK") }, { title: $l10n("CANCEL") }]
+            })
+            if (res.index === 0) {
                 // 保证目录存在
                 if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
                 try {
@@ -144,92 +149,73 @@ class AppKernel extends Kernel {
                     animate.cancel()
                     this.print(error)
                 }
+            } else {
+                animate.cancel()
             }
-            $ui.alert({
-                title: $l10n("BACKUP"),
-                message: $l10n("START_BACKUP") + "?",
-                actions: [
-                    {
-                        title: $l10n("OK"),
-                        handler: () => {
-                            backupAction()
-                        }
-                    },
-                    {
-                        title: $l10n("CANCEL"),
-                        handler: () => {
-                            animate.cancel()
-                        }
-                    }
-                ]
-            })
         }
 
-        this.setting.method.recoverFromICloud = animate => {
+        this.setting.method.recoverFromICloud = async animate => {
             animate.start()
-            $drive.open({
-                handler: data => {
-                    // 保证目录存在
-                    if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
-                    $file.write({
-                        data: data,
-                        path: `${this.backupPath}/backup.zip`
-                    })
-                    // 解压
-                    $archiver.unzip({
-                        path: `${this.backupPath}/backup.zip`,
-                        dest: this.backupPath,
-                        handler: async success => {
-                            if (success) {
-                                if (
-                                    $file.exists(`${this.backupPath}/widgets.zip`) &&
-                                    $file.exists(`${this.backupPath}/userdata.zip`)
-                                ) {
-                                    try {
-                                        // 保证目录存在
-                                        $file.mkdir(`${this.backupPath}/widgets`)
-                                        $file.mkdir(`${this.backupPath}/userdata`)
-                                        // 解压
-                                        await $archiver.unzip({
-                                            path: `${this.backupPath}/widgets.zip`,
-                                            dest: `${this.backupPath}/widgets`
-                                        })
-                                        await $archiver.unzip({
-                                            path: `${this.backupPath}/userdata.zip`,
-                                            dest: `${this.backupPath}/userdata`
-                                        })
-                                        // 恢复
-                                        $file.list(`${this.backupPath}/widgets`).forEach(item => {
-                                            if ($file.isDirectory(`${this.backupPath}/widgets/${item}`)) {
-                                                $file.delete(`${this.widgetRootPath}/${item}`)
-                                                $file.move({
-                                                    src: `${this.backupPath}/widgets/${item}`,
-                                                    dst: `${this.widgetRootPath}/${item}`
-                                                })
-                                            }
-                                        })
-                                        $file.move({
-                                            src: `${this.backupPath}/userdata`,
-                                            dst: this.widgetDataPath
-                                        })
-                                        // 删除文件
-                                        $file.delete(`${this.backupPath}/backup.zip`)
-                                        $file.delete(`${this.backupPath}/widgets.zip`)
-                                        $file.delete(`${this.backupPath}/userdata.zip`)
-                                        $file.delete(this.backupPath)
-                                        animate.done()
-                                    } catch (error) {
-                                        animate.cancel()
-                                        throw error
-                                    }
-                                }
-                            } else {
-                                animate.cancel()
-                            }
-                        }
-                    })
-                }
+            const data = await $drive.open()
+
+            // 保证目录存在
+            if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
+            $file.write({
+                data: data,
+                path: `${this.backupPath}/backup.zip`
             })
+            // 解压
+            const success = await $archiver.unzip({
+                path: `${this.backupPath}/backup.zip`,
+                dest: this.backupPath
+            })
+
+            if (!success) {
+                animate.cancel()
+                return
+            }
+            if (!($file.exists(`${this.backupPath}/widgets.zip`) && $file.exists(`${this.backupPath}/userdata.zip`))) {
+                animate.cancel()
+                return
+            }
+
+            try {
+                // 保证目录存在
+                $file.mkdir(`${this.backupPath}/widgets`)
+                $file.mkdir(`${this.backupPath}/userdata`)
+                // 解压
+                await $archiver.unzip({
+                    path: `${this.backupPath}/widgets.zip`,
+                    dest: `${this.backupPath}/widgets`
+                })
+                await $archiver.unzip({
+                    path: `${this.backupPath}/userdata.zip`,
+                    dest: `${this.backupPath}/userdata`
+                })
+                // 恢复
+                $file.list(`${this.backupPath}/widgets`).forEach(item => {
+                    if ($file.isDirectory(`${this.backupPath}/widgets/${item}`)) {
+                        $file.delete(`${this.widgetRootPath}/${item}`)
+                        $file.move({
+                            src: `${this.backupPath}/widgets/${item}`,
+                            dst: `${this.widgetRootPath}/${item}`
+                        })
+                    }
+                })
+                $file.move({
+                    src: `${this.backupPath}/userdata`,
+                    dst: this.widgetDataPath
+                })
+                // 删除文件
+                $file.delete(`${this.backupPath}/backup.zip`)
+                $file.delete(`${this.backupPath}/widgets.zip`)
+                $file.delete(`${this.backupPath}/userdata.zip`)
+                $file.delete(this.backupPath)
+                animate.done()
+            } catch (error) {
+                animate.cancel()
+                throw error
+            }
         }
     }
 

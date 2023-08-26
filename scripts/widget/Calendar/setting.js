@@ -166,7 +166,6 @@ class CalendarSetting extends WidgetSetting {
         }
 
         this.setting.method.backgroundImage = animate => {
-            animate.touchHighlightStart()
             $ui.menu({
                 items: [$l10n("CHOOSE_IMAGE"), $l10n("CLEAR_IMAGE")],
                 handler: (title, idx) => {
@@ -199,9 +198,6 @@ class CalendarSetting extends WidgetSetting {
                             animate.done()
                             break
                     }
-                },
-                finished: cancelled => {
-                    if (cancelled) animate.touchHighlightEnd()
                 }
             })
         }

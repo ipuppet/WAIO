@@ -38,7 +38,6 @@ class MyDaysSetting extends WidgetSetting {
 
     initSettingMethods() {
         this.setting.method.backgroundImage = animate => {
-            animate.touchHighlightStart()
             $ui.menu({
                 items: [$l10n("CHOOSE_IMAGE"), $l10n("CLEAR_IMAGE")],
                 handler: (title, idx) => {
@@ -76,9 +75,6 @@ class MyDaysSetting extends WidgetSetting {
                             animate.done()
                             break
                     }
-                },
-                finished: cancelled => {
-                    if (cancelled) animate.touchHighlightEnd()
                 }
             })
         }
