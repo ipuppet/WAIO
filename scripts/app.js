@@ -1,388 +1,78 @@
-const { UIKit, Kernel, TabBarController, FileStorage, Setting, Logger } = require("./libs/easy-jsbox")
-const HomeUI = require("./ui/home")
-
-// path
-const fileStorage = new FileStorage()
-const widgetRootPath = "scripts/widget"
-const widgetDataPath = `${fileStorage.basePath}/widget`
-const backupPath = `${fileStorage.basePath}/backup`
+const { Kernel, FileStorage, Logger } = require("./libs/easy-jsbox")
 
 /**
- * 实例化一个小组件
- * @param {String} widget widget名
- * @param {Kernel} that Kernel实例
+ * @typedef {AppKernelBase} AppKernelBase
  */
-function widgetInstance(widget, that) {
-    const recover = name => {
-        if (
-            !$file.exists(`${widgetRootPath}/${name}/index.js`) &&
-            $file.exists(`${widgetRootPath}/${name}/config.json`)
-        ) {
-            const config = JSON.parse($file.read(`${widgetRootPath}/${name}/config.json`).string)
-            if (config.from) {
-                const configFrom = JSON.parse($file.read(`${widgetRootPath}/${config.from}/config.json`).string)
-                // 检查from是否需要恢复
-                if (configFrom.from) recover(config.from)
-                $file.list(`${widgetRootPath}/${config.from}`).forEach(file => {
-                    if (file !== "config.json") {
-                        $file.copy({
-                            src: `${widgetRootPath}/${config.from}/${file}`,
-                            dst: `${widgetRootPath}/${name}/${file}`
-                        })
-                    }
-                })
-                // 更新设置文件中的NAME常量
-                let settingjs = $file.read(`${widgetRootPath}/${name}/setting.js`).string
-                const firstLine = `const NAME = "${config.from}"`
-                const newFirstLine = `const NAME = "${name}"`
-                settingjs = settingjs.replace(firstLine, newFirstLine)
-                $file.write({
-                    data: $data({ string: settingjs }),
-                    path: `${widgetRootPath}/${name}/setting.js`
-                })
-            }
-        } else if (!$file.exists(`${widgetRootPath}/${name}/config.json`)) {
-            $ui.alert({
-                title: $l10n("ERROR"),
-                message: $l10n("CANNOT_TRACE_TO_THE_SOURCE") + `: ${name}`
-            })
-        }
-    }
-    recover(widget)
-    const { Widget } = require(`./widget/${widget}/index.js`)
-    return new Widget(that)
-}
+class AppKernelBase extends Kernel {
+    static fileStorage = new FileStorage({ basePath: "shared://waio" })
 
-/**
- * @typedef {AppKernel} AppKernel
- */
-class AppKernel extends Kernel {
+    logPath = "logs"
+    logFile = "waio.log"
+    logFilePath = FileStorage.join(this.logPath, this.logFile)
+
     constructor() {
         super()
         // FileStorage
-        this.fileStorage = fileStorage
+        this.fileStorage = AppKernelBase.fileStorage
+        // Logger
         this.logger = new Logger()
-        // setting
-        this.setting = new Setting({ logger: this.logger, fileStorage: this.fileStorage })
-        this.initSettingMethods()
+        this.logger.setWriter(this.fileStorage, this.logFilePath)
 
         // 小组件根目录
-        this.widgetRootPath = widgetRootPath
-        this.widgetDataPath = widgetDataPath
+        this.widgetRootPath = "scripts/widget"
+        this.widgetDataPath = `${this.fileStorage.basePath}/widget`
         // backup
-        this.backupPath = backupPath
-        this.initComponents()
-    }
-
-    initComponents() {
-        // homeUI
-        this.homeUI = new HomeUI(this)
-    }
-
-    updateHomeScreenWidgetOptions() {
-        const config = []
-        this.getWidgetList().forEach(widget => {
-            config.push({
-                name: widget.name,
-                value: widget.name
-            })
-        })
-        $file.write({
-            data: $data({ string: JSON.stringify(config) }),
-            path: "widget-options.json"
-        })
+        this.backupPath = `${this.fileStorage.basePath}/backup`
     }
 
     /**
-     * 注入设置中的脚本类型方法
+     * 实例化一个小组件
+     * @param {String} widget widget 名
      */
-    initSettingMethods() {
-        this.setting.method.tips = () => {
-            $ui.alert("每个小组件中都有 README 文件，点击可以得到一些信息。")
-        }
-
-        this.setting.method.updateHomeScreenWidgetOptions = animate => {
-            animate.start()
-            this.updateHomeScreenWidgetOptions()
-            animate.done()
-        }
-
-        this.setting.method.backupToICloud = async animate => {
-            animate.start()
-            const res = await $ui.alert({
-                title: $l10n("BACKUP"),
-                message: $l10n("START_BACKUP") + "?",
-                actions: [{ title: $l10n("OK") }, { title: $l10n("CANCEL") }]
-            })
-            if (res.index === 0) {
-                // 保证目录存在
-                if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
-                try {
-                    // 打包压缩
-                    await $archiver.zip({
-                        directory: this.widgetRootPath,
-                        dest: `${this.backupPath}/widgets.zip`
-                    })
-                    await $archiver.zip({
-                        directory: this.widgetDataPath,
-                        dest: `${this.backupPath}/userdata.zip`
-                    })
-                    await $archiver.zip({
-                        paths: [`${this.backupPath}/widgets.zip`, `${this.backupPath}/userdata.zip`],
-                        dest: `${this.backupPath}/backup.zip`
-                    })
-                    // 用户选择保存位置
-                    $drive.save({
-                        data: $data({ path: `${this.backupPath}/backup.zip` }),
-                        name: `${$addin.current.name}-${Date.now()}.zip`,
-                        handler: success => {
-                            //删除压缩文件
-                            $file.delete(this.backupPath)
-                            if (success) {
-                                animate.done()
-                            } else {
-                                animate.cancel()
-                            }
+    widgetInstance(widget) {
+        const recover = name => {
+            if (
+                !$file.exists(`${this.widgetRootPath}/${name}/index.js`) &&
+                $file.exists(`${this.widgetRootPath}/${name}/config.json`)
+            ) {
+                const config = JSON.parse($file.read(`${this.widgetRootPath}/${name}/config.json`).string)
+                if (config.from) {
+                    const configFrom = JSON.parse(
+                        $file.read(`${this.widgetRootPath}/${config.from}/config.json`).string
+                    )
+                    // 检查from是否需要恢复
+                    if (configFrom.from) recover(config.from)
+                    $file.list(`${this.widgetRootPath}/${config.from}`).forEach(file => {
+                        if (file !== "config.json") {
+                            $file.copy({
+                                src: `${this.widgetRootPath}/${config.from}/${file}`,
+                                dst: `${this.widgetRootPath}/${name}/${file}`
+                            })
                         }
                     })
-                } catch (error) {
-                    animate.cancel()
-                    this.print(error)
+                    // 更新设置文件中的NAME常量
+                    let settingjs = $file.read(`${this.widgetRootPath}/${name}/setting.js`).string
+                    const firstLine = `const NAME = "${config.from}"`
+                    const newFirstLine = `const NAME = "${name}"`
+                    settingjs = settingjs.replace(firstLine, newFirstLine)
+                    $file.write({
+                        data: $data({ string: settingjs }),
+                        path: `${this.widgetRootPath}/${name}/setting.js`
+                    })
                 }
-            } else {
-                animate.cancel()
+            } else if (!$file.exists(`${this.widgetRootPath}/${name}/config.json`)) {
+                $ui.alert({
+                    title: $l10n("ERROR"),
+                    message: $l10n("CANNOT_TRACE_TO_THE_SOURCE") + `: ${name}`
+                })
             }
         }
-
-        this.setting.method.recoverFromICloud = async animate => {
-            animate.start()
-            const data = await $drive.open()
-
-            // 保证目录存在
-            if (!$file.exists(this.backupPath)) $file.mkdir(this.backupPath)
-            $file.write({
-                data: data,
-                path: `${this.backupPath}/backup.zip`
-            })
-            // 解压
-            const success = await $archiver.unzip({
-                path: `${this.backupPath}/backup.zip`,
-                dest: this.backupPath
-            })
-
-            if (!success) {
-                animate.cancel()
-                return
-            }
-            if (!($file.exists(`${this.backupPath}/widgets.zip`) && $file.exists(`${this.backupPath}/userdata.zip`))) {
-                animate.cancel()
-                return
-            }
-
-            try {
-                // 保证目录存在
-                $file.mkdir(`${this.backupPath}/widgets`)
-                $file.mkdir(`${this.backupPath}/userdata`)
-                // 解压
-                await $archiver.unzip({
-                    path: `${this.backupPath}/widgets.zip`,
-                    dest: `${this.backupPath}/widgets`
-                })
-                await $archiver.unzip({
-                    path: `${this.backupPath}/userdata.zip`,
-                    dest: `${this.backupPath}/userdata`
-                })
-                // 恢复
-                $file.list(`${this.backupPath}/widgets`).forEach(item => {
-                    if ($file.isDirectory(`${this.backupPath}/widgets/${item}`)) {
-                        $file.delete(`${this.widgetRootPath}/${item}`)
-                        $file.move({
-                            src: `${this.backupPath}/widgets/${item}`,
-                            dst: `${this.widgetRootPath}/${item}`
-                        })
-                    }
-                })
-                $file.move({
-                    src: `${this.backupPath}/userdata`,
-                    dst: this.widgetDataPath
-                })
-                // 删除文件
-                $file.delete(`${this.backupPath}/backup.zip`)
-                $file.delete(`${this.backupPath}/widgets.zip`)
-                $file.delete(`${this.backupPath}/userdata.zip`)
-                $file.delete(this.backupPath)
-                animate.done()
-            } catch (error) {
-                animate.cancel()
-                throw error
-            }
-        }
-    }
-
-    widgetInstance(widget) {
-        return widgetInstance(widget, this)
-    }
-
-    getWidgetList() {
-        const data = []
-        const widgets = $file.list(this.widgetRootPath)
-        for (let widget of widgets) {
-            const widgetPath = `${this.widgetRootPath}/${widget}`
-            if ($file.exists(`${widgetPath}/config.json`)) {
-                const config = JSON.parse($file.read(`${widgetPath}/config.json`).string)
-                if (typeof config.icon !== "object") {
-                    config.icon = [config.icon, config.icon]
-                }
-                config.icon = config.icon.map(icon => (icon[0] === "@" ? icon.replace("@", widgetPath) : icon))
-                data.push({
-                    describe: config.describe,
-                    name: widget,
-                    icon: config.icon
-                })
-            } else {
-                // 没有config.json文件则跳过
-                continue
-            }
-        }
-        return data
-    }
-}
-
-class WidgetKernel extends Kernel {
-    constructor() {
-        super()
-        this.inWidgetEnv = true
-        // 小组件根目录
-        this.widgetRootPath = widgetRootPath
-        this.widgetDataPath = widgetDataPath
-    }
-
-    widgetInstance(widget) {
-        return widgetInstance(widget, this)
-    }
-}
-
-class AppUI {
-    static renderMainUI() {
-        // 检查是否携带 URL scheme
-        if ($context.query["url-scheme"]) {
-            $delay(0, () => {
-                $app.openURL($context.query["url-scheme"])
-            })
-            return
-        }
-
-        const kernel = new AppKernel()
-        const buttons = {
-            home: {
-                icon: ["house", "house.fill"],
-                title: $l10n("HOME")
-            },
-            setting: {
-                icon: "gear",
-                title: $l10n("SETTING")
-            }
-        }
-        kernel.setting.setEvent("onSet", key => {
-            if (key === "mainUIDisplayMode") {
-                $delay(0.3, () => $addin.restart())
-            }
-        })
-        if (kernel.setting.get("mainUIDisplayMode") === 0) {
-            kernel.useJsboxNav()
-            kernel.setting.useJsboxNav()
-            // 设置 navButtons
-            kernel.setNavButtons([
-                {
-                    symbol: buttons.setting.icon,
-                    title: buttons.setting.title,
-                    handler: () => {
-                        UIKit.push({
-                            title: buttons.setting.title,
-                            bgcolor: Setting.bgcolor,
-                            views: [kernel.setting.getListView()]
-                        })
-                    }
-                }
-            ])
-
-            kernel.UIRender({ views: [kernel.homeUI.getListView()] })
-        } else {
-            const tabBarController = new TabBarController()
-            const homeNavigationView = kernel.homeUI.getNavigationView()
-            tabBarController
-                .setPages({
-                    home: homeNavigationView.getPage(),
-                    setting: kernel.setting.getPage()
-                })
-                .setCells({
-                    home: buttons.home,
-                    setting: buttons.setting
-                })
-
-            kernel.UIRender(tabBarController.generateView().definition)
-        }
-        // 监听运行状态
-        $app.listen({
-            pause: () => {
-                $widget.reloadTimeline()
-                kernel.updateHomeScreenWidgetOptions()
-            }
-        })
-    }
-
-    static renderUnsupported() {
-        $intents.finish("不支持在此环境中运行")
-        $ui.render({
-            views: [
-                {
-                    type: "label",
-                    props: {
-                        text: "不支持在此环境中运行",
-                        align: $align.center
-                    },
-                    layout: $layout.fill
-                }
-            ]
-        })
-    }
-}
-
-class Widget {
-    static renderError() {
-        $widget.setTimeline({
-            render: () => {
-                return {
-                    type: "text",
-                    props: {
-                        text: "加载失败，可能是参数有误？去主程序更新参数再来试试？"
-                    }
-                }
-            }
-        })
-    }
-
-    static render(widgetName = $widget.inputValue) {
-        const kernel = new WidgetKernel()
-        const widget = kernel.widgetInstance(widgetName)
-        if (widget) {
-            widget.render()
-        } else {
-            Widget.renderError()
-        }
+        recover(widget)
+        const { Widget } = require(`./widget/${widget}/index.js`)
+        return new Widget(this)
     }
 }
 
 module.exports = {
-    run: () => {
-        //Widget.render("Calendar");return
-        //Widget.render("Schedule");return
-        if ($app.env === $env.widget) {
-            Widget.render()
-        } else if ($app.env === $env.app) {
-            AppUI.renderMainUI()
-        } else {
-            AppUI.renderUnsupported()
-        }
-    }
+    AppKernelBase
 }
