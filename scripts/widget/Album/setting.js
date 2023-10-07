@@ -11,16 +11,12 @@ class PictureSetting extends WidgetSetting {
 
     initSettingMethods() {
         this.setting.method.album = animate => {
-            animate.touchHighlightStart()
             const views = this.album.getAlbumView(),
                 buttons = this.album.getAlbumButtons()
             UIKit.push({
                 views: views,
                 title: $l10n("ALBUM"),
-                navButtons: buttons,
-                disappeared: () => {
-                    animate.touchHighlightEnd()
-                }
+                navButtons: buttons
             })
         }
 

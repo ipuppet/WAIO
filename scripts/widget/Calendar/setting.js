@@ -1,6 +1,6 @@
 const NAME = "Calendar"
 const WidgetSetting = require("../setting")
-const { Kernel } = require("../../libs/easy-jsbox")
+const { UIKit } = require("../../libs/easy-jsbox")
 
 class CalendarSetting extends WidgetSetting {
     constructor(kernel) {
@@ -25,7 +25,7 @@ class CalendarSetting extends WidgetSetting {
                 url: `http://timor.tech/api/holiday/year/${year}/`,
                 handler: response => {
                     if (response.error) {
-                        this.kernel.print(response.error)
+                        this.kernel.logger.info(response.error)
                         $ui.error(response.error)
                         return
                     }
@@ -166,7 +166,6 @@ class CalendarSetting extends WidgetSetting {
         }
 
         this.setting.method.backgroundImage = animate => {
-            animate.touchHighlightStart()
             $ui.menu({
                 items: [$l10n("CHOOSE_IMAGE"), $l10n("CLEAR_IMAGE")],
                 handler: (title, idx) => {
@@ -185,7 +184,7 @@ class CalendarSetting extends WidgetSetting {
                                     this.clearBackgroundImage()
                                     const fileName =
                                         "background" + resp.data.fileName.slice(resp.data.fileName.lastIndexOf("."))
-                                    const image = Kernel.compressImage(resp.data.image)
+                                    const image = UIKit.compressImage(resp.data.image)
                                     $file.write({
                                         data: image.png,
                                         path: `${this.path}/${fileName}`
@@ -199,9 +198,6 @@ class CalendarSetting extends WidgetSetting {
                             animate.done()
                             break
                     }
-                },
-                finished: cancelled => {
-                    if (cancelled) animate.touchHighlightEnd()
                 }
             })
         }
