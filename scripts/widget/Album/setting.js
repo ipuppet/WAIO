@@ -6,6 +6,7 @@ const { UIKit } = require("../../libs/easy-jsbox")
 class PictureSetting extends WidgetSetting {
     constructor(kernel) {
         super(kernel, NAME)
+        this.cacheKey = "switch.data" + this.config.name ?? ""
         this.album = new Album(this.kernel, this)
     }
 
@@ -22,7 +23,7 @@ class PictureSetting extends WidgetSetting {
 
         this.setting.method.clearCache = animate => {
             animate.start()
-            $cache.remove("switch.data")
+            $cache.remove(this.cacheKey)
             animate.done()
         }
     }
