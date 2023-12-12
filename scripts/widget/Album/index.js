@@ -4,7 +4,7 @@ const PictureSetting = require("./setting")
 class PictureWidget extends Widget {
     constructor(kernel) {
         super(kernel, new PictureSetting(kernel))
-        this.cacheKey = "switch.data" + this.setting.config.name ?? ""
+        this.cacheKey = this.setting.cacheKey
         this.album = this.setting.album
         this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
