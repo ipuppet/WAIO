@@ -4,6 +4,7 @@ const PictureSetting = require("./setting")
 class PictureWidget extends Widget {
     constructor(kernel) {
         super(kernel, new PictureSetting(kernel))
+        this.cacheKey = "switch.data" + this.setting.config.name ?? ""
         this.album = this.setting.album
         this.albumPath = this.album.albumPath
         this.imageSwitchMethod = this.setting.get("imageSwitchMethod")
@@ -16,14 +17,14 @@ class PictureWidget extends Widget {
             this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original
         )
         // 缓存
-        this.data = $cache.get("switch.data")
+        this.data = $cache.get(this.cacheKey)
         if (!this.data) {
             // 首次写入缓存
             this.data = {
                 date: Date.now(),
                 index: this.imageSwitchMethod === 0 ? this.randomNum(0, this.pictures.length - 1) : 0
             }
-            $cache.set("switch.data", this.data)
+            $cache.set(this.cacheKey, this.data)
         }
     }
 
@@ -49,7 +50,7 @@ class PictureWidget extends Widget {
                 index = this.data.index + 1
                 if (index > this.pictures.length - 1) index = 0
             }
-            $cache.set("switch.data", {
+            $cache.set(this.cacheKey, {
                 date: Date.now(),
                 index: index
             })
