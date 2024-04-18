@@ -8,63 +8,6 @@
                 "type": "number",
                 "key": "timeSpan",
                 "value": 10
-            },
-            {
-                "icon": ["wand.and.rays", "#FF0033"],
-                "type": "child",
-                "title": "COLOR_SETTING",
-                "children": [
-                    {
-                        "title": "GENERAL",
-                        "items": [
-                            {
-                                "icon": ["wand.and.rays"],
-                                "title": "DATE_COLOR",
-                                "type": "color",
-                                "key": "colorDate",
-                                "value": "#FF9933"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "LIGHT_MODE",
-                        "items": [
-                            {
-                                "icon": ["wand.and.rays", "#FFCC00"],
-                                "title": "TEXT_COLOR",
-                                "type": "color",
-                                "key": "textColor",
-                                "value": "#333333"
-                            },
-                            {
-                                "icon": ["wand.and.rays", "#FF9933"],
-                                "title": "BACKGROUND_COLOR",
-                                "type": "color",
-                                "key": "backgroundColor",
-                                "value": "#FFFFFF"
-                            }
-                        ]
-                    },
-                    {
-                        "title": "DARK_MODE",
-                        "items": [
-                            {
-                                "icon": ["wand.and.rays", "#FFCC00"],
-                                "title": "TEXT_COLOR",
-                                "type": "color",
-                                "key": "textColorDark",
-                                "value": "#FFFFFF"
-                            },
-                            {
-                                "icon": ["wand.and.rays", "#FF9933"],
-                                "title": "BACKGROUND_COLOR",
-                                "type": "color",
-                                "key": "backgroundColorDark",
-                                "value": "#333333"
-                            }
-                        ]
-                    }
-                ]
             }
         ]
     },
