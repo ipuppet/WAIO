@@ -11,7 +11,7 @@ class PictureWidget extends Widget {
         this.switchInterval = 1000 * 60 * Number(this.setting.get("switchInterval"))
         this.urlScheme =
             this.setting.get("urlScheme") !== ""
-                ? `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(this.setting.get("urlScheme"))}`
+                ? this.runScriptUrlScheme(this.setting.get("urlScheme"))
                 : this.setting.settingUrlScheme
         this.pictures = this.album.getImages(
             this.setting.get("useCompressedImage") ? this.album.imageType.compressed : this.album.imageType.original

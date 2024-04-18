@@ -84,6 +84,8 @@ class Calendar {
         if (!this.isLockscreen) {
             this.contentViewHeight -= this.padding.v * 2 + this.titleBarHeight
         }
+
+        this.calendarUrlScheme = this.widget.runScriptUrlScheme("calshow://")
     }
 
     localizedWeek(index) {
@@ -589,8 +591,7 @@ class Calendar {
                 background: this.getBackground(),
                 spacing: 0,
                 padding: $insets(this.padding.v, this.padding.h, this.padding.v, this.padding.h),
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
+                widgetURL: this.calendarUrlScheme
             },
             views: [this.titleBarTemplate(), calendar]
         }
@@ -642,8 +643,7 @@ class Calendar {
                     maxWidth: Infinity,
                     maxHeight: Infinity
                 },
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
+                widgetURL: this.calendarUrlScheme
             },
             views: days
         }

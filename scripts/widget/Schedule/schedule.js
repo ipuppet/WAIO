@@ -15,8 +15,6 @@ class Schedule {
         this.widget = widget
         this.setting = widget.setting
         this.colorDate = this.setting.get("colorDate")
-        this.colorCalendar = this.setting.get("colorCalendar")
-        this.colorReminder = this.setting.get("colorReminder")
         this.backgroundColor = this.setting.get("backgroundColor")
         this.backgroundColorDark = this.setting.get("backgroundColorDark")
         this.textColor = this.setting.get("textColor")
@@ -27,10 +25,8 @@ class Schedule {
         this.dataMode2x2 = this.setting.get("dataMode2x2")
         this.dataMode2x4 = this.setting.get("dataMode2x4")
         this.dataMode4x4 = this.setting.get("dataMode4x4")
-        this.calendarUrlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode("calshow://")}`
-        this.reminderUrlScheme = `jsbox://run?name=${$addin.current.name}&url-scheme=${$text.URLEncode(
-            "x-apple-reminderkit://"
-        )}`
+        this.calendarUrlScheme = this.widget.runScriptUrlScheme("calshow://")
+        this.reminderUrlScheme = this.widget.runScriptUrlScheme("x-apple-reminderkit://")
         switch (this.setting.get("clickEvent")) {
             case 0:
                 this.urlScheme = this.setting.settingUrlScheme
@@ -255,7 +251,7 @@ class Schedule {
                                             width: colorBarWidth,
                                             height: colorBarHeight * 0.75
                                         },
-                                        color: isReminder(item) ? this.colorReminder : this.colorCalendar
+                                        color: item.color
                                     }
                                 },
                                 {
@@ -292,7 +288,7 @@ class Schedule {
                                     type: "image",
                                     props: {
                                         symbol: isReminder(item) ? "list.dash" : "calendar",
-                                        color: isReminder(item) ? this.colorReminder : this.colorCalendar,
+                                        color: item.color,
                                         resizable: true,
                                         frame: iconFrame
                                     }

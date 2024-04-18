@@ -191,14 +191,6 @@ class AppUI {
     static kernel = new AppKernel()
 
     static renderMainUI() {
-        // 检查是否携带 URL scheme
-        if ($context.query["url-scheme"]) {
-            $delay(0, () => {
-                $app.openURL($context.query["url-scheme"])
-            })
-            return
-        }
-
         const buttons = {
             home: {
                 icon: ["house", "house.fill"],

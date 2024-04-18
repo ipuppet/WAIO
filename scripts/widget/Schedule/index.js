@@ -15,8 +15,13 @@ class ScheduleWidget extends Widget {
             startDate: startDate,
             hours: hours
         })
+        const store = $objc("EKEventStore").$new()
         // 未过期日程
         calendar.events.forEach(item => {
+            const calendarItem = store.$calendarItemWithIdentifier(item.identifier)
+            const calendar = calendarItem.$calendar()
+            item.color = calendar.$color().jsValue()
+
             const endDate = item.endDate instanceof Date ? item.endDate.getTime() : item.endDate
             if (endDate >= nowDate) {
                 res.push(item)
@@ -87,7 +92,11 @@ class ScheduleWidget extends Widget {
                                     return (!startDate || date >= startDate) && (!endDate || date <= endDate)
                                 })()
                             ) {
-                                result.events.push(reminder.jsValue())
+                                let item = reminder.jsValue()
+                                const calendarItem = store.$calendarItemWithIdentifier(item.identifier)
+                                const calendar = calendarItem.$calendar()
+                                item.color = calendar.$color().jsValue()
+                                result.events.push(item)
                             }
                         }
 

@@ -83,6 +83,12 @@ class Widget {
         return this.helveticaNeueFontSize[height]
     }
 
+    runScriptUrlScheme(url) {
+        let code = `$app.openURL("${url}")`
+        code = $text.URLEncode(code)
+        return `jsbox://run?script=${code}`
+    }
+
     async getSmallView() {
         return this.errorView
     }
