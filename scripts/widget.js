@@ -34,7 +34,7 @@ class Widget {
 
 module.exports = {
     Widget,
-    run: () => {
-        Widget.render()
+    run: widgetName => {
+        Widget.render(widgetName)
     }
 }

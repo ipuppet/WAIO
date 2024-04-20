@@ -43,10 +43,6 @@ class Calendar {
         this.titleLunar = this.setting.get("title.lunar") // 标题是否显示农历
         this.titleLunarYear = this.setting.get("title.lunarYear") // 标题是否显示农历年
         this.backgroundImage = this.setting.getBackgroundImage() // 背景图片
-        this.backgroundColor = this.setting.get("backgroundColor")
-        this.backgroundColorDark = this.setting.get("backgroundColorDark")
-        this.textColor = this.setting.get("textColor")
-        this.textColorDark = this.setting.get("textColorDark")
     }
 
     get padding() {
@@ -84,6 +80,8 @@ class Calendar {
         if (!this.isLockscreen) {
             this.contentViewHeight -= this.padding.v * 2 + this.titleBarHeight
         }
+
+        this.calendarUrlScheme = this.widget.runScriptUrlScheme("calshow://")
     }
 
     localizedWeek(index) {
@@ -133,7 +131,7 @@ class Calendar {
                 }
             }
         } else {
-            return $color(this.backgroundColor, this.backgroundColorDark)
+            return $color("primarySurface")
         }
     }
 
@@ -284,12 +282,12 @@ class Calendar {
         const props = {
             text: {
                 text: String(dayInfo.date),
-                color: $color(this.textColor, this.textColorDark)
+                color: $color("primaryText")
             },
             ext: {
                 text: extra,
                 lineLimit: extra.length > 3 ? 2 : 1,
-                color: $color(this.textColor, this.textColorDark)
+                color: $color("primaryText")
             }, // 额外信息样式，如农历等
             box: {}
         }
@@ -404,7 +402,7 @@ class Calendar {
         const props = {
             text: {
                 text: String(dayInfo.date),
-                color: $color(this.textColor, this.textColorDark)
+                color: $color("primaryText")
             },
             box: {}
         }
@@ -451,7 +449,7 @@ class Calendar {
     singleContentDayTemplate(props = {}) {
         const height = this.contentViewHeight / (this.calendar.calendar.length + 1)
         if (!this.singleContentFontSize) {
-            this.singleContentFontSize = Math.min(this.widget.getFontSizeByHeight(height) * 0.8, 20)
+            this.singleContentFontSize = Math.max(this.widget.getFontSizeByHeight(height) * 0.6, 12)
         }
         let view = {
             type: "text",
@@ -589,8 +587,8 @@ class Calendar {
                 background: this.getBackground(),
                 spacing: 0,
                 padding: $insets(this.padding.v, this.padding.h, this.padding.v, this.padding.h),
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
+                widgetURL: this.calendarUrlScheme,
+                link: this.calendarUrlScheme
             },
             views: [this.titleBarTemplate(), calendar]
         }
@@ -642,8 +640,8 @@ class Calendar {
                     maxWidth: Infinity,
                     maxHeight: Infinity
                 },
-                widgetURL: this.setting.settingUrlScheme,
-                link: this.setting.settingUrlScheme
+                widgetURL: this.calendarUrlScheme,
+                link: this.calendarUrlScheme
             },
             views: days
         }

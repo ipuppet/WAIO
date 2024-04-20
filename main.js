@@ -25,6 +25,10 @@ switch ($app.env) {
         break
 }
 
+// AppInstance = require("./scripts/widget")
+// AppInstance.run("Schedule")
+// AppInstance = null
+
 if (AppInstance) {
     AppInstance.run()
 }

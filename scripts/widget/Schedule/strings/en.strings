@@ -18,7 +18,7 @@
 "DATE_COLOR" = "Date Color";
 "CALENDAR_COLOR" = "Calendar Color";
 "REMINDER_COLOR" = "Reminder Color";
-"NO_CALENDAR" = "No Schedule";
+"NO_CALENDAR" = "No Events";
 "NO_REMINDER" = "No Reminder";
 "NO_CALENDAR&REMINDER" = "No Events";
 "ITEM_LENGTH" = "Items to Display";
