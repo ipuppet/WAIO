@@ -165,13 +165,12 @@ class Calendar {
         let firstDay = new Date(year, month, 1).getDay() // 本月第一天是周几
         let lastMonthDates = new Date(year, month, 0).getDate() // 上个月总天数
         let nextMonth = 1 // 下个月的日期计数器
-        lastMonthDates -= 7 - firstDay // 补齐本月开始前的空位
         if (this.firstDayOfWeek === 1) {
             // 设置中设定每周第一天是周几
             firstDay -= 1
             if (firstDay < 0) firstDay = 6
-            lastMonthDates++ // 上周补到这周的天数少一天，加上一才会少一天
         }
+        lastMonthDates -= firstDay - 1
         let calendar = []
         let date = 1 // 日期计数器
         for (let i = 0; i < 6; i++) {
@@ -609,8 +608,12 @@ class Calendar {
         this.initCalendar(false)
         // 计算周数
         const dateInstance = new Date()
-        const saturday = dateInstance.getDate() + (6 - dateInstance.getDay())
-        const week = Math.ceil(saturday / 7) // start from 1
+        const day =
+            this.firstDayOfWeek === 0
+                ? dateInstance.getDay()
+                : (() => (dateInstance.getDay() === 0 ? 6 : dateInstance.getDay()))()
+        const lastDayOfWeek = dateInstance.getDate() + (6 - day)
+        const week = Math.ceil(lastDayOfWeek / 7) // start from 1
         const length = this.calendar.calendar.length
         const weekStart = week + 2 > length ? length - 2 : week
         const weekEnd = Math.min(weekStart + 2, length) // 最多显示 3 周
