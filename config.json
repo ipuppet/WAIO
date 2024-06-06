@@ -3,6 +3,7 @@
         "name": "WAIO",
         "version": "1.9.1",
         "author": "ipuppet",
+        "types": 1,
         "module": false
     },
     "settings": {
