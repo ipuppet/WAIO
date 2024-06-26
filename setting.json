@@ -58,7 +58,7 @@
                 "icon": ["person.fill", "#FF9900"],
                 "title": "AUTHOR",
                 "type": "info",
-                "value": ["ipuppet", "https://blog.ipuppet.top"]
+                "value": ["Blog", "https://blog.ultagic.com"]
             },
             {
                 "icon": ["book.fill", "#A569BD"],
