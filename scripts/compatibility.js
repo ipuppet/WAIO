@@ -129,7 +129,7 @@ class Compatibility {
 }
 
 class VersionActions {
-    version = 1
+    version = 2
     userVersion = $cache.get("compatibility.version") ?? 0
 
     /**
@@ -174,6 +174,16 @@ class VersionActions {
         }
 
         this.compatibility.deleteFiles(["storage"])
+    }
+
+    ver2() {
+        this.compatibility.deleteFiles([
+            "setting.json",
+            "dist/CAIO-en.json",
+            "dist/CAIO-zh-Hans.json",
+            "dist/CAIO.js",
+            "assets/icon"
+        ])
     }
 }
 

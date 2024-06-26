@@ -3,10 +3,7 @@
         "title": "GENERAL",
         "items": [
             {
-                "icon": [
-                    "arrow.2.circlepath",
-                    "#FF9900"
-                ],
+                "icon": ["arrow.2.circlepath", "#FF9900"],
                 "title": "UPDATE_HOME_SCREEN_WIDGET_OPTIONS",
                 "type": "script",
                 "value": "this.method.updateHomeScreenWidgetOptions"
@@ -17,18 +14,13 @@
         "title": "BACKUP",
         "items": [
             {
-                "icon": [
-                    "icloud.and.arrow.up.fill"
-                ],
+                "icon": ["icloud.and.arrow.up.fill"],
                 "title": "BACKUP_TO_ICLOUD",
                 "type": "script",
                 "value": "this.method.backupToICloud"
             },
             {
-                "icon": [
-                    "arrow.clockwise.icloud.fill",
-                    "#FFCC33"
-                ],
+                "icon": ["arrow.clockwise.icloud.fill", "#FFCC33"],
                 "title": "RECOVER_FROM_ICLOUD",
                 "type": "script",
                 "value": "this.method.recoverFromICloud"
@@ -38,17 +30,11 @@
     {
         "items": [
             {
-                "icon": [
-                    "rectangle.topthird.inset.filled",
-                    "#A569BD"
-                ],
+                "icon": ["rectangle.topthird.inset.filled", "#A569BD"],
                 "title": "DISPLAY_MODE",
                 "type": "tab",
                 "key": "mainUIDisplayMode",
-                "items": [
-                    "CLASSIC",
-                    "MODERN"
-                ],
+                "items": ["CLASSIC", "MODERN"],
                 "value": 0
             }
         ]
@@ -57,34 +43,25 @@
         "title": "ABOUT",
         "items": [
             {
-                "icon": [
-                    "/assets/icon/github.com.jpeg",
-                    "white"
-                ],
+                "icon": ["icon_177", "black"],
                 "title": "Github",
                 "type": "info",
-                "value": [
-                    "ipuppet/WAIO",
-                    "https://github.com/ipuppet/WAIO"
-                ]
+                "value": ["ipuppet/WAIO", "https://github.com/ipuppet/WAIO"]
             },
             {
-                "icon": [
-                    "person.fill",
-                    "#FF9900"
-                ],
+                "icon": ["icon_172", "#1888bf"],
+                "title": "Telegram",
+                "type": "info",
+                "value": ["JSBoxTG", "https://t.me/JSBoxTG"]
+            },
+            {
+                "icon": ["person.fill", "#FF9900"],
                 "title": "AUTHOR",
                 "type": "info",
-                "value": [
-                    "ipuppet",
-                    "https://blog.ipuppet.top"
-                ]
+                "value": ["ipuppet", "https://blog.ipuppet.top"]
             },
             {
-                "icon": [
-                    "book.fill",
-                    "#A569BD"
-                ],
+                "icon": ["book.fill", "#A569BD"],
                 "title": "README",
                 "type": "script",
                 "value": "this.method.readme"
